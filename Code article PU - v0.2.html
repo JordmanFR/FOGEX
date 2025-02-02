@@ -78,6 +78,18 @@
             background-color: #ff9999;
         }
 
+        .back-to-first-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ccffcc;
+            border: 1px solid #66ff66;
+        }
+
+        .back-to-first-button:hover {
+            background-color: #99ff99;
+        }
+
         .error {
             color: red;
             display: none;
@@ -120,7 +132,6 @@
     <!-- Étape 1: Sélection de la catégorie -->
     <div class="step active" id="step1">
         <h3>Étape 1: Sélectionnez la catégorie</h3>
-		<h5>(Les courroies soudées peuvent être appelées fermées ou sans fin par les clients)</h5>
         <button onclick="selectOption('','R', 2)">Courroie ouverte</button>
         <button onclick="selectOption('','V', 2)">Courroie soudée</button>
         <button onclick="selectOption('','F', 2)">Courroie flex</button>
@@ -129,6 +140,7 @@
     <!-- Étape 2: Sélection du profil -->
     <div class="step" id="step2">
         <button class="back-button" onclick="goBack(1)">Retour</button>
+        <button class="back-to-first-button" onclick="goToFirst()">Retour à la première étape</button>
         <h3>Étape 2: Sélectionnez le profil</h3>
         <select id="profileSelect" onchange="updateStep3Options()">
             <optgroup label="Profil T">
@@ -179,6 +191,7 @@
     <!-- Étape 3: Sélection de la largeur -->
     <div class="step" id="step3">
         <button class="back-button" onclick="goBack(2)">Retour</button>
+        <button class="back-to-first-button" onclick="goToFirst()">Retour à la première étape</button>
         <h3>Étape 3: Sélectionnez la largeur</h3>
         <div id="widthOptions"></div>
     </div>
@@ -186,9 +199,9 @@
     <!-- Étape 4: Sélection du câble -->
     <div class="step" id="step4">
         <button class="back-button" onclick="goBack(3)">Retour</button>
+        <button class="back-to-first-button" onclick="goToFirst()">Retour à la première étape</button>
         <h3>Étape 4 : Sélectionnez le câble</h3>
-		<h5>(Si le client ne le précise pas, le choix par défaut est acier)</h5>
-        <button onclick="selectOption('','A', 5)">Acier</button>
+        <button onclick="selectOption('','A', 5)">Acier (par défaut)</button>
         <button onclick="selectOption('','K', 5)">Kevlar</button>
         <button onclick="selectOption('','S', 5)">Inox</button>
     </div>
@@ -196,29 +209,33 @@
     <!-- Étape 5: Saisie de la longueur -->
     <div class="step" id="step5">
         <button class="back-button" onclick="goBack(4)">Retour</button>
-        <h3>Étape 5: Entrez la longueur en mm</h3>
+        <button class="back-to-first-button" onclick="goToFirst()">Retour à la première étape</button>
+        <h3>Étape 5: Entrez la longueur (5 caractères max)</h3>
         <input type="text" id="sizeInput" placeholder="Entrez la longueur en mm" maxlength="5">
         <div id="sizeError" class="error">Veuillez entrer une taille valide.</div>
         <div id="lengthError" class="error">La longueur doit être supérieure ou égale à 1000 mm.</div>
         <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
         <button onclick="validateSize()">Valider</button>
     </div>
-	
-	<!-- Étape 6: Sélection de revêtement en tissu -->
-	<div class="step" id="step6">
-    <button class="back-button" onclick="goBack(5)">Retour</button>
-    <h3>Première option: Sélectionnez un revêtement en tissu</h3>
-    <button onclick="selectOptionalOption('', '', 7)">Sans</button>
-    <button onclick="selectOptionalOption('/Z', 'PAZ', 7)">PAZ</button>
-    <button onclick="selectOptionalOption('/R', 'PAR', 7)">PAR</button>
-    <button onclick="selectOptionalOption('/D', 'PAZ + PAR', 7)">PAZ + PAR</button>
-	</div>
+
+    <!-- Étape 6: Sélection de revêtement en tissu -->
+    <div class="step" id="step6">
+        <button class="back-button" onclick="goBack(5)">Retour</button>
+        <button class="back-to-first-button" onclick="goToFirst()">Retour à la première étape</button>
+        <h3>Étape 6: Sélectionnez un revêtement en tissu</h3>
+        <button onclick="selectOptionalOption('', '', 7)">Sans</button>
+        <button onclick="selectOptionalOption('/Z', 'PAZ', 7)">PAZ</button>
+        <button onclick="selectOptionalOption('/R', 'PAR', 7)">PAR</button>
+        <button onclick="selectOptionalOption('/D', 'PAZ + PAR', 7)">PAZ + PAR</button>
+    </div>
 
     <!-- Résultat -->
     <div id="result"></div>
     <div id="designation"></div>
 
     <script>
+	
+	
         // Variables globales
 let codeArticle = '';
 let currentStep = 1;
