@@ -208,7 +208,6 @@
 	<div class="step" id="step6">
     <button class="back-button" onclick="goBack(5)">Retour</button>
     <h3>Première option: Sélectionnez un revêtement en tissu</h3>
-    <button onclick="selectOptionalOption('', '', 7)">Sans</button>
     <button onclick="selectOptionalOption('/Z', 'PAZ', 7)">PAZ</button>
     <button onclick="selectOptionalOption('/R', 'PAR', 7)">PAR</button>
     <button onclick="selectOptionalOption('/D', 'PAZ + PAR', 7)">PAZ + PAR</button>
@@ -487,7 +486,7 @@ function generateDesignation() {
         designation += `- ${numberOfTeeth} dents `;
 
     // Ajouter le revêtement en tissu
-    if (optionalOption1Desc) designation += optionalOption1Desc + ' ';
+    if (optionalOption1Desc) designation +=  optionalOption1Desc + ' ';
 
     }
 
