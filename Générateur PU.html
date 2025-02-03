@@ -17,59 +17,15 @@
     <!-- Étape 1: Sélection de la catégorie -->
     <div class="step active" id="step1">
         <h3>Étape 1: Sélectionnez la catégorie</h3>
-		<h5>(Les courroies soudées peuvent être appelées fermées ou sans fin par les clients)</h5>
-        <button onclick="selectOption('','R', 2)">Courroie ouverte</button>
-        <button onclick="selectOption('','V', 2)">Courroie soudée</button>
-        <button onclick="selectOption('','F', 2)">Courroie flex</button>
+        <h5>(Les courroies soudées peuvent être appelées fermées ou sans fin par les clients)</h5>
+        <div id="categoryButtons"></div>
     </div>
 
     <!-- Étape 2: Sélection du profil -->
     <div class="step" id="step2">
         <button class="back-button" onclick="goBack(1)">Retour</button>
         <h3>Étape 2: Sélectionnez le profil</h3>
-        <select id="profileSelect" onchange="updateStep3Options()">
-            <optgroup label="Profil T">
-                <option value="T2.5">T2.5</option>
-                <option value="T5">T5</option>
-                <option value="T10">T10</option>
-                <option value="T20">T20</option>
-            </optgroup>
-            <optgroup label="Profil AT">
-                <option value="AT3">AT3</option>
-                <option value="AT5">AT5</option>
-                <option value="AT10">AT10</option>
-                <option value="AT15">AT15</option>
-                <option value="AT20">AT20</option>
-            </optgroup>
-            <optgroup label="Profil HTD">
-                <option value="HT5">HTD 5M</option>
-                <option value="HT8">HTD 8M</option>
-                <option value="HT14">HTD 14M</option>
-            </optgroup>
-            <optgroup label="Profil STD">
-                <option value="ST5">STD 5M</option>
-                <option value="ST8">STD 8M</option>
-                <option value="ST14">STD 14M</option>
-            </optgroup>
-            <optgroup label="Profil RTD">
-                <option value="RP5">RTD 5M</option>
-                <option value="RP8">RTD 8M</option>
-                <option value="RP14">RTD 14M</option>
-            </optgroup>
-            <optgroup label="Profil EAGLE">
-                <option value="E5">EAGLE 5M</option>
-                <option value="E8">EAGLE 8M</option>
-                <option value="E10">EAGLE 10M</option>
-                <option value="E14">EAGLE 14M</option>
-            </optgroup>
-            <optgroup label="Profil MXL / XL / L / H / XH">
-                <option value="MXL">MXL</option>
-                <option value="XL">XL</option>
-                <option value="L">L</option>
-                <option value="H">H</option>
-                <option value="XH">XH</option>
-            </optgroup>
-        </select>
+        <select id="profileSelect" onchange="updateStep3Options()"></select>
         <button onclick="selectProfile()">Suivant</button>
     </div>
 
@@ -84,10 +40,8 @@
     <div class="step" id="step4">
         <button class="back-button" onclick="goBack(3)">Retour</button>
         <h3>Étape 4 : Sélectionnez le câble</h3>
-		<h5>(Si le client ne le précise pas, le choix par défaut est acier)</h5>
-        <button onclick="selectOption('','A', 5)">Acier</button>
-        <button onclick="selectOption('','K', 5)">Kevlar</button>
-        <button onclick="selectOption('','S', 5)">Inox</button>
+        <h5>(Si le client ne le précise pas, le choix par défaut est acier)</h5>
+        <div id="cableButtons"></div>
     </div>
 
     <!-- Étape 5: Saisie de la longueur -->
@@ -100,21 +54,19 @@
         <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
         <button onclick="validateSize()">Valider</button>
     </div>
-	
-	<!-- Étape 6: Sélection de revêtement en tissu -->
-	<div class="step" id="step6">
-    <button class="back-button" onclick="goBack(5)">Retour</button>
-    <h3>Première option: Sélectionnez un revêtement en tissu</h3>
-    <button onclick="selectOptionalOption('/Z', 'PAZ', 7)">PAZ</button>
-    <button onclick="selectOptionalOption('/R', 'PAR', 7)">PAR</button>
-    <button onclick="selectOptionalOption('/D', 'PAZ + PAR', 7)">PAZ + PAR</button>
-	</div>
+
+    <!-- Étape 6: Sélection de revêtement en tissu -->
+    <div class="step" id="step6">
+        <button class="back-button" onclick="goBack(5)">Retour</button>
+        <h3>Première option: Sélectionnez un revêtement en tissu</h3>
+        <div id="coatingButtons"></div>
+    </div>
 
     <!-- Résultat -->
     <div id="result"></div>
     <div id="designation"></div>
 
-<script src="script.js"></script>
-    
+    <script src="data.json" type="application/json"></script>
+    <script src="script.js"></script>
 </body>
 </html>
