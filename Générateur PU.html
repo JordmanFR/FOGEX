@@ -54,19 +54,23 @@
         <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
         <button onclick="validateSize()">Valider</button>
     </div>
-    <!-- Étape 6: Options de revêtement -->
+    <!-- Étape 6: Revêtement en tissu -->
     <div class="step" id="step6">
         <button class="back-button" onclick="goBack(5)">Retour</button>
         <h3>Première option: Sélectionnez un revêtement en tissu</h3>
         <div id="coatingButtons">
-            <button onclick="selectOptionalOption('/Z', 'PAZ', 7)">PAZ</button>
+            <button onclick="selectOptionalOption('', 'Sans')">Sans</button>
+			<button onclick="selectOptionalOption('/Z', 'PAZ', 7)">PAZ</button>
             <button onclick="selectOptionalOption('/R', 'PAR', 7)">PAR</button>
             <button onclick="selectOptionalOption('/D', 'PAZ + PAR', 7)">PAZ + PAR</button>
         </div>
     </div>
     <!-- Résultat -->
-    <div id="result"></div>
-    <div id="designation"></div>
+    <div id="result-container">
+        <div id="weldabilityInfo"></div>
+    <div id="result" class="result-style"></div>
+    <div id="designation" class="result-style"></div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

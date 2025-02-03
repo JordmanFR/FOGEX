@@ -227,6 +227,16 @@ function showResult() {
 
         const resultElement = document.getElementById('result');
         const designationElement = document.getElementById('designation');
+        const weldabilityElement = document.getElementById('weldabilityInfo');
+
+        if (state.category === 'V') {
+            const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
+            const cssClass = getWeldabilityClass(weldabilityMessage);
+            weldabilityElement.className = `weldability ${cssClass}`;
+            weldabilityElement.innerHTML = `<strong>Information de faisabilité :</strong> ${weldabilityMessage}`;
+        } else {
+            weldabilityElement.innerHTML = '';
+        }
 
         if (resultElement) {
             resultElement.innerHTML = `Votre code article : <strong>${codeArticle}</strong>`;
@@ -235,24 +245,6 @@ function showResult() {
         const designation = generateDesignation();
         if (designationElement && designation) {
             designationElement.innerHTML = `Désignation : <strong>${designation}</strong>`;
-        }
-
-        if (state.category === 'V') {
-            const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
-            
-            let weldabilityElement = document.getElementById('weldabilityInfo');
-            if (!weldabilityElement) {
-                weldabilityElement = document.createElement('div');
-                weldabilityElement.id = 'weldabilityInfo';
-                resultElement.parentNode.insertBefore(
-                    weldabilityElement, 
-                    resultElement.nextSibling
-                );
-            }
-            
-            const cssClass = getWeldabilityClass(weldabilityMessage);
-            weldabilityElement.className = `weldability ${cssClass}`;
-            weldabilityElement.innerHTML = `<strong>Information de faisabilité :</strong> ${weldabilityMessage}`;
         }
     } catch (error) {
         console.error('Erreur dans showResult:', error);
