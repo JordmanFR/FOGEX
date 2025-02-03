@@ -8,41 +8,190 @@ const state = {
     size: '',
     optionalOption1: '',
     optionalOption1Desc: '',
-    beltsData: null
+    beltsData: {
+        "profiles": {
+            "T": {
+                "T2.5": {
+                    "pitch": 2.5,
+                    "widths": ["004", "006", "010", "020", "050", "100"]
+                },
+                "T5": {
+                    "pitch": 5,
+                    "widths": ["010", "016", "025", "032", "050", "075", "100"]
+                },
+                "T10": {
+                    "pitch": 10,
+                    "widths": ["010", "016", "025", "032", "050", "075", "100"]
+                },
+                "T20": {
+                    "pitch": 20,
+                    "widths": ["025", "032", "050", "075", "100"]
+                }
+            },
+            "AT": {
+                "AT3": {
+                    "pitch": 3,
+                    "widths": ["008", "010", "012", "016", "020", "025", "050", "100"]
+                },
+                "AT5": {
+                    "pitch": 5,
+                    "widths": ["010", "016", "025", "032", "050", "075", "100"]
+                },
+                "AT10": {
+                    "pitch": 10,
+                    "widths": ["010", "016", "025", "032", "050", "075", "100"]
+                },
+                "AT15": {
+                    "pitch": 15,
+                    "widths": ["050", "075", "100"]
+                },
+                "AT20": {
+                    "pitch": 20,
+                    "widths": ["025", "032", "050", "075", "100"]
+                }
+            },
+            "HTD": {
+                "HT5": {
+                    "pitch": 5,
+                    "widths": ["010", "015", "025", "050", "100"],
+                    "display": "HTD 5M"
+                },
+                "HT8": {
+                    "pitch": 8,
+                    "widths": ["020", "030", "050", "085", "100"],
+                    "display": "HTD 8M"
+                },
+                "HT14": {
+                    "pitch": 14,
+                    "widths": ["040", "055", "085", "0115", "150"],
+                    "display": "HTD 14M"
+                }
+            },
+            "STD": {
+                "ST5": {
+                    "pitch": 5,
+                    "widths": ["010", "015", "025", "050", "100"],
+                    "display": "STD 5M"
+                },
+                "ST8": {
+                    "pitch": 8,
+                    "widths": ["020", "030", "050", "085", "100"],
+                    "display": "STD 8M"
+                },
+                "ST14": {
+                    "pitch": 14,
+                    "widths": ["040", "055", "085", "0115", "150"],
+                    "display": "STD 14M"
+                }
+            },
+            "RTD": {
+                "RP5": {
+                    "pitch": 5,
+                    "widths": ["010", "015", "025", "050", "100"],
+                    "display": "RTD 5M"
+                },
+                "RP8": {
+                    "pitch": 8,
+                    "widths": ["020", "030", "050", "085", "100"],
+                    "display": "RTD 8M"
+                },
+                "RP14": {
+                    "pitch": 14,
+                    "widths": ["040", "055", "085", "0115", "150"],
+                    "display": "RTD 14M"
+                }
+            },
+            "EAGLE": {
+                "E5": {
+                    "pitch": 5,
+                    "widths": ["012.5", "025"],
+                    "display": "EAGLE 5M"
+                },
+                "E8": {
+                    "pitch": 8,
+                    "widths": ["016", "025", "032", "050"],
+                    "display": "EAGLE 8M"
+                },
+                "E10": {
+                    "pitch": 10,
+                    "widths": ["025", "032", "050", "075", "100"],
+                    "display": "EAGLE 10M"
+                },
+                "E14": {
+                    "pitch": 14,
+                    "widths": ["035", "052", "070", "105"],
+                    "display": "EAGLE 14M"
+                }
+            },
+            "IMPERIAL": {
+                "MXL": {
+                    "pitch": 2.032,
+                    "widths": ["025", "050", "100", "200", "400"]
+                },
+                "XL": {
+                    "pitch": 5.08,
+                    "widths": ["025", "050", "100", "200", "400"]
+                },
+                "L": {
+                    "pitch": 9.525,
+                    "widths": ["050", "075", "100", "200", "400"]
+                },
+                "H": {
+                    "pitch": 12.7,
+                    "widths": ["050", "075", "100", "200", "400"]
+                },
+                "XH": {
+                    "pitch": 22.225,
+                    "widths": ["100", "200", "400"]
+                }
+            }
+        },
+        "categories": {
+            "R": {
+                "code": "R",
+                "name": "Courroie ouverte Elatech"
+            },
+            "V": {
+                "code": "V",
+                "name": "Courroie soudée Elatech"
+            },
+            "F": {
+                "code": "F",
+                "name": "Courroie ELAFLEX"
+            }
+        },
+        "cables": {
+            "A": {
+                "code": "A",
+                "name": "Cable Acier"
+            },
+            "K": {
+                "code": "K",
+                "name": "Cable Kevlar"
+            },
+            "S": {
+                "code": "S",
+                "name": "Cable Inox"
+            }
+        }
+    }
 };
 
-// Fonctions d'initialisation
-async function initializeApp() {
-    try {
-        const response = await fetch('data.json');
-        state.beltsData = await response.json();
-        setupInitialUI();
-        updateProgress(1);
-    } catch (error) {
-        console.error('Erreur lors du chargement des données:', error);
-    }
+// Initialisation
+function initializeApp() {
+    setupInitialUI();
+    updateProgress(1);
 }
 
 function setupInitialUI() {
-    createCategoryButtons();
     createProfileSelect();
-    createCableButtons();
-    createCoatingButtons();
 }
 
-// Création des éléments UI dynamiques
-function createCategoryButtons() {
-    const container = document.getElementById('categoryButtons');
-    Object.entries(state.beltsData.categories).forEach(([code, data]) => {
-        const button = document.createElement('button');
-        button.textContent = data.name;
-        button.onclick = () => selectOption('', code, 2);
-        container.appendChild(button);
-    });
-}
-
+// Création du select pour les profils
 function createProfileSelect() {
     const select = document.getElementById('profileSelect');
+    select.innerHTML = ''; // Vider le select
+
     Object.entries(state.beltsData.profiles).forEach(([groupName, profiles]) => {
         const optgroup = document.createElement('optgroup');
         optgroup.label = `Profil ${groupName}`;
@@ -53,27 +202,8 @@ function createProfileSelect() {
             option.textContent = data.display || code;
             optgroup.appendChild(option);
         });
+        
         select.appendChild(optgroup);
-    });
-}
-
-function createCableButtons() {
-    const container = document.getElementById('cableButtons');
-    Object.entries(state.beltsData.cables).forEach(([code, data]) => {
-        const button = document.createElement('button');
-        button.textContent = data.name;
-        button.onclick = () => selectOption('', code, 5);
-        container.appendChild(button);
-    });
-}
-
-function createCoatingButtons() {
-    const container = document.getElementById('coatingButtons');
-    Object.entries(state.beltsData.coatings).forEach(([code, data]) => {
-        const button = document.createElement('button');
-        button.textContent = data.name;
-        button.onclick = () => selectOptionalOption(data.code, data.name, 7);
-        container.appendChild(button);
     });
 }
 
@@ -82,6 +212,22 @@ function updateProgress(step) {
     const totalSteps = 6;
     const progressWidth = (step / totalSteps) * 100;
     document.getElementById('progress').style.width = `${progressWidth}%`;
+}
+
+function selectOption(prefix, value, nextStep) {
+    switch(state.currentStep) {
+        case 1:
+            state.category = value;
+            break;
+        case 3:
+            state.width = value;
+            break;
+        case 4:
+            state.cable = value;
+            break;
+    }
+
+    navigateToStep(nextStep);
 }
 
 function navigateToStep(nextStep) {
@@ -100,22 +246,6 @@ function goBack(previousStep) {
 }
 
 // Gestion des sélections
-function selectOption(prefix, value, nextStep) {
-    switch (state.currentStep) {
-        case 1:
-            state.category = value;
-            break;
-        case 3:
-            state.width = value;
-            break;
-        case 4:
-            state.cable = value;
-            break;
-    }
-    updateArticleCode();
-    navigateToStep(nextStep);
-}
-
 function selectProfile() {
     const profileSelect = document.getElementById('profileSelect');
     state.profile = profileSelect.value;
@@ -127,7 +257,9 @@ function updateStep3Options() {
     const widthOptionsDiv = document.getElementById('widthOptions');
     widthOptionsDiv.innerHTML = '';
     
-    const profile = state.beltsData.profiles[getProfileGroup(state.profile)][state.profile];
+    const profileGroup = getProfileGroup(state.profile);
+    const profile = state.beltsData.profiles[profileGroup][state.profile];
+    
     profile.widths.forEach(width => {
         const button = document.createElement('button');
         button.textContent = `${width}mm`;
@@ -136,17 +268,14 @@ function updateStep3Options() {
     });
 }
 
-// Validation et génération du code
 function validateSize() {
     const sizeInput = document.getElementById('sizeInput');
     const size = sizeInput.value.trim();
     
-    // Réinitialiser les erreurs
     resetErrors();
     
     if (validateSizeInput(size)) {
         state.size = size.padStart(5, '0');
-        updateArticleCode();
         
         if (shouldSkipCoating()) {
             state.optionalOption1 = '/Z';
@@ -169,7 +298,8 @@ function validateSizeInput(size) {
         return false;
     }
     
-    const profile = state.beltsData.profiles[getProfileGroup(state.profile)][state.profile];
+    const profileGroup = getProfileGroup(state.profile);
+    const profile = state.beltsData.profiles[profileGroup][state.profile];
     const numberOfTeeth = parseInt(size) / profile.pitch;
     
     if (!Number.isInteger(numberOfTeeth)) {
@@ -178,6 +308,12 @@ function validateSizeInput(size) {
     }
     
     return true;
+}
+
+function selectOptionalOption(value, desc, nextStep) {
+    state.optionalOption1 = value;
+    state.optionalOption1Desc = desc;
+    showResult();
 }
 
 // Fonctions utilitaires
@@ -203,25 +339,31 @@ function showError(errorId) {
     document.getElementById(errorId).style.display = 'block';
 }
 
-// Génération du résultat
-function updateArticleCode() {
-    const code = state.category === 'R' 
-        ? `${state.category}${state.width}${state.profile}${state.cable}`
-        : `${state.category}${state.width}${state.profile}${state.cable}${state.size}`;
-        
-    const finalCode = state.optionalOption1 ? code + state.optionalOption1 : code;
-    
-    document.getElementById('result').innerHTML = `Votre code article : <strong>${finalCode}</strong>`;
+function showResult() {
+    let codeArticle = '';
+    if (state.category === 'R') {
+        codeArticle = `${state.category}${state.width}${state.profile}${state.cable}`;
+    } else {
+        codeArticle = `${state.category}${state.width}${state.profile}${state.cable}${state.size}`;
+    }
+
+    if (state.optionalOption1) {
+        codeArticle += state.optionalOption1;
+    }
+
+    document.getElementById('result').innerHTML = `Votre code article : <strong>${codeArticle}</strong>`;
     document.getElementById('designation').innerHTML = `Désignation : <strong>${generateDesignation()}</strong>`;
 }
 
 function generateDesignation() {
-    const category = state.beltsData.categories[state.category].name;
-    const cable = state.beltsData.cables[state.cable].name;
-    let designation = `${category} - ${state.profile} - ${state.width}mm - ${cable}`;
+    const categoryName = state.beltsData.categories[state.category].name;
+    const cableName = state.beltsData.cables[state.cable].name;
+    
+    let designation = `${categoryName} - ${state.profile} - ${state.width}mm - ${cableName}`;
     
     if (state.category !== 'R') {
-        const profile = state.beltsData.profiles[getProfileGroup(state.profile)][state.profile];
+        const profileGroup = getProfileGroup(state.profile);
+        const profile = state.beltsData.profiles[profileGroup][state.profile];
         const numberOfTeeth = Math.round(parseInt(state.size) / profile.pitch);
         designation += ` - ${numberOfTeeth} dents`;
         
