@@ -18,13 +18,12 @@
     <div class="step active" id="step1">
         <h3>Étape 1: Sélectionnez la catégorie</h3>
         <h5>(Les courroies soudées peuvent être appelées fermées ou sans fin par les clients)</h5>
-        <!-- Remettre les boutons en dur pour la première étape -->
         <button onclick="selectOption('','R', 2)">Courroie ouverte</button>
         <button onclick="selectOption('','V', 2)">Courroie soudée</button>
         <button onclick="selectOption('','F', 2)">Courroie flex</button>
     </div>
 
-    <!-- Les autres étapes restent inchangées -->
+    <!-- Étape 2: Sélection du profil -->
     <div class="step" id="step2">
         <button class="back-button" onclick="goBack(1)">Retour</button>
         <h3>Étape 2: Sélectionnez le profil</h3>
@@ -32,12 +31,14 @@
         <button onclick="selectProfile()">Suivant</button>
     </div>
 
+    <!-- Étape 3: Sélection de la largeur -->
     <div class="step" id="step3">
         <button class="back-button" onclick="goBack(2)">Retour</button>
         <h3>Étape 3: Sélectionnez la largeur</h3>
         <div id="widthOptions"></div>
     </div>
 
+    <!-- Étape 4: Sélection du câble -->
     <div class="step" id="step4">
         <button class="back-button" onclick="goBack(3)">Retour</button>
         <h3>Étape 4 : Sélectionnez le câble</h3>
@@ -49,6 +50,7 @@
         </div>
     </div>
 
+    <!-- Étape 5: Saisie de la longueur -->
     <div class="step" id="step5">
         <button class="back-button" onclick="goBack(4)">Retour</button>
         <h3>Étape 5: Entrez la longueur en mm</h3>
@@ -59,6 +61,7 @@
         <button onclick="validateSize()">Valider</button>
     </div>
 
+    <!-- Étape 6: Options de revêtement -->
     <div class="step" id="step6">
         <button class="back-button" onclick="goBack(5)">Retour</button>
         <h3>Première option: Sélectionnez un revêtement en tissu</h3>
