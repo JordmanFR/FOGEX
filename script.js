@@ -9,6 +9,43 @@ const state = {
     optionalOption1: '',
     optionalOption1Desc: '',
     beltsData: {
+        "messages": {
+            "YES": "Peut être soudée",
+            "YES_BUT": "Peut être soudé mais soumis à un MOQ, ou traces de refentes à prévoir",
+            "NO": "Doit être réclamé à Elatech"
+        },
+        "categories": {
+            "R": { "name": "Courroie ouverte Elatech" },
+            "V": { "name": "Courroie soudée Elatech" },
+            "F": { "name": "Courroie ELAFLEX" }
+        },
+        "cables": {
+            "A": { "name": "Cable Acier" },
+            "K": { "name": "Cable Kevlar" },
+            "S": { "name": "Cable Inox" }
+        },
+        "weldability": {
+            "T5": {
+                "010": "YES_BUT", "016": "YES", "025": "YES", "032": "YES_BUT",
+                "050": "YES_BUT", "075": "YES_BUT", "100": "YES"
+            },
+            "T10": {
+                "010": "YES_BUT", "016": "YES_BUT", "025": "YES", "032": "YES",
+                "050": "YES", "075": "YES_BUT", "100": "YES"
+            },
+            "T20": {
+                "025": "YES_BUT", "032": "YES_BUT", "050": "YES_BUT",
+                "075": "YES_BUT", "100": "YES"
+            },
+            "L": {
+                "050": "YES_BUT", "075": "YES_BUT", "100": "YES_BUT",
+                "150": "YES_BUT", "200": "YES_BUT", "300": "YES_BUT", "400": "YES"
+            },
+            "H": {
+                "050": "YES_BUT", "075": "YES_BUT", "100": "YES_BUT",
+                "150": "YES_BUT", "200": "YES", "300": "YES_BUT", "400": "YES"
+            }
+        },
         "profiles": {
             "T": {
                 "T2.5": {
@@ -21,11 +58,11 @@ const state = {
                 },
                 "T10": {
                     "pitch": 10,
-                    "widths": ["010", "016", "025", "032", "050", "075", "100"]
+                    "widths": ["010", "016", "025", "032", "050", "075", "100", "150", "200"]
                 },
                 "T20": {
                     "pitch": 20,
-                    "widths": ["025", "032", "050", "075", "100"]
+                    "widths": ["025", "032", "050", "075", "100", "150"]
                 }
             },
             "AT": {
@@ -35,150 +72,187 @@ const state = {
                 },
                 "AT5": {
                     "pitch": 5,
-                    "widths": ["010", "016", "025", "032", "050", "075", "100"]
+                    "widths": ["010", "016", "025", "032", "050", "075", "100", "150"]
                 },
                 "AT10": {
                     "pitch": 10,
-                    "widths": ["010", "016", "025", "032", "050", "075", "100"]
-                },
-                "AT15": {
-                    "pitch": 15,
-                    "widths": ["050", "075", "100"]
+                    "widths": ["016", "025", "032", "050", "075", "100", "150"]
                 },
                 "AT20": {
                     "pitch": 20,
-                    "widths": ["025", "032", "050", "075", "100"]
+                    "widths": ["025", "032", "050", "075", "100", "150"]
                 }
             },
             "HTD": {
-                "HT5": {
-                    "pitch": 5,
+                "HTD3M": {
+                    "pitch": 3,
                     "widths": ["010", "015", "025", "050", "100"],
+                    "display": "HTD 3M"
+                },
+                "HTD5M": {
+                    "pitch": 5,
+                    "widths": ["010", "015", "025", "050", "075", "100"],
                     "display": "HTD 5M"
                 },
-                "HT8": {
+                "HTD8M": {
                     "pitch": 8,
-                    "widths": ["020", "030", "050", "085", "100"],
+                    "widths": ["010", "015", "020", "030", "050", "085", "100"],
                     "display": "HTD 8M"
                 },
-                "HT14": {
+                "HTD14M": {
                     "pitch": 14,
-                    "widths": ["040", "055", "085", "0115", "150"],
+                    "widths": ["025", "040", "055", "085", "115", "150"],
                     "display": "HTD 14M"
                 }
             },
-            "STD": {
-                "ST5": {
+            "iFOOD": {
+                "FT5": {
                     "pitch": 5,
-                    "widths": ["010", "015", "025", "050", "100"],
-                    "display": "STD 5M"
+                    "widths": ["100"]
                 },
-                "ST8": {
-                    "pitch": 8,
-                    "widths": ["020", "030", "050", "085", "100"],
-                    "display": "STD 8M"
+                "FT10": {
+                    "pitch": 10,
+                    "widths": ["100"]
                 },
-                "ST14": {
-                    "pitch": 14,
-                    "widths": ["040", "055", "085", "0115", "150"],
-                    "display": "STD 14M"
-                }
-            },
-            "RTD": {
-                "RP5": {
+                "FAT5": {
                     "pitch": 5,
-                    "widths": ["010", "015", "025", "050", "100"],
-                    "display": "RTD 5M"
+                    "widths": ["100"]
                 },
-                "RP8": {
-                    "pitch": 8,
-                    "widths": ["020", "030", "050", "085", "100"],
-                    "display": "RTD 8M"
-                },
-                "RP14": {
-                    "pitch": 14,
-                    "widths": ["040", "055", "085", "0115", "150"],
-                    "display": "RTD 14M"
+                "FAT10": {
+                    "pitch": 10,
+                    "widths": ["100"]
                 }
             },
             "EAGLE": {
-                "E5": {
+                "E5M": {
                     "pitch": 5,
                     "widths": ["012.5", "025"],
-                    "display": "EAGLE 5M"
+                    "display": "E 5M"
                 },
-                "E8": {
+                "E8M": {
                     "pitch": 8,
                     "widths": ["016", "025", "032", "050"],
-                    "display": "EAGLE 8M"
+                    "display": "E 8M"
                 },
-                "E10": {
+                "E10M": {
                     "pitch": 10,
-                    "widths": ["025", "032", "050", "075", "100"],
-                    "display": "EAGLE 10M"
+                    "widths": ["015", "032", "050", "075", "100"],
+                    "display": "E 10M"
                 },
-                "E14": {
+                "E14M": {
                     "pitch": 14,
-                    "widths": ["035", "052", "070", "105"],
-                    "display": "EAGLE 14M"
+                    "widths": ["035", "052.5", "070", "105"],
+                    "display": "E 14M"
                 }
             },
-            "IMPERIAL": {
+            "Imperial": {
                 "MXL": {
                     "pitch": 2.032,
                     "widths": ["025", "050", "100", "200", "400"]
                 },
                 "XL": {
                     "pitch": 5.08,
-                    "widths": ["025", "050", "100", "200", "400"]
+                    "widths": ["025", "031", "037", "050", "075", "100", "150", "200", "400"]
                 },
                 "L": {
                     "pitch": 9.525,
-                    "widths": ["050", "075", "100", "200", "400"]
+                    "widths": ["050", "075", "100", "150", "200", "300", "400"]
                 },
                 "H": {
                     "pitch": 12.7,
-                    "widths": ["050", "075", "100", "200", "400"]
+                    "widths": ["050", "075", "100", "150", "200", "300", "400", "600", "800"]
                 },
                 "XH": {
                     "pitch": 22.225,
-                    "widths": ["100", "200", "400"]
+                    "widths": ["100", "200", "300", "400", "600"]
                 }
-            }
-        },
-        "categories": {
-            "R": {
-                "code": "R",
-                "name": "Courroie ouverte Elatech"
             },
-            "V": {
-                "code": "V",
-                "name": "Courroie soudée Elatech"
+            "Profils avec guide": {
+                "TK5-K6": {
+                    "pitch": 5,
+                    "widths": ["032", "050", "075", "100"]
+                },
+                "TK10-K6": {
+                    "pitch": 10,
+                    "widths": ["032", "050", "075", "100", "150"]
+                },
+                "TK10-K13": {
+                    "pitch": 10,
+                    "widths": ["032", "050", "075", "100", "150"]
+                },
+                "TK20-K13": {
+                    "pitch": 20,
+                    "widths": ["032", "050"]
+                },
+                "ATK5-K6": {
+                    "pitch": 5,
+                    "widths": ["032", "050", "075", "100"]
+                },
+                "ATK10-K6": {
+                    "pitch": 10,
+                    "widths": ["025", "032", "050", "075", "100"]
+                },
+                "ATK10-K13": {
+                    "pitch": 10,
+                    "widths": ["032", "050", "075", "100", "150"]
+                },
+                "H-K13": {
+                    "pitch": 13,
+                    "widths": ["003", "004", "006", "100", "200"]
+                }
             },
-            "F": {
-                "code": "F",
-                "name": "Courroie ELAFLEX"
-            }
-        },
-        "cables": {
-            "A": {
-                "code": "A",
-                "name": "Cable Acier"
+            "STD": {
+                "ST5": {
+                    "pitch": 5,
+                    "widths": ["010", "015", "025", "050", "100", "150"]
+                },
+                "ST8": {
+                    "pitch": 8,
+                    "widths": ["010", "015", "020", "030", "050", "085", "100"]
+                },
+                "ST14": {
+                    "pitch": 14,
+                    "widths": ["040", "055", "085", "115"]
+                }
             },
-            "K": {
-                "code": "K",
-                "name": "Cable Kevlar"
+            "RPD": {
+                "RP5": {
+                    "pitch": 5,
+                    "widths": ["010", "015", "025", "030", "050", "100"]
+                },
+                "RP8": {
+                    "pitch": 8,
+                    "widths": ["010", "015", "020", "030", "050", "085", "100"]
+                },
+                "RP14": {
+                    "pitch": 14,
+                    "widths": ["040", "055", "085", "115"]
+                }
             },
-            "S": {
-                "code": "S",
-                "name": "Cable Inox"
+            "Spéciaux": {
+                "SAT10": {
+                    "pitch": 10,
+                    "widths": ["050", "075", "100"]
+                },
+                "ATF10": {
+                    "pitch": 10,
+                    "widths": ["025", "050", "075", "100"]
+                },
+                "ATF20": {
+                    "pitch": 20,
+                    "widths": ["050", "075", "100"]
+                },
+                "ATM10": {
+                    "pitch": 10,
+                    "widths": ["100"]
+                }
             }
         }
     }
 };
-
 // Initialisation
 function initializeApp() {
+    console.log("Initialisation de l'application...");
     setupInitialUI();
     updateProgress(1);
 }
@@ -190,11 +264,11 @@ function setupInitialUI() {
 // Création du select pour les profils
 function createProfileSelect() {
     const select = document.getElementById('profileSelect');
-    select.innerHTML = ''; // Vider le select
+    select.innerHTML = '';
 
     Object.entries(state.beltsData.profiles).forEach(([groupName, profiles]) => {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = `Profil ${groupName}`;
+        optgroup.label = `${groupName}`;
         
         Object.entries(profiles).forEach(([code, data]) => {
             const option = document.createElement('option');
@@ -215,9 +289,12 @@ function updateProgress(step) {
 }
 
 function selectOption(prefix, value, nextStep) {
+    console.log("Option sélectionnée:", value);
+    console.log("Étape actuelle:", state.currentStep);
     switch(state.currentStep) {
         case 1:
             state.category = value;
+            console.log("Catégorie définie:", state.category);
             break;
         case 3:
             state.width = value;
@@ -226,11 +303,11 @@ function selectOption(prefix, value, nextStep) {
             state.cable = value;
             break;
     }
-
     navigateToStep(nextStep);
 }
 
 function navigateToStep(nextStep) {
+    console.log("Navigation vers l'étape:", nextStep);
     document.getElementById(`step${state.currentStep}`).classList.remove('active');
     if (nextStep > 6) {
         showResult();
@@ -245,7 +322,6 @@ function goBack(previousStep) {
     navigateToStep(previousStep);
 }
 
-// Gestion des sélections
 function selectProfile() {
     const profileSelect = document.getElementById('profileSelect');
     state.profile = profileSelect.value;
@@ -268,6 +344,7 @@ function updateStep3Options() {
     });
 }
 
+// Validation de la taille
 function validateSize() {
     const sizeInput = document.getElementById('sizeInput');
     const size = sizeInput.value.trim();
@@ -310,7 +387,7 @@ function validateSizeInput(size) {
     return true;
 }
 
-function selectOptionalOption(value, desc, nextStep) {
+function selectOptionalOption(value, desc) {
     state.optionalOption1 = value;
     state.optionalOption1Desc = desc;
     showResult();
@@ -339,40 +416,100 @@ function showError(errorId) {
     document.getElementById(errorId).style.display = 'block';
 }
 
+function getWeldabilityMessage(profile, width) {
+    const weldabilityData = state.beltsData.weldability[profile];
+    if (!weldabilityData) return state.beltsData.messages.NO;
+    
+    const status = weldabilityData[width];
+    return state.beltsData.messages[status || "NO"];
+}
+
+function getWeldabilityClass(message) {
+    if (message === state.beltsData.messages.YES) {
+        return 'weldability-ok';
+    } else if (message === state.beltsData.messages.YES_BUT) {
+        return 'weldability-warning';
+    }
+    return 'weldability-attention';
+}
+
 function showResult() {
-    let codeArticle = '';
-    if (state.category === 'R') {
-        codeArticle = `${state.category}${state.width}${state.profile}${state.cable}`;
-    } else {
-        codeArticle = `${state.category}${state.width}${state.profile}${state.cable}${state.size}`;
-    }
+    try {
+        let codeArticle = '';
+        if (state.category === 'R') {
+            codeArticle = `${state.category}${state.width}${state.profile}${state.cable}`;
+        } else {
+            codeArticle = `${state.category}${state.width}${state.profile}${state.cable}${state.size}`;
+        }
 
-    if (state.optionalOption1) {
-        codeArticle += state.optionalOption1;
-    }
+        if (state.optionalOption1) {
+            codeArticle += state.optionalOption1;
+        }
 
-    document.getElementById('result').innerHTML = `Votre code article : <strong>${codeArticle}</strong>`;
-    document.getElementById('designation').innerHTML = `Désignation : <strong>${generateDesignation()}</strong>`;
+        const resultElement = document.getElementById('result');
+        const designationElement = document.getElementById('designation');
+
+        if (resultElement) {
+            resultElement.innerHTML = `Votre code article : <strong>${codeArticle}</strong>`;
+        }
+
+        const designation = generateDesignation();
+        if (designationElement && designation) {
+            designationElement.innerHTML = `Désignation : <strong>${designation}</strong>`;
+        }
+
+        if (state.category === 'V') {
+            const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
+            
+            let weldabilityElement = document.getElementById('weldabilityInfo');
+            if (!weldabilityElement) {
+                weldabilityElement = document.createElement('div');
+                weldabilityElement.id = 'weldabilityInfo';
+                resultElement.parentNode.insertBefore(
+                    weldabilityElement, 
+                    resultElement.nextSibling
+                );
+            }
+            
+            const cssClass = getWeldabilityClass(weldabilityMessage);
+            weldabilityElement.className = `weldability ${cssClass}`;
+            weldabilityElement.innerHTML = `<strong>Information de faisabilité :</strong> ${weldabilityMessage}`;
+        }
+    } catch (error) {
+        console.error('Erreur dans showResult:', error);
+    }
 }
 
 function generateDesignation() {
-    const categoryName = state.beltsData.categories[state.category].name;
-    const cableName = state.beltsData.cables[state.cable].name;
-    
-    let designation = `${categoryName} - ${state.profile} - ${state.width}mm - ${cableName}`;
-    
-    if (state.category !== 'R') {
-        const profileGroup = getProfileGroup(state.profile);
-        const profile = state.beltsData.profiles[profileGroup][state.profile];
-        const numberOfTeeth = Math.round(parseInt(state.size) / profile.pitch);
-        designation += ` - ${numberOfTeeth} dents`;
+    try {
+        const category = state.beltsData.categories[state.category];
+        const cable = state.beltsData.cables[state.cable];
         
-        if (state.optionalOption1Desc) {
-            designation += ` ${state.optionalOption1Desc}`;
+        if (!category || !cable) {
+            console.error('Catégorie ou câble non trouvé');
+            return '';
         }
+
+        let designation = `${category.name} - ${state.profile} - ${state.width}mm - ${cable.name}`;
+        
+        if (state.category !== 'R' && state.size) {
+            const profileGroup = getProfileGroup(state.profile);
+            const profile = state.beltsData.profiles[profileGroup][state.profile];
+            if (profile && profile.pitch) {
+                const numberOfTeeth = Math.round(parseInt(state.size) / profile.pitch);
+                designation += ` - ${numberOfTeeth} dents`;
+            }
+            
+            if (state.optionalOption1Desc) {
+                designation += ` ${state.optionalOption1Desc}`;
+            }
+        }
+        
+        return designation;
+    } catch (error) {
+        console.error('Erreur dans generateDesignation:', error);
+        return '';
     }
-    
-    return designation;
 }
 
 // Initialisation au chargement de la page
