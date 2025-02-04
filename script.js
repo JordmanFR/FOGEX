@@ -570,6 +570,57 @@ function setupInitialUI() {
     createProfileSelect();
 }
 
+// Switch thème sombre
+document.addEventListener('DOMContentLoaded', () => {
+    const themeSwitch = document.getElementById('switch');
+
+    // Initialiser le switch en fonction du thème actuel
+    const savedTheme = localStorage.getItem('theme') || 'auto';
+    if (savedTheme === 'dark' || (savedTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        themeSwitch.checked = true;
+        setTheme('dark');
+    } else {
+        themeSwitch.checked = false;
+        setTheme('light');
+    }
+
+    themeSwitch.addEventListener('change', () => {
+        if (themeSwitch.checked) {
+            setTheme('dark');
+        } else {
+            setTheme('light');
+        }
+    });
+
+    function setTheme(theme) {
+        if (theme === 'auto') {
+            document.body.classList.remove('theme-light', 'theme-dark');
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.body.classList.add('theme-dark');
+            } else {
+                document.body.classList.add('theme-light');
+            }
+        } else if (theme === 'light') {
+            document.body.classList.add('theme-light');
+            document.body.classList.remove('theme-dark');
+            localStorage.setItem('theme', 'light');
+        } else if (theme === 'dark') {
+            document.body.classList.add('theme-dark');
+            document.body.classList.remove('theme-light');
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    // Écoutez les modifications du thème préféré de l'utilisateur
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (localStorage.getItem('theme') === 'auto') {
+                setTheme('auto');
+            }
+        });
+    }
+});
+
 // Création du select pour les profils
 function createProfileSelect() {
     const select = document.getElementById('profileSelect');
