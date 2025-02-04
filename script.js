@@ -14,7 +14,7 @@ const state = {
 // Données intégrées
 const beltsData = {
     "messages": {
-        "YES": "Peut être soudée même l'unité",
+        "YES": "Peut être soudée même à l'unité",
         "YES_BUT": "Peut être soudé mais soumis à un MOQ, ou traces de refentes à prévoir",
         "NO": "Doit être réclamé à Elatech"
     },
