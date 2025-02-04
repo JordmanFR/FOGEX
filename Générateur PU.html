@@ -14,7 +14,7 @@
     </div>
     <!-- Étape 1: Sélection de la catégorie -->
     <div class="step active" id="step1">
-        <h3>Étape 1: Sélectionnez la catégorie</h3>
+        <h3>Sélectionnez la catégorie</h3>
         <h5>(Les courroies soudées peuvent être appelées fermées ou sans fin par les clients)</h5>
         <button onclick="selectOption('','R', 2)">Courroie ouverte</button>
         <button onclick="selectOption('','V', 2)">Courroie soudée</button>
@@ -23,20 +23,20 @@
     <!-- Étape 2: Sélection du profil -->
     <div class="step" id="step2">
         <button class="back-button" onclick="goBack(1)">Retour</button>
-        <h3>Étape 2: Sélectionnez le profil</h3>
+        <h3>Sélectionnez le profil</h3>
         <select id="profileSelect" onchange="updateStep3Options()"></select>
         <button onclick="selectProfile()">Suivant</button>
     </div>
     <!-- Étape 3: Sélection de la largeur -->
     <div class="step" id="step3">
         <button class="back-button" onclick="goBack(2)">Retour</button>
-        <h3>Étape 3: Sélectionnez la largeur</h3>
+        <h3>Sélectionnez la largeur</h3>
         <div id="widthOptions"></div>
     </div>
     <!-- Étape 4: Sélection du câble -->
     <div class="step" id="step4">
         <button class="back-button" onclick="goBack(3)">Retour</button>
-        <h3>Étape 4 : Sélectionnez le câble</h3>
+        <h3>Sélectionnez le câble</h3>
         <h5>(Si le client ne le précise pas, le choix par défaut est acier)</h5>
         <div id="cableButtons">
             <button onclick="selectOption('','A', 5)">Acier</button>
@@ -47,7 +47,7 @@
     <!-- Étape 5: Saisie de la longueur -->
     <div class="step" id="step5">
         <button class="back-button" onclick="goBack(4)">Retour</button>
-        <h3>Étape 5: Entrez la longueur en mm</h3>
+        <h3>Entrez la longueur en mm</h3>
         <input type="text" id="sizeInput" placeholder="Entrez la longueur en mm" maxlength="5">
         <div id="sizeError" class="error">Veuillez entrer une taille valide.</div>
         <div id="lengthError" class="error">La longueur doit être supérieure ou égale à 1000 mm.</div>
@@ -57,7 +57,7 @@
     <!-- Étape 6: Revêtement en tissu -->
     <div class="step" id="step6">
         <button class="back-button" onclick="goBack(5)">Retour</button>
-        <h3>Première option: Sélectionnez un revêtement en tissu</h3>
+        <h3>Sélectionnez un revêtement en tissu</h3>
         <div id="coatingButtons">
             <button onclick="selectOptionalOption('', 'Sans')">Sans</button>
 			<button onclick="selectOptionalOption('/Z', 'PAZ', 7)">PAZ</button>
