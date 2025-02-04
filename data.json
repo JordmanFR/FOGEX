@@ -358,22 +358,22 @@
       }
     },
     "HTD": {
-      "HTD3M": {
+      "HT3": {
         "pitch": 3,
         "widths": ["010", "015", "025", "050", "100"],
         "display": "HTD 3M"
       },
-      "HTD5M": {
+      "HT5": {
         "pitch": 5,
         "widths": ["010", "015", "025", "050", "075", "100"],
         "display": "HTD 5M"
       },
-      "HTD8M": {
+      "HT8": {
         "pitch": 8,
         "widths": ["010", "015", "020", "030", "050", "085", "100"],
         "display": "HTD 8M"
       },
-      "HTD14M": {
+      "HT14": {
         "pitch": 14,
         "widths": ["025", "040", "055", "085", "115", "150"],
         "display": "HTD 14M"
@@ -398,25 +398,25 @@
       }
     },
     "EAGLE": {
-      "E5M": {
+      "E5": {
         "pitch": 5,
         "widths": ["012.5", "025"],
-        "display": "E 5M"
+        "display": "EAGLE 5M"
       },
-      "E8M": {
+      "E8": {
         "pitch": 8,
         "widths": ["016", "025", "032", "050"],
-        "display": "E 8M"
+        "display": "EAGLE 8M"
       },
-      "E10M": {
+      "E10": {
         "pitch": 10,
         "widths": ["015", "032", "050", "075", "100"],
-        "display": "E 10M"
+        "display": "EAGLE 10M"
       },
-      "E14M": {
+      "E14": {
         "pitch": 14,
         "widths": ["035", "052.5", "070", "105"],
-        "display": "E 14M"
+        "display": "EAGLE 14M"
       }
     },
     "Imperial": {
