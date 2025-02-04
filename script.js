@@ -14,7 +14,7 @@ const state = {
 // Données intégrées
 const beltsData = {
     "messages": {
-        "YES": "Peut être soudée même à l'unité",
+        "YES": "Peut être soudée même l'unité",
         "YES_BUT": "Peut être soudé mais soumis à un MOQ, ou traces de refentes à prévoir",
         "NO": "Doit être réclamé à Elatech"
     },
@@ -785,28 +785,28 @@ function generateDesignation() {
     try {
         const category = state.beltsData.categories[state.category];
         const cable = state.beltsData.cables[state.cable];
-        
+
         if (!category || !cable) {
             console.error('Catégorie ou câble non trouvé');
             return '';
         }
 
-        let designation = `${category.name} - ${state.profile} - ${state.width}mm - ${cable.name}`;
-        
+        let designationParts = [`${category.name}`, `${state.profile}`, `${state.width}mm`, `${cable.name}`];
+
         if (state.category !== 'R' && state.size) {
             const profileGroup = getProfileGroup(state.profile);
             const profile = state.beltsData.profiles[profileGroup][state.profile];
             if (profile && profile.pitch) {
                 const numberOfTeeth = Math.round(parseInt(state.size) / profile.pitch);
-                designation += ` - ${numberOfTeeth} dents`;
+                designationParts.push(`${numberOfTeeth} dents`);
             }
-            
-            if (state.optionalOption1Desc) {
-                designation += ` ${state.optionalOption1Desc}`;
+
+            if (state.optionalOption1Desc && state.optionalOption1Desc !== 'Sans') {
+                designationParts.push(`${state.optionalOption1Desc}`);
             }
         }
-        
-        return designation;
+
+        return designationParts.join(' - ');
     } catch (error) {
         console.error('Erreur dans generateDesignation:', error);
         return '';
