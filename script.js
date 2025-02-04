@@ -14,8 +14,8 @@ const state = {
 // Données intégrées
 const beltsData = {
     "messages": {
-        "YES": "Peut être soudée même l'unité",
-        "YES_BUT": "Peut être soudé mais soumis à un MOQ, ou traces de refentes à prévoir",
+        "YES": "Peut être soudée même à l'unité",
+        "YES_BUT": "Peut être obtenu à partir d'une courroie plus large (trace de refente à prévoir)",
         "NO": "Doit être réclamé à Elatech"
     },
     "categories": {
@@ -725,12 +725,25 @@ function showError(errorId) {
     document.getElementById(errorId).style.display = 'block';
 }
 
-function getWeldabilityMessage(profile, width) {
+function getWeldability(profile, width) {
     const weldabilityData = state.beltsData.weldability[profile];
-    if (!weldabilityData) return state.beltsData.messages.NO;
-    
-    const status = weldabilityData[width];
-    return state.beltsData.messages[status || "NO"];
+    if (!weldabilityData) return 'NO';
+    return weldabilityData[width] || 'NO';
+}
+
+function getNextWeldableWidth(profile, currentWidth) {
+    const profileGroup = getProfileGroup(profile);
+    const profileData = state.beltsData.profiles[profileGroup][profile];
+    const widths = profileData.widths;
+    const currentIndex = widths.indexOf(currentWidth);
+
+    for (let i = currentIndex + 1; i < widths.length; i++) {
+        if (getWeldability(profile, widths[i]) === 'YES') {
+            return widths[i];
+        }
+    }
+
+    return null; // If no larger weldable width is found, return null
 }
 
 function getWeldabilityClass(message) {
@@ -740,6 +753,43 @@ function getWeldabilityClass(message) {
         return 'weldability-warning';
     }
     return 'weldability-attention';
+}
+
+function getWeldabilityMessage(profile, width) {
+    const weldability = getWeldability(profile, width);
+    return state.beltsData.messages[weldability] || 'Information non disponible';
+}
+
+function generateDesignation() {
+    try {
+        const category = state.beltsData.categories[state.category];
+        const cable = state.beltsData.cables[state.cable];
+        
+        if (!category || !cable) {
+            console.error('Catégorie ou câble non trouvé');
+            return '';
+        }
+
+        let designation = `${category.name} - ${state.profile} - ${state.width}mm - ${cable.name}`;
+        
+        if (state.category !== 'R' && state.size) {
+            const profileGroup = getProfileGroup(state.profile);
+            const profile = state.beltsData.profiles[profileGroup][state.profile];
+            if (profile && profile.pitch) {
+                const numberOfTeeth = Math.round(parseInt(state.size) / profile.pitch);
+                designation += ` - ${numberOfTeeth} dents`;
+            }
+            
+            if (state.optionalOption1Desc && state.optionalOption1Desc !== 'Sans') {
+                designation += ` ${state.optionalOption1Desc}`;
+            }
+        }
+        
+        return designation;
+    } catch (error) {
+        console.error('Erreur dans generateDesignation:', error);
+        return '';
+    }
 }
 
 function showResult() {
@@ -758,6 +808,7 @@ function showResult() {
         const resultElement = document.getElementById('result');
         const designationElement = document.getElementById('designation');
         const weldabilityElement = document.getElementById('weldabilityInfo');
+        const specialCodeElement = document.getElementById('specialCode');
 
         if (state.category === 'V') {
             const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
@@ -769,47 +820,45 @@ function showResult() {
         }
 
         if (resultElement) {
-            resultElement.innerHTML = `Votre code article : <strong>${codeArticle}</strong>`;
+            resultElement.innerHTML = `Code article : <strong>${codeArticle}</strong>`;
         }
 
         const designation = generateDesignation();
         if (designationElement && designation) {
             designationElement.innerHTML = `Désignation : <strong>${designation}</strong>`;
         }
+
+        // Logique pour afficher le code spécial
+        let specialCode = '';
+        let selectedWidth = state.width;
+
+        // Cherche la prochaine largeur faisable
+        while (getWeldability(state.profile, selectedWidth) !== 'YES') {
+            const nextWidth = getNextWeldableWidth(state.profile, selectedWidth);
+            if (nextWidth === null) {
+                selectedWidth = state.width; // Aucune largeur faisable trouvée
+                break;
+            }
+            selectedWidth = nextWidth;
+        }
+
+        if (state.category === 'R') {
+            specialCode = codeArticle;
+        } else if (state.category === 'V') {
+            if (parseInt(selectedWidth) > 100) {
+                specialCode = `R100${state.profile}${state.cable}/P${selectedWidth}`;
+            } else {
+                specialCode = `R${selectedWidth}${state.profile}${state.cable}`;
+            }
+        } else if (state.category === 'F') {
+            specialCode = 'Impossible';
+        }
+
+        if (specialCodeElement) {
+            specialCodeElement.innerHTML = `Stock à vérifier : <strong>${specialCode}</strong>`;
+        }
     } catch (error) {
         console.error('Erreur dans showResult:', error);
-    }
-}
-
-function generateDesignation() {
-    try {
-        const category = state.beltsData.categories[state.category];
-        const cable = state.beltsData.cables[state.cable];
-
-        if (!category || !cable) {
-            console.error('Catégorie ou câble non trouvé');
-            return '';
-        }
-
-        let designationParts = [`${category.name}`, `${state.profile}`, `${state.width}mm`, `${cable.name}`];
-
-        if (state.category !== 'R' && state.size) {
-            const profileGroup = getProfileGroup(state.profile);
-            const profile = state.beltsData.profiles[profileGroup][state.profile];
-            if (profile && profile.pitch) {
-                const numberOfTeeth = Math.round(parseInt(state.size) / profile.pitch);
-                designationParts.push(`${numberOfTeeth} dents`);
-            }
-
-            if (state.optionalOption1Desc && state.optionalOption1Desc !== 'Sans') {
-                designationParts.push(`${state.optionalOption1Desc}`);
-            }
-        }
-
-        return designationParts.join(' - ');
-    } catch (error) {
-        console.error('Erreur dans generateDesignation:', error);
-        return '';
     }
 }
 
