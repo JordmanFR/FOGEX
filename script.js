@@ -584,6 +584,11 @@ function handleLengthKeydown(event) {
     }
 }
 
+function convertToInches(mmValue) {
+    const inchesValue = (mmValue / 100).toFixed(2);
+    return `${inchesValue}po`;
+}
+
 // Création du select pour les profils
 function createProfileSelect() {
     const select = document.getElementById('profileSelect');
@@ -661,7 +666,11 @@ function updateStep3Options() {
     
     profile.widths.forEach(width => {
         const button = document.createElement('button');
-        button.textContent = `${width}mm`;
+        if (profileGroup === 'Imperial') {
+            button.textContent = convertToInches(width);
+        } else {
+            button.textContent = `${width}mm`;
+        }
         button.onclick = () => selectOption('', width, 4);
         widthOptionsDiv.appendChild(button);
     });
@@ -822,7 +831,15 @@ function generateDesignation() {
             return '';
         }
 
-        let designation = `${category.name} - ${state.profile} - ${state.width}mm - ${cable.name}`;
+        let designation = `${category.name} - ${state.profile} - `;
+        
+        if (getProfileGroup(state.profile) === 'Imperial') {
+            designation += `${convertToInches(state.width)} - `;
+        } else {
+            designation += `${state.width}mm - `;
+        }
+
+        designation += `${cable.name}`;
         
         if (state.category !== 'R' && state.size) {
             const profileGroup = getProfileGroup(state.profile);
@@ -895,11 +912,8 @@ function showResult() {
         if (state.category === 'R') {
             specialCode = codeArticle;
         } else if (state.category === 'V') {
-            if (parseInt(selectedWidth) > 100) {
-                specialCode = `R100${state.profile}${state.cable}/P${selectedWidth}`;
-            } else {
-                specialCode = `R${selectedWidth}${state.profile}${state.cable}`;
-            }
+            // Supprimer la vieille condition concernant les courroies de plus de 100mm de large
+            specialCode = `R${selectedWidth}${state.profile}${state.cable}`;
         } else if (state.category === 'F') {
             specialCode = 'Impossible';
         }
@@ -911,6 +925,5 @@ function showResult() {
         console.error('Erreur dans showResult:', error);
     }
 }
-
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', initializeApp);
