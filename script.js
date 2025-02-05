@@ -570,56 +570,19 @@ function setupInitialUI() {
     createProfileSelect();
 }
 
-// Switch thème sombre
-document.addEventListener('DOMContentLoaded', () => {
-    const themeSwitch = document.getElementById('switch');
-
-    // Initialiser le switch en fonction du thème actuel
-    const savedTheme = localStorage.getItem('theme') || 'auto';
-    if (savedTheme === 'dark' || (savedTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        themeSwitch.checked = true;
-        setTheme('dark');
-    } else {
-        themeSwitch.checked = false;
-        setTheme('light');
+// Fonction pour gérer l'événement de la touche "Entrée" dans le champ de saisie de la largeur
+function handleWidthKeydown(event) {
+    if (event.key === 'Enter') {
+        selectCustomWidth();
     }
+}
 
-    themeSwitch.addEventListener('change', () => {
-        if (themeSwitch.checked) {
-            setTheme('dark');
-        } else {
-            setTheme('light');
-        }
-    });
-
-    function setTheme(theme) {
-        if (theme === 'auto') {
-            document.body.classList.remove('theme-light', 'theme-dark');
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.body.classList.add('theme-dark');
-            } else {
-                document.body.classList.add('theme-light');
-            }
-        } else if (theme === 'light') {
-            document.body.classList.add('theme-light');
-            document.body.classList.remove('theme-dark');
-            localStorage.setItem('theme', 'light');
-        } else if (theme === 'dark') {
-            document.body.classList.add('theme-dark');
-            document.body.classList.remove('theme-light');
-            localStorage.setItem('theme', 'dark');
-        }
+// Fonction pour gérer l'événement de la touche "Entrée" dans le champ de saisie de la longueur
+function handleLengthKeydown(event) {
+    if (event.key === 'Enter') {
+        validateSize();
     }
-
-    // Écoutez les modifications du thème préféré de l'utilisateur
-    if (window.matchMedia) {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-            if (localStorage.getItem('theme') === 'auto') {
-                setTheme('auto');
-            }
-        });
-    }
-});
+}
 
 // Création du select pour les profils
 function createProfileSelect() {
@@ -657,7 +620,7 @@ function selectOption(prefix, value, nextStep) {
             console.log("Catégorie définie:", state.category);
             break;
         case 3:
-            state.width = value;
+            state.width = value.padStart(3, '0');  // Ajouter des zéros au début si nécessaire
             break;
         case 4:
             state.cable = value;
@@ -704,7 +667,25 @@ function updateStep3Options() {
     });
 }
 
-// Validation de la taille
+function selectCustomWidth() {
+    const customWidthInput = document.getElementById('customWidthInput');
+    let customWidth = customWidthInput.value.trim();
+    
+    resetErrors();
+    
+    if (validateCustomWidth(customWidth)) {
+        customWidth = customWidth.padStart(3, '0');  // Ajouter des zéros au début si nécessaire
+        state.width = customWidth;
+        navigateToStep(4);
+    } else {
+        showError('customWidthError');
+    }
+}
+
+function validateCustomWidth(width) {
+    return width.length > 0 && !isNaN(width) && width.length <= 3;
+}
+
 function validateSize() {
     const sizeInput = document.getElementById('sizeInput');
     const size = sizeInput.value.trim();
@@ -779,17 +760,37 @@ function showError(errorId) {
 function getWeldability(profile, width) {
     const weldabilityData = state.beltsData.weldability[profile];
     if (!weldabilityData) return 'NO';
-    return weldabilityData[width] || 'NO';
+    
+    // Vérifier si la largeur actuelle est faisable
+    const currentWeldability = weldabilityData[width];
+    if (currentWeldability === 'YES') {
+        return 'YES';
+    }
+
+    // Vérifier les largeurs supérieures pour un YES atteignable
+    const profileGroup = getProfileGroup(profile);
+    const profileData = state.beltsData.profiles[profileGroup][profile];
+    const widths = profileData.widths;
+    const currentIndex = widths.indexOf(width);
+
+    for (let i = currentIndex + 1; i < widths.length; i++) {
+        if (weldabilityData[widths[i]] === 'YES') {
+            return 'YES_BUT';
+        }
+    }
+
+    return currentWeldability || 'NO';
 }
 
 function getNextWeldableWidth(profile, currentWidth) {
     const profileGroup = getProfileGroup(profile);
     const profileData = state.beltsData.profiles[profileGroup][profile];
     const widths = profileData.widths;
-    const currentIndex = widths.indexOf(currentWidth);
+    const currentWidthNumber = parseInt(currentWidth);
 
-    for (let i = currentIndex + 1; i < widths.length; i++) {
-        if (getWeldability(profile, widths[i]) === 'YES') {
+    for (let i = 0; i < widths.length; i++) {
+        const widthNumber = parseInt(widths[i]);
+        if (widthNumber >= currentWidthNumber && getWeldability(profile, widths[i]) === 'YES') {
             return widths[i];
         }
     }
@@ -884,13 +885,11 @@ function showResult() {
         let selectedWidth = state.width;
 
         // Cherche la prochaine largeur faisable
-        while (getWeldability(state.profile, selectedWidth) !== 'YES') {
+        if (getWeldability(state.profile, selectedWidth) !== 'YES') {
             const nextWidth = getNextWeldableWidth(state.profile, selectedWidth);
-            if (nextWidth === null) {
-                selectedWidth = state.width; // Aucune largeur faisable trouvée
-                break;
+            if (nextWidth !== null) {
+                selectedWidth = nextWidth;
             }
-            selectedWidth = nextWidth;
         }
 
         if (state.category === 'R') {

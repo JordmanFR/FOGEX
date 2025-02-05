@@ -7,10 +7,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="theme-switcher">
-        <input type="checkbox" id="switch" />
-        <label for="switch">Toggle</label>
-    </div>
     <h1>Générateur de code article</h1>
     <!-- Barre de progression -->
     <div id="progressBar">
@@ -32,11 +28,14 @@
         <button onclick="selectProfile()">Suivant</button>
     </div>
     <!-- Étape 3: Sélection de la largeur -->
-    <div class="step" id="step3">
-        <button class="back-button" onclick="goBack(2)">Retour</button>
-        <h3>Sélectionnez la largeur</h3>
-        <div id="widthOptions"></div>
-    </div>
+	<div class="step" id="step3">
+    <button class="back-button" onclick="goBack(2)">Retour</button>
+    <h3>Sélectionnez la largeur</h3>
+    <div id="widthOptions"></div>
+    <input type="text" id="customWidthInput" placeholder="Entrez une largeur personnalisée (max 3 chiffres)" maxlength="3" onkeydown="handleWidthKeydown(event)">
+    <div id="customWidthError" class="error">Veuillez entrer une largeur valide (max 3 chiffres).</div>
+    <button onclick="selectCustomWidth()">Valider</button>
+	</div>
     <!-- Étape 4: Sélection du câble -->
     <div class="step" id="step4">
         <button class="back-button" onclick="goBack(3)">Retour</button>
@@ -49,15 +48,15 @@
         </div>
     </div>
     <!-- Étape 5: Saisie de la longueur -->
-    <div class="step" id="step5">
-        <button class="back-button" onclick="goBack(4)">Retour</button>
-        <h3>Entrez la longueur en mm</h3>
-        <input type="text" id="sizeInput" placeholder="Entrez la longueur en mm" maxlength="5">
-        <div id="sizeError" class="error">Veuillez entrer une taille valide.</div>
-        <div id="lengthError" class="error">La longueur doit être supérieure ou égale à 1000 mm.</div>
-        <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
-        <button onclick="validateSize()">Valider</button>
-    </div>
+	<div class="step" id="step5">
+    <button class="back-button" onclick="goBack(4)">Retour</button>
+    <h3>Entrez la longueur en mm</h3>
+    <input type="text" id="sizeInput" placeholder="Entrez la longueur en mm" maxlength="5" onkeydown="handleLengthKeydown(event)">
+    <div id="sizeError" class="error">Veuillez entrer une taille valide.</div>
+    <div id="lengthError" class="error">La longueur doit être supérieure ou égale à 1000 mm.</div>
+    <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
+    <button onclick="validateSize()">Valider</button>
+	</div>
     <!-- Étape 6: Revêtement en tissu -->
     <div class="step" id="step6">
         <button class="back-button" onclick="goBack(5)">Retour</button>
