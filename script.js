@@ -862,22 +862,30 @@ function generateDesignation() {
 }
 
 function generateCodeStock() {
-    let CodeStock = '';
+    let codeStock = '';
     let selectedWidth = state.width;
 
+    // Cherche la prochaine largeur faisable
+    if (getWeldability(state.profile, selectedWidth) !== 'YES') {
+        const nextWidth = getNextWeldableWidth(state.profile, selectedWidth);
+        if (nextWidth !== null) {
+            selectedWidth = nextWidth;
+        }
+    }
+
     if (state.category === 'R') {
-        CodeStock = `R${selectedWidth}${state.profile}${state.cable}`;
+        codeStock = `R${selectedWidth}${state.profile}${state.cable}`;
     } else if (state.category === 'V') {
-        CodeStock = `R${selectedWidth}${state.profile}${state.cable}`;
+        codeStock = `R${selectedWidth}${state.profile}${state.cable}`;
     } else if (state.category === 'F') {
-        CodeStock = 'Impossible';
+        codeStock = 'Impossible';
     }
 
     if (state.optionalOption1) {
-        CodeStock += state.optionalOption1;
+        codeStock += state.optionalOption1;
     }
 
-    return CodeStock;
+    return codeStock;
 }
 
 function generateAlternativeCodeStock() {
