@@ -861,6 +861,49 @@ function generateDesignation() {
     }
 }
 
+function generateCodeStock() {
+    let CodeStock = '';
+    let selectedWidth = state.width;
+
+    if (state.category === 'R') {
+        CodeStock = `R${selectedWidth}${state.profile}${state.cable}`;
+    } else if (state.category === 'V') {
+        CodeStock = `R${selectedWidth}${state.profile}${state.cable}`;
+    } else if (state.category === 'F') {
+        CodeStock = 'Impossible';
+    }
+
+    if (state.optionalOption1) {
+        CodeStock += state.optionalOption1;
+    }
+
+    return CodeStock;
+}
+
+function generateAlternativeCodeStock() {
+    let alternativeCodeStock = '';
+    let selectedWidth = state.width;
+
+    // Remove leading zeros from width unless it's an Imperial profile
+    if (getProfileGroup(state.profile) !== 'Imperial') {
+        selectedWidth = selectedWidth.replace(/^0+/, '');
+    }
+
+    if (state.category === 'R') {
+        alternativeCodeStock = `R100${state.profile}${state.cable}/P${selectedWidth}`;
+    } else if (state.category === 'V') {
+        alternativeCodeStock = `R100${state.profile}${state.cable}/P${selectedWidth}`;
+    } else if (state.category === 'F') {
+        alternativeCodeStock = 'Impossible';
+    }
+
+    if (state.optionalOption1) {
+        alternativeCodeStock += state.optionalOption1.replace(/^\//, '');
+    }
+
+    return alternativeCodeStock;
+}
+
 function showResult() {
     try {
         let codeArticle = '';
@@ -877,7 +920,8 @@ function showResult() {
         const resultElement = document.getElementById('result');
         const designationElement = document.getElementById('designation');
         const weldabilityElement = document.getElementById('weldabilityInfo');
-        const specialCodeElement = document.getElementById('specialCode');
+        const CodeStockElement = document.getElementById('CodeStock');
+        const alternativeCodeStockElement = document.getElementById('alternativeCodeStock');
 
         if (state.category === 'V') {
             const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
@@ -897,33 +941,21 @@ function showResult() {
             designationElement.innerHTML = `Désignation : <strong>${designation}</strong>`;
         }
 
-        // Logique pour afficher le code spécial
-        let specialCode = '';
-        let selectedWidth = state.width;
-
-        // Cherche la prochaine largeur faisable
-        if (getWeldability(state.profile, selectedWidth) !== 'YES') {
-            const nextWidth = getNextWeldableWidth(state.profile, selectedWidth);
-            if (nextWidth !== null) {
-                selectedWidth = nextWidth;
-            }
+        // Display the special code
+        const CodeStock = generateCodeStock();
+        if (CodeStockElement) {
+            CodeStockElement.innerHTML = `Stock à contrôler : <strong>${CodeStock}</strong>`;
         }
 
-        if (state.category === 'R') {
-            specialCode = codeArticle;
-        } else if (state.category === 'V') {
-            // Supprimer la vieille condition concernant les courroies de plus de 100mm de large
-            specialCode = `R${selectedWidth}${state.profile}${state.cable}`;
-        } else if (state.category === 'F') {
-            specialCode = 'Impossible';
-        }
-
-        if (specialCodeElement) {
-            specialCodeElement.innerHTML = `Stock à vérifier : <strong>${specialCode}</strong>`;
+        // Display the alternative special code
+        const alternativeCodeStock = generateAlternativeCodeStock();
+        if (alternativeCodeStockElement) {
+            alternativeCodeStockElement.innerHTML = `Ou alors : <strong>${alternativeCodeStock}</strong>`;
         }
     } catch (error) {
         console.error('Erreur dans showResult:', error);
     }
 }
+
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', initializeApp);
