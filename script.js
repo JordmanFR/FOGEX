@@ -8,14 +8,15 @@ const state = {
     size: '',
     optionalOption1: '',
     optionalOption1Desc: '',
-    beltsData: {}
+    beltsData: {},
+    suggestedSizes: []
 };
 
 // Données intégrées
 const beltsData = {
     "messages": {
         "YES": "Peut être soudée même à l'unité",
-        "YES_BUT": "Peut être obtenu à partir d'une courroie plus large (trace de refente à prévoir)",
+        "YES_BUT": "Peut être obtenu à partir d'une courroie plus large (traces de refente à prévoir)",
         "NO": "Doit être réclamé à Elatech"
     },
     "categories": {
@@ -637,7 +638,7 @@ function selectOption(prefix, value, nextStep) {
 function navigateToStep(nextStep) {
     console.log("Navigation vers l'étape:", nextStep);
     document.getElementById(`step${state.currentStep}`).classList.remove('active');
-    if (nextStep > 6) {
+    if (nextStep > 7) {
         showResult();
         return;
     }
@@ -709,9 +710,48 @@ function validateSize() {
             state.optionalOption1Desc = 'PAZ';
             showResult();
         } else {
-            navigateToStep(6);
+            navigateToStep(7);
+        }
+    } else {
+        // Suggest nearest valid sizes
+        const profileGroup = getProfileGroup(state.profile);
+        const profile = state.beltsData.profiles[profileGroup][state.profile];
+        const pitch = profile.pitch;
+        const enteredSize = parseInt(sizeInput.value.trim());
+
+        const lowerValidSize = Math.floor(enteredSize / pitch) * pitch;
+        const upperValidSize = Math.ceil(enteredSize / pitch) * pitch;
+
+        state.suggestedSizes = [lowerValidSize, upperValidSize].filter(s => s >= 1000);
+
+        if (state.suggestedSizes.length > 0) {
+            updateSuggestedSizesUI(state.suggestedSizes);
+            navigateToStep(6); // Go to the suggestion step
+        } else {
+            showError('lengthError'); // If no suggestions, show length error
         }
     }
+}
+
+function updateSuggestedSizesUI(sizes) {
+    const suggestionsContainer = document.getElementById('suggestedSizes');
+    suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+
+    sizes.forEach(size => {
+        const button = document.createElement('button');
+        button.textContent = `${size} mm`;
+        button.onclick = () => {
+            state.size = String(size).padStart(5, '0');
+            if (shouldSkipCoating()) {
+                state.optionalOption1 = '/Z';
+                state.optionalOption1Desc = 'PAZ';
+                showResult();
+            } else {
+                navigateToStep(7);
+            }
+        };
+        suggestionsContainer.appendChild(button);
+    });
 }
 
 function validateSizeInput(size) {
@@ -720,14 +760,15 @@ function validateSizeInput(size) {
         return false;
     }
     
-    if (parseInt(size) < 1000) {
+    const sizeValue = parseInt(size); // Convert size to integer
+    if (sizeValue < 1000) {
         showError('lengthError');
         return false;
     }
     
     const profileGroup = getProfileGroup(state.profile);
     const profile = state.beltsData.profiles[profileGroup][state.profile];
-    const numberOfTeeth = parseInt(size) / profile.pitch;
+    const numberOfTeeth = sizeValue / profile.pitch; // Use integer value for calculation
     
     if (!Number.isInteger(numberOfTeeth)) {
         showError('teethError');
@@ -823,38 +864,41 @@ function getWeldabilityMessage(profile, width) {
 
 function generateDesignation() {
     try {
+        const designationParts = [];
+
         const category = state.beltsData.categories[state.category];
         const cable = state.beltsData.cables[state.cable];
-        
+
         if (!category || !cable) {
             console.error('Catégorie ou câble non trouvé');
             return '';
         }
 
-        let designation = `${category.name} - ${state.profile} - `;
-        
+        designationParts.push(category.name);
+        designationParts.push(state.profile);
+
         if (getProfileGroup(state.profile) === 'Imperial') {
-            designation += `${convertToInches(state.width)} - `;
+            designationParts.push(convertToInches(state.width));
         } else {
-            designation += `${state.width}mm - `;
+            designationParts.push(`${state.width}mm`);
         }
 
-        designation += `${cable.name}`;
-        
+        designationParts.push(cable.name);
+
         if (state.category !== 'R' && state.size) {
             const profileGroup = getProfileGroup(state.profile);
             const profile = state.beltsData.profiles[profileGroup][state.profile];
             if (profile && profile.pitch) {
                 const numberOfTeeth = Math.round(parseInt(state.size) / profile.pitch);
-                designation += ` - ${numberOfTeeth} dents`;
+                designationParts.push(`${numberOfTeeth} dents`);
             }
-            
+
             if (state.optionalOption1Desc && state.optionalOption1Desc !== 'Sans') {
-                designation += ` ${state.optionalOption1Desc}`;
+                designationParts.push(state.optionalOption1Desc);
             }
         }
-        
-        return designation;
+
+        return designationParts.join(' - ');
     } catch (error) {
         console.error('Erreur dans generateDesignation:', error);
         return '';
@@ -891,16 +935,20 @@ function generateCodeStock() {
 function generateAlternativeCodeStock() {
     let alternativeCodeStock = '';
     let selectedWidth = state.width;
+    let baseCode = 'R100';
 
     // Remove leading zeros from width unless it's an Imperial profile
-    if (getProfileGroup(state.profile) !== 'Imperial') {
+    if (getProfileGroup(state.profile) === 'Imperial') {
         selectedWidth = selectedWidth.replace(/^0+/, '');
+        baseCode = 'R400';
+    } else {
+        selectedWidth = selectedWidth.replace(/^0+/, ''); // Remove leading zeros
     }
 
     if (state.category === 'R') {
-        alternativeCodeStock = `R100${state.profile}${state.cable}/P${selectedWidth}`;
+        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${selectedWidth}`;
     } else if (state.category === 'V') {
-        alternativeCodeStock = `R100${state.profile}${state.cable}/P${selectedWidth}`;
+        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${selectedWidth}`;
     } else if (state.category === 'F') {
         alternativeCodeStock = 'Impossible';
     }
@@ -915,10 +963,11 @@ function generateAlternativeCodeStock() {
 function showResult() {
     try {
         let codeArticle = '';
+        let size = parseInt(state.size); // Convert state.size to integer
         if (state.category === 'R') {
             codeArticle = `${state.category}${state.width}${state.profile}${state.cable}`;
         } else {
-            codeArticle = `${state.category}${state.width}${state.profile}${state.cable}${state.size}`;
+            codeArticle = `${state.category}${state.width}${state.profile}${state.cable}${size}`;
         }
 
         if (state.optionalOption1) {

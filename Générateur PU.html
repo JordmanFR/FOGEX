@@ -57,15 +57,23 @@
     <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
     <button onclick="validateSize()">Valider</button>
 	</div>
-    <!-- Étape 6: Revêtement en tissu -->
+    <!-- Étape 6: Proposition de la longueur -->
     <div class="step" id="step6">
+        <button class="back-button" onclick="goBack(4)">Retour</button>
+        <h3>Longueurs suggérées (en mm)</h3>
+        <div id="suggestedSizes">
+            <!-- Les boutons de taille suggérée seront ajoutés ici par JavaScript -->
+        </div>
+    </div>
+    <!-- Étape 7: Revêtement en tissu -->
+    <div class="step" id="step7">
         <button class="back-button" onclick="goBack(5)">Retour</button>
         <h3>Sélectionnez un revêtement en tissu</h3>
         <div id="coatingButtons">
             <button onclick="selectOptionalOption('', 'Sans')">Sans</button>
-            <button onclick="selectOptionalOption('/Z', 'PAZ', 7)">PAZ</button>
-            <button onclick="selectOptionalOption('/R', 'PAR', 7)">PAR</button>
-            <button onclick="selectOptionalOption('/D', 'PAZ + PAR', 7)">PAZ + PAR</button>
+            <button onclick="selectOptionalOption('/Z', 'PAZ', 8)">PAZ</button>
+            <button onclick="selectOptionalOption('/R', 'PAR', 8)">PAR</button>
+            <button onclick="selectOptionalOption('/D', 'PAZ + PAR', 8)">PAZ + PAR</button>
         </div>
     </div>
     <!-- Résultat -->

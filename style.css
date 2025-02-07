@@ -89,3 +89,16 @@ select {
 .error-visible {
     display: block;
 }
+
+#suggestedSizes button {
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#suggestedSizes button:hover {
+    background-color: #d0d0d0;
+}
