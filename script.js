@@ -22,7 +22,10 @@ const beltsData = {
     "categories": {
         "R": { "name": "Courroie ouverte Elatech" },
         "V": { "name": "Courroie soudée Elatech" },
-        "F": { "name": "Courroie ELAFLEX" }
+        "F": { "name": "Courroie ElaFlex SD" },
+        "W": { "name": "Courroie Syncro MAX Elatech" },
+        "U": { "name": "Courroie iSync Elatech" }
+
     },
     "cables": {
         "A": { "name": "Cable Acier" },
@@ -417,19 +420,19 @@ const beltsData = {
         "iFOOD": {
             "FT5": {
                 "pitch": 5,
-                "widths": ["100"]
+                "widths": ["025", "050", "075", "100"]
             },
             "FT10": {
                 "pitch": 10,
-                "widths": ["100"]
+                "widths": ["025", "050", "075", "100"]
             },
             "FAT5": {
                 "pitch": 5,
-                "widths": ["100"]
+                "widths": ["025", "050", "075", "100"]
             },
             "FAT10": {
                 "pitch": 10,
-                "widths": ["100"]
+                "widths": ["025", "050", "075", "100"]
             }
         },
         "EAGLE": {
@@ -559,6 +562,61 @@ const beltsData = {
     }
 };
 
+// Table de compatibilité
+const compatibilityTable = {
+    "T2.5": { "A": true, "HFE": true },
+    "T5": { "A": true, "K": true, "HFE": true, "HPL": true, "XHPL": true },
+    "T10": { "A": true, "K": true, "S": true, "HFE": true, "HPL": true, "XHPL": true },
+    "T20": { "A": true, "K": true, "S": true, "HFE": true, "HPL": true },
+    "MXL": { "A": true, "HFE": true },
+    "XL": { "A": true, "K": true, "HFE": true, "HPL": true },
+    "L": { "A": true, "K": true, "S": true, "HFE": true },
+    "H": { "A": true, "K": true, "S": true, "HFE": true, "XHPL": true },
+    "XH": { "A": true, "K": true, "S": true, "HFE": true },
+    "AT3": { "A": true, "HFE": true },
+    "AT5": { "A": true, "K": true, "S": true, "HFE": true, "HPL": true, "XHPL": true },
+    "AT10": { "A": true, "K": true, "S": true, "HFE": true, "HPL": true, "XHPL": true },
+    "AT15": { "HFE": true, "HPL": true },
+    "AT20": { "A": true, "K": true, "S": true, "HFE": true, "HPL": true },
+    "ATK5-K6": { "A": true, "K": true, "HFE": true, "HPL": true },
+    "TK5-K6": { "A": true, "K": true },
+    "TK10-K6": { "A": true, "K": true },
+    "TK10-K13": { "A": true, "K": true },
+    "TK20-K13": { "A": true },
+    "ATK10-K6": { "A": true, "K": true, "HFE": true, "HPL": true },
+    "ATK10-K13": { "A": true, "K": true },
+    "H-K13": { "A": true },
+    "HT3": { "A": true, "HFE": true },
+    "HT5": { "A": true, "K": true, "S": true, "HFE": true },
+    "HT8": { "A": true, "K": true, "S": true, "HFE": true },
+    "HT14": { "A": true, "HFE": true, "HPL": true },
+    "FT5": { "K": true, "S": true },
+    "FT10": { "K": true, "S": true },
+    "FAT5": { "K": true, "S": true },
+    "FAT10": { "K": true, "S": true },
+    "ST5": { "A": true, "K": true, "S": true, "HFE": true },
+    "ST8": { "A": true, "K": true, "S": true, "HFE": true },
+    "ST14": { "A": true, "HFE": true },
+    "RP5": { "A": true, "K": true, "S": true, "HFE": true },
+    "RP8": { "A": true, "K": true, "S": true, "HFE": true },
+    "RP14": { "A": true, "HFE": true, "HPL": true },
+    "E5": { "A": true, "HPL": true },
+    "E8": { "A": true, "K": true, "S": true, "HFE": true },
+    "E10": { "A": true, "HPL": true },
+    "E14": { "A": true, "HFE": true, "HPL": true },
+    "SAT10": { "A": true, "S": true, "HFE": true },
+    "ATF10": { "A": true },
+    "ATM10": { "HFE": true, "HPL": true },
+    "ATF20": { "A": true },
+    "PG14M": { "A": true },
+    "PG20M": { "A": true },
+    "F1": { "A": true, "K": true, "HFE": true },
+    "F2": { "A": true, "K": true, "S": true, "HFE": true },
+    "F2.5": { "A": true, "K": true, "S": true, "HFE": true },
+    "F3": { "A": true, "K": true, "HFE": true },
+    "F8.75": { "A": true, "HFE": true }
+};
+
 // Initialisation
 function initializeApp() {
     console.log("Initialisation de l'application...");
@@ -590,24 +648,44 @@ function convertToInches(mmValue) {
     return `${inchesValue}po`;
 }
 
-// Création du select pour les profils
+// Fonction pour créer le select pour les profils en fonction de la catégorie sélectionnée
 function createProfileSelect() {
     const select = document.getElementById('profileSelect');
     select.innerHTML = '';
 
-    Object.entries(state.beltsData.profiles).forEach(([groupName, profiles]) => {
+    const category = state.category;
+    const profiles = state.beltsData.profiles;
+
+    Object.entries(profiles).forEach(([groupName, groupProfiles]) => {
         const optgroup = document.createElement('optgroup');
         optgroup.label = `${groupName}`;
         
-        Object.entries(profiles).forEach(([code, data]) => {
-            const option = document.createElement('option');
-            option.value = code;
-            option.textContent = data.display || code;
-            optgroup.appendChild(option);
+        Object.entries(groupProfiles).forEach(([code, data]) => {
+            if (isProfileCompatibleWithCategory(code, category)) {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = data.display || code;
+                optgroup.appendChild(option);
+            }
         });
         
-        select.appendChild(optgroup);
+        if (optgroup.children.length > 0) {
+            select.appendChild(optgroup);
+        }
     });
+}
+
+// Fonction pour vérifier la compatibilité du profil avec la catégorie
+function isProfileCompatibleWithCategory(profile, category) {
+    const compatibleCategories = {
+        "R": ["T2.5", "T5", "T10", "T20", "MXL", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "TK5-K6", "TK10-K6", "TK10-K13", "TK20-K13", "ATK10-K6", "ATK10-K13", "H-K13", "HT3", "HT5", "HT8", "HT14", "FT5", "FT10", "FAT5", "FAT10", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "E5", "E8", "E10", "E14", "SAT10", "ATF10", "ATM10", "ATF20", "PG14M", "PG20M", "F1", "F2", "F2.5", "F3", "F8.75"],
+        "V": ["T2.5", "T5", "T10", "T20", "MXL", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "TK5-K6", "TK10-K6", "TK10-K13", "TK20-K13", "ATK10-K6", "ATK10-K13", "H-K13", "HT3", "HT5", "HT8", "HT14", "FT5", "FT10", "FAT5", "FAT10", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "E5", "E8", "E10", "E14", "SAT10", "ATF10", "ATM10", "ATF20", "PG14M", "PG20M", "F1", "F2", "F2.5", "F3", "F8.75"],
+        "F": ["T10", "T20", "L", "H", "AT10", "AT20", "HT8", "HT14", "ST8", "ST14", "RP8", "RP14"],
+        "W": ["T10", "AT10", "H"],
+        "U": ["T2.5", "T5", "T10", "XL", "L", "AT5", "AT10"]
+    };
+
+    return compatibleCategories[category] && compatibleCategories[category].includes(profile);
 }
 
 // Gestion de la navigation
@@ -617,6 +695,12 @@ function updateProgress(step) {
     document.getElementById('progress').style.width = `${progressWidth}%`;
 }
 
+// Fonction pour vérifier la compatibilité
+function isCompatible(profile, cable) {
+    return compatibilityTable[profile] && compatibilityTable[profile][cable];
+}
+
+// Mise à jour de la fonction selectOption pour vérifier la compatibilité
 function selectOption(prefix, value, nextStep) {
     console.log("Option sélectionnée:", value);
     console.log("Étape actuelle:", state.currentStep);
@@ -624,6 +708,7 @@ function selectOption(prefix, value, nextStep) {
         case 1:
             state.category = value;
             console.log("Catégorie définie:", state.category);
+            createProfileSelect();
             break;
         case 3:
             state.width = value.padStart(3, '0');  // Ajouter des zéros au début si nécessaire
@@ -633,6 +718,33 @@ function selectOption(prefix, value, nextStep) {
             break;
     }
     navigateToStep(nextStep);
+}
+
+// Fonction pour mettre à jour les options de câbles compatibles
+function updateStep4Options() {
+    const cableButtonsDiv = document.getElementById('cableButtons');
+    cableButtonsDiv.innerHTML = '';
+
+    const profile = state.profile;
+    const cables = state.beltsData.cables;
+
+    Object.keys(cables).forEach(cableCode => {
+        if (isCompatible(profile, cableCode)) {
+            const button = document.createElement('button');
+            button.textContent = cables[cableCode].name;
+            button.onclick = () => selectOption('', cableCode, 5);
+            cableButtonsDiv.appendChild(button);
+        }
+    });
+}
+
+// Mise à jour de la fonction selectProfile pour appeler updateStep4Options
+function selectProfile() {
+    const profileSelect = document.getElementById('profileSelect');
+    state.profile = profileSelect.value;
+    updateStep3Options();
+    updateStep4Options();
+    navigateToStep(3);
 }
 
 function navigateToStep(nextStep) {

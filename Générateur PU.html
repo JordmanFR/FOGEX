@@ -18,14 +18,16 @@
         <h5>(Les courroies soudées peuvent être appelées fermées ou sans fin par les clients)</h5>
         <button onclick="selectOption('','R', 2)">Courroie ouverte</button>
         <button onclick="selectOption('','V', 2)">Courroie soudée</button>
-        <button onclick="selectOption('','F', 2)">Courroie flex</button>
+        <button onclick="selectOption('','F', 2)">ElaFlex SD</button>
+        <button onclick="selectOption('','W', 2)">Syncro Max</button>
+        <button onclick="selectOption('','U', 2)">iSync</button>
     </div>
     <!-- Étape 2: Sélection du profil -->
     <div class="step" id="step2">
         <button class="back-button" onclick="goBack(1)">Retour</button>
         <h3>Sélectionnez un profil dans la liste</h3>
         <select id="profileSelect" onchange="updateStep3Options()"></select>
-        <button onclick="selectProfile()">Suivant</button>
+        <button onclick="selectProfile(); updateStep4Options()">Suivant</button>
     </div>
     <!-- Étape 3: Sélection de la largeur -->
 	<div class="step" id="step3">
@@ -45,6 +47,9 @@
             <button onclick="selectOption('','A', 5)">Acier</button>
             <button onclick="selectOption('','K', 5)">Kevlar</button>
             <button onclick="selectOption('','S', 5)">Inox</button>
+            <button onclick="selectOption('','HFE', 5)">Haute flexibilité</button>
+            <button onclick="selectOption('','HPL', 5)">Haute performance</button>
+            <button onclick="selectOption('','XHPL', 5)">Très Haute Performance</button>
         </div>
     </div>
     <!-- Étape 5: Saisie de la longueur -->
