@@ -1,4 +1,7 @@
+// -----------------------------------------------------------------------------
 // État de l'application
+// -----------------------------------------------------------------------------
+
 const state = {
     currentStep: 1,
     category: '',
@@ -12,7 +15,10 @@ const state = {
     suggestedSizes: []
 };
 
-// Données intégrées
+// -----------------------------------------------------------------------------
+// Initialisation des données
+// -----------------------------------------------------------------------------
+
 const beltsData = {
     "messages": {
         "YES": "Peut être soudée même à l'unité",
@@ -100,7 +106,7 @@ const beltsData = {
             "050": "YES_BUT",
             "075": "YES_BUT",
             "100": "YES_BUT",
-            "150": "YES_BUT",
+            "150": "YES",
             "200": "YES",
             "300": "YES_BUT",
             "400": "YES",
@@ -617,6 +623,10 @@ const compatibilityTable = {
     "F8.75": { "A": true, "HFE": true }
 };
 
+// -----------------------------------------------------------------------------
+// Initialisation de l'interface utilisateur
+// -----------------------------------------------------------------------------
+
 // Initialisation
 function initializeApp() {
     console.log("Initialisation de l'application...");
@@ -629,26 +639,40 @@ function setupInitialUI() {
     createProfileSelect();
 }
 
-// Fonction pour gérer l'événement de la touche "Entrée" dans le champ de saisie de la largeur
-function handleWidthKeydown(event) {
-    if (event.key === 'Enter') {
-        selectCustomWidth();
+// -----------------------------------------------------------------------------
+// Fonctions de navigation
+// -----------------------------------------------------------------------------
+
+function navigateToStep(nextStep) {
+    console.log("Navigation vers l'étape:", nextStep);
+    document.getElementById(`step${state.currentStep}`).classList.remove('active');
+    if (nextStep > 7) {
+        showResult();
+        return;
     }
+    state.currentStep = nextStep;
+    document.getElementById(`step${state.currentStep}`).classList.add('active');
+    updateProgress(state.currentStep);
 }
 
-// Fonction pour gérer l'événement de la touche "Entrée" dans le champ de saisie de la longueur
-function handleLengthKeydown(event) {
-    if (event.key === 'Enter') {
-        validateSize();
-    }
+function goBack(previousStep) {
+    navigateToStep(previousStep);
 }
 
-function convertToInches(mmValue) {
-    const inchesValue = (mmValue / 100).toFixed(2);
-    return `${inchesValue}po`;
+function updateProgress(step) {
+    const totalSteps = 6;
+    const progressWidth = (step / totalSteps) * 100;
+    document.getElementById('progress').style.width = `${progressWidth}%`;
 }
 
-// Fonction pour créer le select pour les profils en fonction de la catégorie sélectionnée
+// -----------------------------------------------------------------------------
+// Fonctions spécifiques à l'étape
+// -----------------------------------------------------------------------------
+
+// ** Étape 1 : Sélection de la catégorie **
+// Aucune fonction spécifique nécessaire, l'interface est gérée directement dans le HTML
+
+// ** Étape 2 : Sélection du profil **
 function createProfileSelect() {
     const select = document.getElementById('profileSelect');
     select.innerHTML = '';
@@ -675,7 +699,6 @@ function createProfileSelect() {
     });
 }
 
-// Fonction pour vérifier la compatibilité du profil avec la catégorie
 function isProfileCompatibleWithCategory(profile, category) {
     const compatibleCategories = {
         "R": ["T2.5", "T5", "T10", "T20", "MXL", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "TK5-K6", "TK10-K6", "TK10-K13", "TK20-K13", "ATK10-K6", "ATK10-K13", "H-K13", "HT3", "HT5", "HT8", "HT14", "FT5", "FT10", "FAT5", "FAT10", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "E5", "E8", "E10", "E14", "SAT10", "ATF10", "ATM10", "ATF20", "PG14M", "PG20M", "F1", "F2", "F2.5", "F3", "F8.75"],
@@ -688,92 +711,32 @@ function isProfileCompatibleWithCategory(profile, category) {
     return compatibleCategories[category] && compatibleCategories[category].includes(profile);
 }
 
-// Gestion de la navigation
-function updateProgress(step) {
-    const totalSteps = 6;
-    const progressWidth = (step / totalSteps) * 100;
-    document.getElementById('progress').style.width = `${progressWidth}%`;
-}
-
-// Fonction pour vérifier la compatibilité
-function isCompatible(profile, cable) {
-    return compatibilityTable[profile] && compatibilityTable[profile][cable];
-}
-
-// Mise à jour de la fonction selectOption pour vérifier la compatibilité
-function selectOption(prefix, value, nextStep) {
-    console.log("Option sélectionnée:", value);
-    console.log("Étape actuelle:", state.currentStep);
-    switch(state.currentStep) {
-        case 1:
-            state.category = value;
-            console.log("Catégorie définie:", state.category);
-            createProfileSelect();
-            break;
-        case 3:
-            state.width = value.padStart(3, '0');  // Ajouter des zéros au début si nécessaire
-            break;
-        case 4:
-            state.cable = value;
-            break;
-    }
-    navigateToStep(nextStep);
-}
-
-// Fonction pour mettre à jour les options de câbles compatibles
-function updateStep4Options() {
-    const cableButtonsDiv = document.getElementById('cableButtons');
-    cableButtonsDiv.innerHTML = '';
-
-    const profile = state.profile;
-    const cables = state.beltsData.cables;
-
-    Object.keys(cables).forEach(cableCode => {
-        if (isCompatible(profile, cableCode)) {
-            const button = document.createElement('button');
-            button.textContent = cables[cableCode].name;
-            button.onclick = () => selectOption('', cableCode, 5);
-            cableButtonsDiv.appendChild(button);
-        }
-    });
-}
-
-// Mise à jour de la fonction selectProfile pour appeler updateStep4Options
-function selectProfile() {
-    const profileSelect = document.getElementById('profileSelect');
-    state.profile = profileSelect.value;
-    updateStep3Options();
-    updateStep4Options();
-    navigateToStep(3);
-}
-
-function navigateToStep(nextStep) {
-    console.log("Navigation vers l'étape:", nextStep);
-    document.getElementById(`step${state.currentStep}`).classList.remove('active');
-    if (nextStep > 7) {
-        showResult();
-        return;
-    }
-    state.currentStep = nextStep;
-    document.getElementById(`step${state.currentStep}`).classList.add('active');
-    updateProgress(state.currentStep);
-}
-
-function goBack(previousStep) {
-    navigateToStep(previousStep);
-}
-
-function selectProfile() {
-    const profileSelect = document.getElementById('profileSelect');
-    state.profile = profileSelect.value;
-    updateStep3Options();
-    navigateToStep(3);
-}
-
+// ** Étape 3 : Sélection de la largeur **
 function updateStep3Options() {
     const widthOptionsDiv = document.getElementById('widthOptions');
     widthOptionsDiv.innerHTML = '';
     
+    // Cas spécial pour la catégorie W
+    if (state.category === 'W') {
+        let specialWidths;
+        if (state.profile === 'H') {
+            specialWidths = ['254', '304', '406', '457', '508'];
+        } else if (state.profile === 'T10' || state.profile === 'AT10') {
+            specialWidths = ['250', '300', '350', '400', '450', '500'];
+        }
+        
+        if (specialWidths) {
+            specialWidths.forEach(width => {
+                const button = document.createElement('button');
+                button.textContent = `${width}mm`;
+                button.onclick = () => selectOption('', width.padStart(3, '0'), 4);
+                widthOptionsDiv.appendChild(button);
+            });
+            return;
+        }
+    }
+    
+    // Cas normal pour les autres catégories
     const profileGroup = getProfileGroup(state.profile);
     const profile = state.beltsData.profiles[profileGroup][state.profile];
     
@@ -808,6 +771,29 @@ function validateCustomWidth(width) {
     return width.length > 0 && !isNaN(width) && width.length <= 3;
 }
 
+// ** Étape 4 : Sélection du câble **
+function updateStep4Options() {
+    const cableButtonsDiv = document.getElementById('cableButtons');
+    cableButtonsDiv.innerHTML = '';
+
+    const profile = state.profile;
+    const cables = state.beltsData.cables;
+
+    Object.keys(cables).forEach(cableCode => {
+        if (isCompatible(profile, cableCode)) {
+            const button = document.createElement('button');
+            button.textContent = cables[cableCode].name;
+            button.onclick = () => selectOption('', cableCode, 5);
+            cableButtonsDiv.appendChild(button);
+        }
+    });
+}
+
+function isCompatible(profile, cable) {
+    return compatibilityTable[profile] && compatibilityTable[profile][cable];
+}
+
+// ** Étape 5 : Saisie de la taille **
 function validateSize() {
     const sizeInput = document.getElementById('sizeInput');
     const size = sizeInput.value.trim();
@@ -825,7 +811,7 @@ function validateSize() {
             navigateToStep(7);
         }
     } else {
-        // Suggest nearest valid sizes
+        // Proposer les tailles valides les plus proches
         const profileGroup = getProfileGroup(state.profile);
         const profile = state.beltsData.profiles[profileGroup][state.profile];
         const pitch = profile.pitch;
@@ -838,16 +824,41 @@ function validateSize() {
 
         if (state.suggestedSizes.length > 0) {
             updateSuggestedSizesUI(state.suggestedSizes);
-            navigateToStep(6); // Go to the suggestion step
+            navigateToStep(6); // Aller à l'étape de suggestion
         } else {
-            showError('lengthError'); // If no suggestions, show length error
+            showError('lengthError'); // Si aucune suggestion, afficher l'erreur de longueur
         }
     }
 }
 
+function validateSizeInput(size) {
+    if (!size || isNaN(size) || size.length > 5) {
+        showError('sizeError');
+        return false;
+    }
+    
+    const sizeValue = parseInt(size); // Convertir la taille en entier
+    if (sizeValue < 1000) {
+        showError('lengthError');
+        return false;
+    }
+    
+    const profileGroup = getProfileGroup(state.profile);
+    const profile = state.beltsData.profiles[profileGroup][state.profile];
+    const numberOfTeeth = sizeValue / profile.pitch; // Utiliser la valeur entière pour le calcul
+    
+    if (!Number.isInteger(numberOfTeeth)) {
+        showError('teethError');
+        return false;
+    }
+    
+    return true;
+}
+
+// ** Étape 6 : Tailles suggérées **
 function updateSuggestedSizesUI(sizes) {
     const suggestionsContainer = document.getElementById('suggestedSizes');
-    suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+    suggestionsContainer.innerHTML = ''; // Effacer les suggestions précédentes
 
     sizes.forEach(size => {
         const button = document.createElement('button');
@@ -866,37 +877,240 @@ function updateSuggestedSizesUI(sizes) {
     });
 }
 
-function validateSizeInput(size) {
-    if (!size || isNaN(size) || size.length > 5) {
-        showError('sizeError');
-        return false;
-    }
-    
-    const sizeValue = parseInt(size); // Convert size to integer
-    if (sizeValue < 1000) {
-        showError('lengthError');
-        return false;
-    }
-    
-    const profileGroup = getProfileGroup(state.profile);
-    const profile = state.beltsData.profiles[profileGroup][state.profile];
-    const numberOfTeeth = sizeValue / profile.pitch; // Use integer value for calculation
-    
-    if (!Number.isInteger(numberOfTeeth)) {
-        showError('teethError');
-        return false;
-    }
-    
-    return true;
-}
-
+// ** Étape 7 : Sélection du revêtement **
 function selectOptionalOption(value, desc) {
     state.optionalOption1 = value;
     state.optionalOption1Desc = desc;
     showResult();
 }
 
+// -----------------------------------------------------------------------------
+// Sélection générique d'options
+// -----------------------------------------------------------------------------
+
+function selectOption(prefix, value, nextStep) {
+    console.log("Option sélectionnée:", value);
+    console.log("Étape actuelle:", state.currentStep);
+    switch(state.currentStep) {
+        case 1:
+            state.category = value;
+            console.log("Catégorie définie:", state.category);
+            createProfileSelect();
+            break;
+        case 3:
+            state.width = value.padStart(3, '0');  // Ajouter des zéros au début si nécessaire
+            break;
+        case 4:
+            state.cable = value;
+            break;
+    }
+    navigateToStep(nextStep);
+}
+
+function selectProfile() {
+    const profileSelect = document.getElementById('profileSelect');
+    state.profile = profileSelect.value;
+    updateStep3Options();
+    updateStep4Options();
+    navigateToStep(3);
+}
+
+// -----------------------------------------------------------------------------
+// Génération et affichage du code
+// -----------------------------------------------------------------------------
+
+function generateDesignation() {
+    try {
+        const designationParts = [];
+
+        const category = state.beltsData.categories[state.category];
+        const cable = state.beltsData.cables[state.cable];
+
+        if (!category || !cable) {
+            console.error('Catégorie ou câble non trouvé');
+            return '';
+        }
+
+        if (state.category === 'U') {
+            // Format de désignation iSync : "COURROIE PU ISYNC" [longueur]-[profil]
+            designationParts.push(`COURROIE PU ISYNC ${parseInt(state.size)}-${state.profile}`);
+        } else {
+            designationParts.push(category.name);
+            designationParts.push(state.profile);
+
+            if (getProfileGroup(state.profile) === 'Imperial') {
+                designationParts.push(convertToInches(state.width));
+            } else {
+                designationParts.push(`${parseInt(state.width)}mm`);
+            }
+
+            designationParts.push(cable.name);
+
+            if (state.category !== 'R' && state.size) {
+                const profileGroup = getProfileGroup(state.profile);
+                const profile = state.beltsData.profiles[profileGroup][state.profile];
+                if (profile && profile.pitch) {
+                    const numberOfTeeth = Math.round(parseInt(state.size) / profile.pitch);
+                    designationParts.push(`${numberOfTeeth} dents`);
+                }
+
+                if (state.optionalOption1Desc && state.optionalOption1Desc !== 'Sans') {
+                    designationParts.push(state.optionalOption1Desc);
+                }
+            }
+        }
+
+        return designationParts.join(' - ');
+    } catch (error) {
+        console.error('Erreur dans generateDesignation:', error);
+        return '';
+    }
+}
+
+function generateCodeStock() {
+    let codeStock = '';
+    let selectedWidth = state.width;
+
+    // Cherche la prochaine largeur faisable
+    if (getWeldability(state.profile, selectedWidth) !== 'YES') {
+        const nextWidth = getNextWeldableWidth(state.profile, selectedWidth);
+        if (nextWidth !== null) {
+            selectedWidth = nextWidth;
+        }
+    }
+
+    if (state.category === 'U') {
+        // Format de code stock iSync : [longueur][profil]
+        codeStock = `${parseInt(state.size)}${state.profile}`;
+    } else if (state.category === 'R') {
+        codeStock = `R${selectedWidth}${state.profile}${state.cable}`;
+    } else if (state.category === 'V') {
+        codeStock = `R${selectedWidth}${state.profile}${state.cable}`;
+    } else if (state.category === 'F') {
+        codeStock = 'Impossible';
+    }
+
+    if (state.optionalOption1) {
+        codeStock += state.optionalOption1;
+    }
+
+    return codeStock;
+}
+
+function generateAlternativeCodeStock() {
+    let alternativeCodeStock = '';
+    let selectedWidth = state.width;
+    let baseCode = 'R100';
+
+    // Retirer les zéros en début de largeur sauf si c'est un profil Imperial
+    if (getProfileGroup(state.profile) === 'Imperial') {
+        selectedWidth = selectedWidth.replace(/^0+/, '');
+        baseCode = 'R400';
+    } else {
+        selectedWidth = selectedWidth.replace(/^0+/, ''); // Retirer les zéros en début
+    }
+
+    if (state.category === 'U') {
+        alternativeCodeStock = 'N/A';
+    } else if (state.category === 'R') {
+        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${selectedWidth}`;
+    } else if (state.category === 'V') {
+        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${selectedWidth}`;
+    } else if (state.category === 'F') {
+        alternativeCodeStock = 'Impossible';
+    }
+
+    if (state.optionalOption1) {
+        alternativeCodeStock += state.optionalOption1.replace(/^\//, '');
+    }
+
+    return alternativeCodeStock;
+}
+
+function showResult() {
+    try {
+        let codeArticle = '';
+        let width = state.width;
+        let size = state.size;
+
+        // Pour les profils impériaux, arrondir la longueur à l'entier inférieur
+        if (getProfileGroup(state.profile) === 'Imperial') {
+            size = Math.floor(parseInt(size)).toString().padStart(5, '0');
+        }
+
+        switch (state.category) {
+            case 'R':
+                codeArticle = `R${width}${state.profile}${state.cable}`;
+                break;
+            case 'V':
+                codeArticle = `V${width}${state.profile}${state.cable}${size}`;
+                break;
+            case 'F':
+                codeArticle = `F${width}${state.profile}${state.cable}${size}`;
+                break;
+            case 'W':
+                codeArticle = `W${width}${state.profile}${state.cable}${size}`;
+                break;
+            case 'U':
+                codeArticle = `${state.profile}-${parseInt(state.size)}`;
+                break;
+            default:
+                codeArticle = 'Format non défini';
+        }
+
+        if (state.optionalOption1) {
+            codeArticle += state.optionalOption1;
+        }
+
+        const resultElement = document.getElementById('result');
+        const designationElement = document.getElementById('designation');
+        const weldabilityElement = document.getElementById('weldabilityInfo');
+        const CodeStockElement = document.getElementById('CodeStock');
+        const alternativeCodeStockElement = document.getElementById('alternativeCodeStock');
+
+        if (state.category === 'V') {
+            const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
+            const cssClass = getWeldabilityClass(weldabilityMessage);
+            weldabilityElement.className = `weldability ${cssClass}`;
+            weldabilityElement.innerHTML = `<strong>Information de faisabilité :</strong> ${weldabilityMessage}`;
+        } else {
+            weldabilityElement.innerHTML = '';
+        }
+
+        if (resultElement) {
+            resultElement.innerHTML = `Code article : <strong>${codeArticle}</strong>`;
+        }
+
+        const designation = generateDesignation();
+        if (designationElement) {
+            designationElement.innerHTML = `Désignation : <strong>${designation}</strong>`;
+        }
+
+        // Afficher le code stock
+        const CodeStock = generateCodeStock();
+        if (CodeStockElement) {
+            CodeStockElement.innerHTML = `Stock à contrôler : <strong>${CodeStock}</strong>`;
+        }
+
+        // Afficher le code stock alternatif
+        const alternativeCodeStock = generateAlternativeCodeStock();
+        if (alternativeCodeStockElement) {
+            alternativeCodeStockElement.innerHTML = `Ou alors : <strong>${alternativeCodeStock}</strong>`;
+        }
+    } catch (error) {
+        console.error('Erreur dans showResult:', error);
+    }
+}
+
+// -----------------------------------------------------------------------------
 // Fonctions utilitaires
+// -----------------------------------------------------------------------------
+
+function convertToInches(mmValue) {
+    const inchesValue = (mmValue / 100).toFixed(2);
+    return `${inchesValue}po`;
+}
+
 function getProfileGroup(profileCode) {
     return Object.entries(state.beltsData.profiles).find(([group, profiles]) => 
         Object.keys(profiles).includes(profileCode)
@@ -957,7 +1171,7 @@ function getNextWeldableWidth(profile, currentWidth) {
         }
     }
 
-    return null; // If no larger weldable width is found, return null
+    return null; // Si aucune largeur faisable plus grande n'est trouvée, retourner null
 }
 
 function getWeldabilityClass(message) {
@@ -974,164 +1188,12 @@ function getWeldabilityMessage(profile, width) {
     return state.beltsData.messages[weldability] || 'Information non disponible';
 }
 
-function generateDesignation() {
-    try {
-        const designationParts = [];
-
-        const category = state.beltsData.categories[state.category];
-        const cable = state.beltsData.cables[state.cable];
-
-        if (!category || !cable) {
-            console.error('Catégorie ou câble non trouvé');
-            return '';
-        }
-
-        designationParts.push(category.name);
-        designationParts.push(state.profile);
-
-        if (getProfileGroup(state.profile) === 'Imperial') {
-            designationParts.push(convertToInches(state.width));
-        } else {
-            designationParts.push(`${state.width}mm`);
-        }
-
-        designationParts.push(cable.name);
-
-        if (state.category !== 'R' && state.size) {
-            const profileGroup = getProfileGroup(state.profile);
-            const profile = state.beltsData.profiles[profileGroup][state.profile];
-            if (profile && profile.pitch) {
-                const numberOfTeeth = Math.round(parseInt(state.size) / profile.pitch);
-                designationParts.push(`${numberOfTeeth} dents`);
-            }
-
-            if (state.optionalOption1Desc && state.optionalOption1Desc !== 'Sans') {
-                designationParts.push(state.optionalOption1Desc);
-            }
-        }
-
-        return designationParts.join(' - ');
-    } catch (error) {
-        console.error('Erreur dans generateDesignation:', error);
-        return '';
-    }
-}
-
-function generateCodeStock() {
-    let codeStock = '';
-    let selectedWidth = state.width;
-
-    // Cherche la prochaine largeur faisable
-    if (getWeldability(state.profile, selectedWidth) !== 'YES') {
-        const nextWidth = getNextWeldableWidth(state.profile, selectedWidth);
-        if (nextWidth !== null) {
-            selectedWidth = nextWidth;
-        }
-    }
-
-    if (state.category === 'R') {
-        codeStock = `R${selectedWidth}${state.profile}${state.cable}`;
-    } else if (state.category === 'V') {
-        codeStock = `R${selectedWidth}${state.profile}${state.cable}`;
-    } else if (state.category === 'F') {
-        codeStock = 'Impossible';
-    }
-
-    if (state.optionalOption1) {
-        codeStock += state.optionalOption1;
-    }
-
-    return codeStock;
-}
-
-function generateAlternativeCodeStock() {
-    let alternativeCodeStock = '';
-    let selectedWidth = state.width;
-    let baseCode = 'R100';
-
-    // Remove leading zeros from width unless it's an Imperial profile
-    if (getProfileGroup(state.profile) === 'Imperial') {
-        selectedWidth = selectedWidth.replace(/^0+/, '');
-        baseCode = 'R400';
-    } else {
-        selectedWidth = selectedWidth.replace(/^0+/, ''); // Remove leading zeros
-    }
-
-    if (state.category === 'R') {
-        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${selectedWidth}`;
-    } else if (state.category === 'V') {
-        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${selectedWidth}`;
-    } else if (state.category === 'F') {
-        alternativeCodeStock = 'Impossible';
-    }
-
-    if (state.optionalOption1) {
-        alternativeCodeStock += state.optionalOption1.replace(/^\//, '');
-    }
-
-    return alternativeCodeStock;
-}
-
-function showResult() {
-    try {
-        let codeArticle = '';
-        let size = parseInt(state.size); // Convert state.size to integer
-        if (state.category === 'R') {
-            codeArticle = `${state.category}${state.width}${state.profile}${state.cable}`;
-        } else {
-            codeArticle = `${state.category}${state.width}${state.profile}${state.cable}${size}`;
-        }
-
-        if (state.optionalOption1) {
-            codeArticle += state.optionalOption1;
-        }
-
-        const resultElement = document.getElementById('result');
-        const designationElement = document.getElementById('designation');
-        const weldabilityElement = document.getElementById('weldabilityInfo');
-        const CodeStockElement = document.getElementById('CodeStock');
-        const alternativeCodeStockElement = document.getElementById('alternativeCodeStock');
-
-        if (state.category === 'V') {
-            const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
-            const cssClass = getWeldabilityClass(weldabilityMessage);
-            weldabilityElement.className = `weldability ${cssClass}`;
-            weldabilityElement.innerHTML = `<strong>Information de faisabilité :</strong> ${weldabilityMessage}`;
-        } else {
-            weldabilityElement.innerHTML = '';
-        }
-
-        if (resultElement) {
-            resultElement.innerHTML = `Code article : <strong>${codeArticle}</strong>`;
-        }
-
-        const designation = generateDesignation();
-        if (designationElement && designation) {
-            designationElement.innerHTML = `Désignation : <strong>${designation}</strong>`;
-        }
-
-        // Display the special code
-        const CodeStock = generateCodeStock();
-        if (CodeStockElement) {
-            CodeStockElement.innerHTML = `Stock à contrôler : <strong>${CodeStock}</strong>`;
-        }
-
-        // Display the alternative special code
-        const alternativeCodeStock = generateAlternativeCodeStock();
-        if (alternativeCodeStockElement) {
-            alternativeCodeStockElement.innerHTML = `Ou alors : <strong>${alternativeCodeStock}</strong>`;
-        }
-    } catch (error) {
-        console.error('Erreur dans showResult:', error);
-    }
-}
-
 function showTooltip(element) {
     const tooltip = document.getElementById('tooltip');
     tooltip.innerHTML = element.dataset.title.replace(/;/g, '<br>');
     tooltip.style.display = 'block';
 
-    // Position the tooltip next to the button
+    // Positionner l'info-bulle à côté du bouton
     const rect = element.getBoundingClientRect();
     tooltip.style.top = (rect.bottom + window.scrollY) + 'px';
     tooltip.style.left = (rect.left + window.scrollX) + 'px';
