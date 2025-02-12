@@ -1126,5 +1126,21 @@ function showResult() {
     }
 }
 
+function showTooltip(element) {
+    const tooltip = document.getElementById('tooltip');
+    tooltip.innerHTML = element.dataset.title.replace(/;/g, '<br>');
+    tooltip.style.display = 'block';
+
+    // Position the tooltip next to the button
+    const rect = element.getBoundingClientRect();
+    tooltip.style.top = (rect.bottom + window.scrollY) + 'px';
+    tooltip.style.left = (rect.left + window.scrollX) + 'px';
+}
+
+function hideTooltip() {
+    const tooltip = document.getElementById('tooltip');
+    tooltip.style.display = 'none';
+}
+
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', initializeApp);
