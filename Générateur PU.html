@@ -16,36 +16,53 @@
     <div class="step active" id="step1">
         <h3>Sélectionnez la catégorie</h3>
         <h5>(Les courroies soudées peuvent être appelées fermées ou sans fin par les clients)</h5>
-        <button 
-            onclick="selectOption('','R', 2)"
-            data-title="Elatech - Elatech M; Ammeraal - PU linéaire; Megadyne - Megalinear; Breco - Breco M; Optibelt - Alpha linear; Gates - Linear belt; Habasit - HabaSync; Forbo - Open Belt"
-            onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-            Courroie ouverte
-        </button>
-        <button 
-            onclick="selectOption('','V', 2)"
-            data-title="Elatech - Elatech V; Ammeraal - PU linéaire; Megadyne - Megalinear; Breco - Breco V; Optibelt - Alpha V; Gates - Linear belt; Habasit - HabaSync; Forbo - Endless Welded Belt"
-            onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-            Courroie soudée
-        </button>
-        <button 
-            onclick="selectOption('','F', 2)"
-            data-title="Elatech - Elaflex SD; Ammeraal - PU Moulée; Megadyne - Mega power; Breco - Brecoflex; Optibelt - Alpha power / Alpha Torque / Alpha SRP; Gates - Synchro-Power; Habasit - HabaSync; Forbo - Trully Endless Belt"
-            onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-            ElaFlex SD
-        </button>
-        <button 
-            onclick="selectOption('','W', 2)"
-            data-title="Pas d'équivalence fournisseur pour Syncro Max"
-            onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-            Syncro Max
-        </button>
-        <button 
-            onclick="selectOption('','U', 2)"
-            data-title="Elatech - Elatech iSync; Ammeraal - PU Torque; Megadyne - Mega flex; Breco - Brecoflex/Synchrofex; Optibelt - Alpha Flex; Habasit - HabaSync"
-            onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-            iSync
-        </button>
+        <div class="category-buttons">
+            <button 
+                class="category-image-button"
+                onclick="selectOption('','R', 2)"
+                data-title="Elatech - Elatech M; Ammeraal - PU linéaire; Megadyne - Megalinear; Breco - Breco M; Optibelt - Alpha linear; Gates - Linear belt; Habasit - HabaSync; Forbo - Open Belt"
+                onmouseover="showTooltip(this)" 
+                onmouseout="hideTooltip()">
+                <img src="images/R.jpg" alt="Courroie ouverte">
+                <span class="tooltip">Courroie ouverte</span>
+            </button>
+            <button 
+                class="category-image-button"
+                onclick="selectOption('','V', 2)"
+                data-title="Elatech - Elatech V; Ammeraal - PU linéaire; Megadyne - Megalinear; Breco - Breco V; Optibelt - Alpha V; Gates - Linear belt; Habasit - HabaSync; Forbo - Endless Welded Belt"
+                onmouseover="showTooltip(this)" 
+                onmouseout="hideTooltip()">
+                <img src="images/V.jpg" alt="Courroie soudée">
+                <span class="tooltip">Courroie soudée</span>
+            </button>
+            <button 
+                class="category-image-button"
+                onclick="selectOption('','F', 2)"
+                data-title="Elatech - Elaflex SD; Ammeraal - PU Moulée; Megadyne - Mega power; Breco - Brecoflex; Optibelt - Alpha power / Alpha Torque / Alpha SRP; Gates - Synchro-Power; Habasit - HabaSync; Forbo - Trully Endless Belt"
+                onmouseover="showTooltip(this)" 
+                onmouseout="hideTooltip()">
+                <img src="images/F.jpg" alt="ElaFlex SD">
+                <span class="tooltip">ElaFlex SD</span>
+            </button>
+            <button 
+                class="category-image-button"
+                onclick="selectOption('','W', 2)"
+                data-title="Pas d'équivalence fournisseur pour Syncro Max"
+                onmouseover="showTooltip(this)" 
+                onmouseout="hideTooltip()">
+                <img src="images/W.jpg" alt="Syncro Max">
+                <span class="tooltip">Syncro Max</span>
+            </button>
+            <button 
+                class="category-image-button"
+                onclick="selectOption('','U', 2)"
+                data-title="Elatech - Elatech iSync; Ammeraal - PU Torque; Megadyne - Mega flex; Breco - Brecoflex/Synchrofex; Optibelt - Alpha Flex; Habasit - HabaSync"
+                onmouseover="showTooltip(this)" 
+                onmouseout="hideTooltip()">
+                <img src="images/U.jpg" alt="iSync">
+                <span class="tooltip">iSync</span>
+            </button>
+        </div>
     </div>
     <div id="tooltip" class="tooltip"></div>
     <!-- Étape 2: Sélection du profil -->
