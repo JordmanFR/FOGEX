@@ -113,17 +113,135 @@
             <!-- Les boutons de taille suggérée seront ajoutés ici par JavaScript -->
         </div>
     </div>
-    <!-- Étape 7: Revêtement en tissu -->
+    <!-- Étape 7: Tissu -->
     <div class="step" id="step7">
         <button class="back-button" onclick="goBack(5)">Retour</button>
         <h3>Sélectionnez un revêtement en tissu</h3>
+		<button onclick="selectOptionalOption('', 'Sans')" style="width: 200px;">Sans</button>
         <div id="coatingButtons">
-            <button onclick="selectOptionalOption('', 'Sans')">Sans</button>
             <button onclick="selectOptionalOption('/Z', 'PAZ', 8)">PAZ</button>
             <button onclick="selectOptionalOption('/R', 'PAR', 8)">PAR</button>
             <button onclick="selectOptionalOption('/D', 'PAZ + PAR', 8)">PAZ + PAR</button>
+            <button onclick="selectOptionalOption('/ZS', 'PAZAS', 8)">PAZ Antistatique</button>
+            <button onclick="selectOptionalOption('/RS', 'PARAS', 8)">PAR Antistatique</button>
+            <button onclick="selectOptionalOption('/DS', 'PAZAS + PARAS', 8)">PAZ + PAR Antistatique</button>
         </div>
     </div>
+
+    <!-- Étape 8: Revêtement -->
+    <div class="step" id="step8">
+        <button class="back-button" onclick="goBack(7)">Retour</button>
+        <h3>Sélectionnez un revêtement</h3>
+		<button onclick="selectFinalOption('', 'Sans', '', '')" style="width: 200px;">Sans</button>
+        <div class="category-buttons">
+            <h4>Cellulaires</h4>
+            <button class="category-image-button" onclick="selectFinalOption('CFX', 'Celloflex', '', 'Crème')" data-title="Dureté: N/A; Couleur: Crème" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/CFX.jpg" alt="Celloflex">Celloflex</button>
+            <button class="category-image-button" onclick="selectFinalOption('PY50', 'PU Jaune 50', '50 Sh', 'Jaune')" data-title="Dureté: 50 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/PY50.jpg" alt="PU Jaune 50">PU Jaune 50</button>
+            <button class="category-image-button" onclick="selectFinalOption('PY70', 'PU Jaune 70', '70 Sh', 'Jaune')" data-title="Dureté: 70 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/PY70.jpg" alt="PU Jaune 70">PU Jaune 70</button>
+            <button class="category-image-button" onclick="selectFinalOption('POR', 'Porol', '15 Sh', 'Noir')" data-title="Dureté: 15 Sh; Couleur: Noir" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/POR.jpg" alt="Porol">Porol</button>
+            <button class="category-image-button" onclick="selectFinalOption('SYL-B', 'Sylomer Blue', '', 'Bleu')" data-title="Dureté: N/A; Couleur: Bleu" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SYL-B.jpg" alt="Sylomer Blue">Sylomer Blue</button>
+            <button class="category-image-button" onclick="selectFinalOption('SYL-V', 'Sylomer Green', '', 'Vert')" data-title="Dureté: N/A; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SYL-V.jpg" alt="Sylomer Green">Sylomer Green</button>
+            <button class="category-image-button" onclick="selectFinalOption('SYL-M', 'Sylomer Brown', '', 'Marron')" data-title="Dureté: N/A; Couleur: Marron" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SYL-M.jpg" alt="Sylomer Brown">Sylomer Brown</button>
+        </div>
+        <div class="category-buttons">
+            <h4>PVC et PU</h4>
+            <button class="category-image-button" onclick="selectFinalOption('PUR70', 'PU Transparent 70', '70 Sh', 'Transparent')" data-title="Dureté: 70 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/PUR70.jpg" alt="PU Transparent 70">PU Transparent 70</button>
+            <button class="category-image-button" onclick="selectFinalOption('PUR85', 'PU Transparent 85', '85 Sh', 'Transparent')" data-title="Dureté: 85 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/PUR85.jpg" alt="PU Transparent 85">PU Transparent 85</button>
+            <button class="category-image-button" onclick="selectFinalOption('FBPU', 'Fishbone PU', '70 Sh', 'Transparent')" data-title="Dureté: 70 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/FBPU.jpg" alt="Fishbone PU">Fishbone PU</button>
+            <button class="category-image-button" onclick="selectFinalOption('FBPVC', 'Fishbone PVC', '65 Sh', 'Blanc')" data-title="Dureté: 65 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/FBPVC.jpg" alt="Fishbone PVC">Fishbone PVC</button>
+            <button class="category-image-button" onclick="selectFinalOption('PVCW', 'PVC Blanc', '65 Sh', 'Blanc')" data-title="Dureté: 65 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/PVCW.jpg" alt="PVC Blanc">PVC Blanc</button>
+            <button class="category-image-button" onclick="selectFinalOption('PVCG', 'PVC Vert', '40 Sh', 'Vert')" data-title="Dureté: 40 Sh; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/PVCG.jpg" alt="PVC Vert">PVC Vert</button>
+            <button class="category-image-button" onclick="selectFinalOption('SG50R', 'Supergrip 50 R', '50 Sh', 'Rouge')" data-title="Dureté: 50 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SG50R.jpg" alt="Supergrip 50 R">Supergrip 50 R</button>
+            <button class="category-image-button" onclick="selectFinalOption('SG60', 'Supergrip 60 GL', '60 Sh', 'Vert')" data-title="Dureté: 60 Sh; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SG60.jpg" alt="Supergrip 60 GL">Supergrip 60 GL</button>
+            <button class="category-image-button" onclick="selectFinalOption('SG70', 'Supergrip 70Y', '70 Sh', 'Jaune')" data-title="Dureté: 70 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SG70.jpg" alt="Supergrip 70Y">Supergrip 70Y</button>
+            <button class="category-image-button" onclick="selectFinalOption('MG', 'Minigrip PVC', '65 Sh', 'Vert')" data-title="Dureté: 65 Sh; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/MG.jpg" alt="Minigrip PVC">Minigrip PVC</button>
+        </div>
+        <div class="category-buttons">
+            <h4>Caoutchoucs</h4>
+            <button class="category-image-button" onclick="selectFinalOption('SG50T', 'Supergrip 50RT', '40 Sh', 'Rouge')" data-title="Dureté: 40 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SG50T.jpg" alt="Supergrip 50RT">Supergrip 50RT</button>
+            <button class="category-image-button" onclick="selectFinalOption('LTX', 'Linatex', '40 Sh', 'Rouge')" data-title="Dureté: 40 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/LTX.jpg" alt="Linatex">Linatex</button>
+            <button class="category-image-button" onclick="selectFinalOption('LNP', 'LinaPlus', '40 Sh', 'Blanc')" data-title="Dureté: 40 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/LNP.jpg" alt="LinaPlus">LinaPlus</button>
+            <button class="category-image-button" onclick="selectFinalOption('LTR', 'Linatrile', '55 Sh', 'Orange')" data-title="Dureté: 55 Sh; Couleur: Orange" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/LTR.jpg" alt="Linatrile">Linatrile</button>
+            <button class="category-image-button" onclick="selectFinalOption('NBR', 'Nitrile', '65 Sh', 'Noir')" data-title="Dureté: 65 Sh; Couleur: Noir" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/NBR.jpg" alt="Nitrile">Nitrile</button>
+            <button class="category-image-button" onclick="selectFinalOption('NBR-W', 'Nitrile Blanc', '65 Sh', 'Blanc')" data-title="Dureté: 65 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/NBR-W.jpg" alt="Nitrile Blanc">Nitrile Blanc</button>
+            <button class="category-image-button" onclick="selectFinalOption('TNX', 'Tenax', '40 Sh', 'Rouge')" data-title="Dureté: 40 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/TNX.jpg" alt="Tenax">Tenax</button>
+            <button class="category-image-button" onclick="selectFinalOption('VTN', 'Viton', '75 Sh', 'Noir')" data-title="Dureté: 75 Sh; Couleur: Noir" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/VTN.jpg" alt="Viton">Viton</button>
+            <button class="category-image-button" onclick="selectFinalOption('RP400', 'Caoutchouc Jaune', '35 Sh', 'Jaune')" data-title="Dureté: 35 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/RP400.jpg" alt="Caoutchouc Jaune">Caoutchouc Jaune</button>
+            <button class="category-image-button" onclick="selectFinalOption('CRX', 'Correx', '40 Sh', 'Crème')" data-title="Dureté: 40 Sh; Couleur: Crème" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/CRX.jpg" alt="Correx">Correx</button>
+        </div>
+        <div class="category-buttons">
+            <h4>Spéciaux</h4>
+            <button class="category-image-button" onclick="selectFinalOption('APL', 'APL', '55 Sh', 'Rouge')" data-title="Dureté: 55 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/APL.jpg" alt="APL">APL</button>
+            <button class="category-image-button" onclick="selectFinalOption('SLC', 'Silicone', '30 Sh', 'Transparent')" data-title="Dureté: 30 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SLC.jpg" alt="Silicone">Silicone</button>
+            <button class="category-image-button" onclick="selectFinalOption('SLCPU', 'Silicone PU', '60 Sh', 'Blanc')" data-title="Dureté: 60 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SLCPU.jpg" alt="Silicone PU">Silicone PU</button>
+            <button class="category-image-button" onclick="selectFinalOption('SLCF', 'Silicone FDA', '30 Sh', 'Bleu')" data-title="Dureté: 30 Sh; Couleur: Bleu" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/SLCF.jpg" alt="Silicone FDA">Silicone FDA</button>
+            <button class="category-image-button" onclick="selectFinalOption('TG50', 'Technogum 50', '50 Sh', 'Rouge')" data-title="Dureté: 50 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/TG50.jpg" alt="Technogum 50">Technogum 50</button>
+            <button class="category-image-button" onclick="selectFinalOption('TG70', 'Technogum 70', '70 Sh', 'Rouge')" data-title="Dureté: 70 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/TG70.jpg" alt="Technogum 70">Technogum 70</button>
+            <button class="category-image-button" onclick="selectFinalOption('CHRL', 'Chrome Cuir', '65 Sh', 'Gris')" data-title="Dureté: 65 Sh; Couleur: Gris" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/CHRL.jpg" alt="Chrome Cuir">Chrome Cuir</button>
+            <button class="category-image-button" onclick="selectFinalOption('RIB-H-APL', 'Multirib', '55 Sh', 'Rouge')" data-title="Dureté: 55 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/RIB-H-APL.jpg" alt="Multirib APL">Multirib APL</button>
+            <button class="category-image-button" onclick="selectFinalOption('RIB-H-PU70', 'Multirib', '70 Sh', 'Transparent')" data-title="Dureté: 70 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                <img src="images/RIB-H-PU70.jpg" alt="Multirib PU70">Multirib PU70</button>
+        </div>
+    </div>
+
+    <!-- Étape 9: Pose de Guide -->
+    <div class="step" id="step9">
+        <button class="back-button" onclick="goBack(8)">Retour</button>
+        <h3>Sélectionnez le type de guide</h3>
+		<button onclick="selectGuide('')" style="width: 200px;">Sans</button>
+        <div class="category-buttons">
+            <button onclick="selectGuide('K6')">K6</button>
+            <button onclick="selectGuide('K10')">K10</button>
+            <button onclick="selectGuide('K13')">K13</button>
+        </div>
+    </div>
+
+    <!-- Étape 10: Ajout de fausses dents -->
+    <div class="step" id="step10">
+        <button class="back-button" onclick="goBack(9)">Retour</button>
+        <h3>Ajouter des fausses dents</h3>
+		<button onclick="validateFalseTeeth('')" style="width: 200px;">Sans</button>
+		<div>
+        	<input type="number" id="falseTeethInput" placeholder="Nombre de fausses dents">
+        	<button onclick="validateFalseTeeth()">Valider</button>
+		</div>
+    </div>
+
     <!-- Résultat -->
     <div id="result-container">
         <div id="weldabilityInfo"></div>

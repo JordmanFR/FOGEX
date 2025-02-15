@@ -12,7 +12,14 @@ const state = {
     optionalOption1: '',
     optionalOption1Desc: '',
     beltsData: {},
-    suggestedSizes: []
+    suggestedSizes: [],
+    finalOption: '',
+    finalOptionDesc: '',
+    finalOptionDurete: '',
+    finalOptionCouleur: '',
+    guide: '',
+    guideDesc: '',
+    falseTeeth: ''
 };
 
 // -----------------------------------------------------------------------------
@@ -488,7 +495,7 @@ const beltsData = {
                 "widths": ["100", "200", "300", "400", "600"]
             }
         },
-        "Profils avec guide": {
+        "Profils avec guide extrudé et centré": {
             "TK5-K6": {
                 "pitch": 5,
                 "widths": ["032", "050", "075", "100"]
@@ -573,160 +580,93 @@ const beltsData = {
 
 // Table de compatibilité
 const compatibilityTable = (category) => {
-    switch (category) {
-        case 'R':
-            return {
-                "T2.5": { "A": true, "F": true },
-                "T5": { "A": true, "K": true, "F": true, "P": true },
-                "T10": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "T20": { "A": true, "K": true, "S": true, "F": true },
-                "MXL": { "A": true, "F": true },
-                "XL": { "A": true, "K": true, "F": true },
-                "L": { "A": true, "K": true, "S": true },
-                "H": { "A": true, "K": true, "S": true },
-                "XH": { "A": true, "K": true, "S": true },
-                "AT3": { "A": true, "F": true },
-                "AT5": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "AT10": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "AT20": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "ATK5-K6": { "A": true, "K": true },
-                "TK5-K6": { "A": true, "K": true },
-                "TK10-K6": { "A": true, "K": true },
-                "TK10-K13": { "A": true, "K": true },
-                "TK20-K13": { "A": true },
-                "ATK10-K6": { "A": true, "K": true },
-                "ATK10-K13": { "A": true, "K": true },
-                "H-K13": { "A": true },
-                "HT3": { "A": true, "F": true },
-                "HT5": { "A": true, "K": true, "S": true },
-                "HT8": { "A": true, "K": true, "S": true, "P": true },
-                "HT14": { "A": true, "P": true, "XHPL": true },
-                "ST5": { "A": true, "K": true, "S": true, "F": true },
-                "ST8": { "A": true, "K": true, "S": true, "P": true },
-                "ST14": { "A": true },
-                "RP5": { "A": true, "K": true, "S": true, "F": true },
-                "RP8": { "A": true, "K": true, "S": true, "P": true },
-                "RP14": { "A": true, "P": true, "XHPL": true },
-                "E5": { "A": true },
-                "E8": { "A": true, "K": true, "S": true, "P": true },
-                "E10": { "A": true },
-                "E14": { "A": true, "P": true, "XHPL": true },
-                "SAT10": { "A": true, "S": true, "F": true },
-                "ATF10": { "A": true },
-                "ATF20": { "A": true },
-                "PG14M": { "A": true },
-                "PG20M": { "A": true },
-                "F1": { "A": true, "K": true, "F": true },
-                "F2": { "A": true, "K": true, "S": true },
-                "F2.5": { "A": true, "K": true, "S": true },
-                "F3": { "A": true, "K": true },
-                "F8.75": { "A": true, "P": true }
-            };
-        case 'V':
-            return {
-                "T2.5": { "A": true },
-                "T5": { "A": true, "K": true },
-                "T10": { "A": true, "K": true, "S": true },
-                "T20": { "A": true, "K": true, "S": true },
-                "MXL": { "A": true },
-                "XL": { "A": true, "K": true },
-                "L": { "A": true, "K": true, "S": true },
-                "H": { "A": true, "K": true, "S": true },
-                "XH": { "A": true, "K": true, "S": true },
-                "AT3": { "A": true },
-                "AT5": { "A": true, "K": true, "S": true },
-                "AT10": { "A": true, "K": true, "S": true },
-                "AT20": { "A": true, "K": true, "S": true },
-                "ATK5-K6": { "A": true, "K": true },
-                "TK5-K6": { "A": true, "K": true },
-                "TK10-K6": { "A": true, "K": true },
-                "TK10-K13": { "A": true, "K": true },
-                "TK20-K13": { "A": true },
-                "ATK10-K6": { "A": true, "K": true },
-                "ATK10-K13": { "A": true, "K": true },
-                "H-K13": { "A": true },
-                "HT3": { "A": true },
-                "HT5": { "A": true, "K": true, "S": true },
-                "HT8": { "A": true, "K": true, "S": true },
-                "HT14": { "A": true },
-                "FT5": { "K": true, "S": true },
-                "FT10": { "K": true, "S": true },
-                "FAT5": { "K": true, "S": true },
-                "FAT10": { "K": true, "S": true },
-                "ST5": { "A": true, "K": true, "S": true },
-                "ST8": { "A": true, "K": true, "S": true },
-                "ST14": { "A": true },
-                "RP5": { "A": true, "K": true, "S": true },
-                "RP8": { "A": true, "K": true, "S": true },
-                "RP14": { "A": true },
-                "E5": { "A": true },
-                "E8": { "A": true, "K": true, "S": true },
-                "E10": { "A": true },
-                "E14": { "A": true },
-                "SAT10": { "A": true },
-                "ATF10": { "A": true },
-                "ATF20": { "A": true },
-                "PG14M": { "A": true },
-                "PG20M": { "A": true },
-                "F1": { "A": true, "K": true },
-                "F2": { "A": true, "K": true, "S": true },
-                "F2.5": { "A": true, "K": true, "S": true },
-                "F3": { "A": true, "K": true },
-                "F8.75": { "A": true }
-            };
-        case 'F':
-            return {
-                "T5": { "A": true, "K": true, "S": true },
-                "T10": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "T20": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "XL": { "A": true, "K": true, "F": true },
-                "L": { "A": true, "K": true, "S": true, "F": true },
-                "H": { "A": true, "K": true, "S": true, "F": true },
-                "XH": { "A": true, "K": true, "S": true, "F": true },
-                "AT3": { "A": true },
-                "AT5": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "AT10": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "AT15": { "A": true, "K": true },
-                "AT20": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "ATK5-K6": { "A": true, "K": true, "F": true, "P": true },
-                "ATK10-K6": { "A": true, "K": true, "F": true, "P": true },
-                "HT5": { "A": true, "K": true, "S": true, "F": true },
-                "HT8": { "A": true, "K": true, "S": true, "F": true },
-                "HT14": { "A": true, "K": true, "S": true, "F": true },
-                "ST5": { "A": true, "K": true, "S": true, "F": true },
-                "ST8": { "A": true, "K": true, "S": true, "F": true },
-                "ST14": { "A": true, "K": true, "S": true, "F": true },
-                "RP5": { "A": true, "K": true, "S": true, "F": true },
-                "RP8": { "A": true, "K": true, "S": true, "F": true },
-                "RP14": { "A": true, "K": true, "S": true, "F": true },
-                "E5": { "A": true },
-                "E8": { "A": true },
-                "E10": { "A": true },
-                "E14": { "A": true },
-                "ATM10": { "A": true, "K": true, "S": true, "F": true, "P": true },
-                "F2": { "A": true, "K": true, "S": true, "F": true },
-                "F2.5": { "A": true, "K": true, "S": true, "F": true },
-                "F3": { "A": true, "K": true, "S": true, "F": true }
-            };
-        case 'W':
-            return {
-                "T10": { "K": true },
-                "AT10": { "K": true },
-                "H": { "K": true }
-            };
-        case 'U':
-            return {
-                "T2.5": { "A": true },
-                "T5": { "A": true },
-                "T10": { "A": true },
-                "XL": { "A": true },
-                "L": { "A": true },
-                "AT5": { "A": true },
-                "AT10": { "A": true }
-            };
-        default:
-            return {};
-    }
+    const table = {
+        'R': {
+            "T2.5": { "A": true, "F": true }, "T5": { "A": true, "K": true, "F": true, "P": true },
+            "T10": { "A": true, "K": true, "S": true, "F": true, "P": true }, "T20": { "A": true, "K": true, "S": true, "F": true },
+            "MXL": { "A": true, "F": true }, "XL": { "A": true, "K": true, "F": true },
+            "L": { "A": true, "K": true, "S": true }, "H": { "A": true, "K": true, "S": true },
+            "XH": { "A": true, "K": true, "S": true }, "AT3": { "A": true, "F": true },
+            "AT5": { "A": true, "K": true, "S": true, "F": true, "P": true }, "AT10": { "A": true, "K": true, "S": true, "F": true, "P": true },
+            "AT20": { "A": true, "K": true, "S": true, "F": true, "P": true }, "ATK5-K6": { "A": true, "K": true },
+            "TK5-K6": { "A": true, "K": true }, "TK10-K6": { "A": true, "K": true },
+            "TK10-K13": { "A": true, "K": true }, "TK20-K13": { "A": true },
+            "ATK10-K6": { "A": true, "K": true }, "ATK10-K13": { "A": true, "K": true },
+            "H-K13": { "A": true }, "HT3": { "A": true, "F": true },
+            "HT5": { "A": true, "K": true, "S": true }, "HT8": { "A": true, "K": true, "S": true, "P": true },
+            "HT14": { "A": true, "P": true, "XHPL": true }, "ST5": { "A": true, "K": true, "S": true, "F": true },
+            "ST8": { "A": true, "K": true, "S": true, "P": true }, "ST14": { "A": true },
+            "RP5": { "A": true, "K": true, "S": true, "F": true }, "RP8": { "A": true, "K": true, "S": true, "P": true },
+            "RP14": { "A": true, "P": true, "XHPL": true }, "E5": { "A": true },
+            "E8": { "A": true, "K": true, "S": true, "P": true }, "E10": { "A": true },
+            "E14": { "A": true, "P": true, "XHPL": true }, "SAT10": { "A": true, "S": true, "F": true },
+            "ATF10": { "A": true }, "ATF20": { "A": true },
+            "PG14M": { "A": true }, "PG20M": { "A": true },
+            "F1": { "A": true, "K": true, "F": true }, "F2": { "A": true, "K": true, "S": true },
+            "F2.5": { "A": true, "K": true, "S": true }, "F3": { "A": true, "K": true },
+            "F8.75": { "A": true, "P": true }
+        },
+        'V': {
+            "T2.5": { "A": true }, "T5": { "A": true, "K": true },
+            "T10": { "A": true, "K": true, "S": true }, "T20": { "A": true, "K": true, "S": true },
+            "MXL": { "A": true }, "XL": { "A": true, "K": true },
+            "L": { "A": true, "K": true, "S": true }, "H": { "A": true, "K": true, "S": true },
+            "XH": { "A": true, "K": true, "S": true }, "AT3": { "A": true },
+            "AT5": { "A": true, "K": true, "S": true }, "AT10": { "A": true, "K": true, "S": true },
+            "AT20": { "A": true, "K": true, "S": true }, "ATK5-K6": { "A": true, "K": true },
+            "TK5-K6": { "A": true, "K": true }, "TK10-K6": { "A": true, "K": true },
+            "TK10-K13": { "A": true, "K": true }, "TK20-K13": { "A": true },
+            "ATK10-K6": { "A": true, "K": true }, "ATK10-K13": { "A": true, "K": true },
+            "H-K13": { "A": true }, "HT3": { "A": true },
+            "HT5": { "A": true, "K": true, "S": true }, "HT8": { "A": true, "K": true, "S": true },
+            "HT14": { "A": true }, "FT5": { "K": true, "S": true },
+            "FT10": { "K": true, "S": true }, "FAT5": { "K": true, "S": true },
+            "FAT10": { "K": true, "S": true }, "ST5": { "A": true, "K": true, "S": true },
+            "ST8": { "A": true, "K": true, "S": true }, "ST14": { "A": true },
+            "RP5": { "A": true, "K": true, "S": true }, "RP8": { "A": true, "K": true, "S": true },
+            "RP14": { "A": true }, "E5": { "A": true },
+            "E8": { "A": true, "K": true, "S": true }, "E10": { "A": true },
+            "E14": { "A": true }, "SAT10": { "A": true },
+            "ATF10": { "A": true }, "ATF20": { "A": true },
+            "PG14M": { "A": true }, "PG20M": { "A": true },
+            "F1": { "A": true, "K": true }, "F2": { "A": true, "K": true, "S": true },
+            "F2.5": { "A": true, "K": true, "S": true }, "F3": { "A": true, "K": true },
+            "F8.75": { "A": true }
+        },
+        'F': {
+            "T5": { "A": true, "K": true, "S": true }, "T10": { "A": true, "K": true, "S": true, "F": true, "P": true },
+            "T20": { "A": true, "K": true, "S": true, "F": true, "P": true }, "XL": { "A": true, "K": true, "F": true },
+            "L": { "A": true, "K": true, "S": true, "F": true }, "H": { "A": true, "K": true, "S": true, "F": true },
+            "XH": { "A": true, "K": true, "S": true, "F": true }, "AT3": { "A": true },
+            "AT5": { "A": true, "K": true, "S": true, "F": true, "P": true }, "AT10": { "A": true, "K": true, "S": true, "F": true, "P": true },
+            "AT15": { "A": true, "K": true }, "AT20": { "A": true, "K": true, "S": true, "F": true, "P": true },
+            "ATK5-K6": { "A": true, "K": true, "F": true, "P": true }, "ATK10-K6": { "A": true, "K": true, "F": true, "P": true },
+            "HT5": { "A": true, "K": true, "S": true, "F": true }, "HT8": { "A": true, "K": true, "S": true, "F": true },
+            "HT14": { "A": true, "K": true, "S": true, "F": true }, "ST5": { "A": true, "K": true, "S": true, "F": true },
+            "ST8": { "A": true, "K": true, "S": true, "F": true }, "ST14": { "A": true, "K": true, "S": true, "F": true },
+            "RP5": { "A": true, "K": true, "S": true, "F": true }, "RP8": { "A": true, "K": true, "S": true, "F": true },
+            "RP14": { "A": true, "K": true, "S": true, "F": true }, "E5": { "A": true },
+            "E8": { "A": true }, "E10": { "A": true },
+            "E14": { "A": true }, "ATM10": { "A": true, "K": true, "S": true, "F": true, "P": true },
+            "F2": { "A": true, "K": true, "S": true, "F": true }, "F2.5": { "A": true, "K": true, "S": true, "F": true },
+            "F3": { "A": true, "K": true, "S": true, "F": true }
+        },
+        'W': {
+            "T10": { "K": true },
+            "AT10": { "K": true },
+            "H": { "K": true }
+        },
+        'U': {
+            "T2.5": { "A": true },
+            "T5": { "A": true },
+            "T10": { "A": true },
+            "XL": { "A": true },
+            "L": { "A": true },
+            "AT5": { "A": true },
+            "AT10": { "A": true }
+        }
+    };
+    return table[category] || {};
 };
 
 // -----------------------------------------------------------------------------
@@ -752,7 +692,7 @@ function setupInitialUI() {
 function navigateToStep(nextStep) {
     console.log("Navigation vers l'étape:", nextStep);
     document.getElementById(`step${state.currentStep}`).classList.remove('active');
-    if (nextStep > 7) {
+    if (nextStep > 9) {
         showResult();
         return;
     }
@@ -766,7 +706,7 @@ function goBack(previousStep) {
 }
 
 function updateProgress(step) {
-    const totalSteps = 6;
+    const totalSteps = 9;
     const progressWidth = (step / totalSteps) * 100;
     document.getElementById('progress').style.width = `${progressWidth}%`;
 }
@@ -786,86 +726,81 @@ function createProfileSelect() {
     const category = state.category;
     const profiles = state.beltsData.profiles;
 
-    Object.entries(profiles).forEach(([groupName, groupProfiles]) => {
+    for (const [groupName, groupProfiles] of Object.entries(profiles)) {
         const optgroup = document.createElement('optgroup');
         optgroup.label = `${groupName}`;
-        
-        Object.entries(groupProfiles).forEach(([code, data]) => {
+
+        for (const [code, data] of Object.entries(groupProfiles)) {
             if (isProfileCompatibleWithCategory(code, category)) {
                 const option = document.createElement('option');
                 option.value = code;
                 option.textContent = data.display || code;
                 optgroup.appendChild(option);
             }
-        });
-        
+        }
+
         if (optgroup.children.length > 0) {
             select.appendChild(optgroup);
         }
-    });
+    }
 }
 
 function isProfileCompatibleWithCategory(profile, category) {
     const compatibleCategories = {
         "R": ["T2.5", "T5", "T10", "T20", "MXL", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "TK5-K6", "TK10-K6", "TK10-K13", "TK20-K13", "ATK10-K6", "ATK10-K13", "H-K13", "HT3", "HT5", "HT8", "HT14", "FT5", "FT10", "FAT5", "FAT10", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "E5", "E8", "E10", "E14", "SAT10", "ATF10", "ATM10", "ATF20", "PG14M", "PG20M", "F1", "F2", "F2.5", "F3", "F8.75"],
         "V": ["T2.5", "T5", "T10", "T20", "MXL", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "TK5-K6", "TK10-K6", "TK10-K13", "TK20-K13", "ATK10-K6", "ATK10-K13", "H-K13", "HT3", "HT5", "HT8", "HT14", "FT5", "FT10", "FAT5", "FAT10", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "E5", "E8", "E10", "E14", "SAT10", "ATF10", "ATM10", "ATF20", "PG14M", "PG20M", "F1", "F2", "F2.5", "F3", "F8.75"],
-        "F": ["T10", "T20", "L", "H", "AT10", "AT20", "HT8", "HT14", "ST8", "ST14", "RP8", "RP14"],
+        "F": ["FT5", "FT10", "FAT5", "FAT10", "T5", "T10", "T20", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "ATK10-K6", "HT5", "HT8", "HT14", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "ATM10", "F2", "F2.5", "F3"],
         "W": ["T10", "AT10", "H"],
         "U": ["T2.5", "T5", "T10", "XL", "L", "AT5", "AT10"]
     };
 
-    return compatibleCategories[category] && compatibleCategories[category].includes(profile);
+    return compatibleCategories[category]?.includes(profile) || false;
 }
 
 // ** Étape 3 : Sélection de la largeur **
 function updateStep3Options() {
     const widthOptionsDiv = document.getElementById('widthOptions');
     widthOptionsDiv.innerHTML = '';
-    
-    // Cas spécial pour la catégorie W
+
     if (state.category === 'W') {
-        let specialWidths;
-        if (state.profile === 'H') {
-            specialWidths = ['254', '304', '406', '457', '508'];
-        } else if (state.profile === 'T10' || state.profile === 'AT10') {
-            specialWidths = ['250', '300', '350', '400', '450', '500'];
-        }
-        
+        const specialWidths = {
+            'H': ['254', '304', '406', '457', '508'],
+            'T10': ['250', '300', '350', '400', '450', '500'],
+            'AT10': ['250', '300', '350', '400', '450', '500']
+        }[state.profile];
+
         if (specialWidths) {
             specialWidths.forEach(width => {
-                const button = document.createElement('button');
-                button.textContent = `${width}mm`;
-                button.onclick = () => selectOption('', width.padStart(3, '0'), 4);
-                widthOptionsDiv.appendChild(button);
+                createWidthButton(width, widthOptionsDiv);
             });
             return;
         }
     }
-    
-    // Cas normal pour les autres catégories
+
     const profileGroup = getProfileGroup(state.profile);
     const profile = state.beltsData.profiles[profileGroup][state.profile];
-    
+
     profile.widths.forEach(width => {
-        const button = document.createElement('button');
-        if (profileGroup === 'Imperial') {
-            button.textContent = convertToInches(width);
-        } else {
-            button.textContent = `${width}mm`;
-        }
-        button.onclick = () => selectOption('', width, 4);
-        widthOptionsDiv.appendChild(button);
+        const label = profileGroup === 'Imperial' ? convertToInches(width) : `${width}mm`;
+        createWidthButton(width, widthOptionsDiv, label);
     });
+}
+
+function createWidthButton(width, container, label = `${width}mm`) {
+    const button = document.createElement('button');
+    button.textContent = label;
+    button.onclick = () => selectOption('', width, 4);
+    container.appendChild(button);
 }
 
 function selectCustomWidth() {
     const customWidthInput = document.getElementById('customWidthInput');
     let customWidth = customWidthInput.value.trim();
-    
+
     resetErrors();
-    
+
     if (validateCustomWidth(customWidth)) {
-        customWidth = customWidth.padStart(3, '0');  // Ajouter des zéros au début si nécessaire
+        customWidth = customWidth.padStart(3, '0');
         state.width = customWidth;
         navigateToStep(4);
     } else {
@@ -885,14 +820,14 @@ function updateStep4Options() {
     const profile = state.profile;
     const cables = state.beltsData.cables;
 
-    Object.keys(cables).forEach(cableCode => {
+    for (const cableCode of Object.keys(cables)) {
         if (isCompatible(profile, cableCode)) {
             const button = document.createElement('button');
             button.textContent = cables[cableCode].name;
             button.onclick = () => selectOption('', cableCode, 5);
             cableButtonsDiv.appendChild(button);
         }
-    });
+    }
 }
 
 function isCompatible(profile, cable) {
@@ -987,7 +922,10 @@ function updateSuggestedSizesUI(sizes) {
 function selectOptionalOption(value, desc) {
     state.optionalOption1 = value;
     state.optionalOption1Desc = desc;
-    showResult();
+	if (desc === 'Sans') {
+		state.optionalOption1Desc = '';
+	}
+    navigateToStep(8); // Aller à l'étape 8 après la sélection du revêtement
 }
 
 // -----------------------------------------------------------------------------
@@ -1064,6 +1002,18 @@ function generateDesignation() {
                     designationParts.push(state.optionalOption1Desc);
                 }
             }
+        }
+
+        if (state.finalOptionDesc) {
+            designationParts.push(state.finalOptionDesc); // Ajout de la description de l'option finale
+        }
+
+        if (state.guideDesc) {
+            designationParts.push(state.guideDesc); // Ajout de la description du guide
+        }
+		
+		if (state.falseTeeth) {
+            designationParts.push(`${state.falseTeeth} EFT`); // Ajout des fausses dents
         }
 
         return designationParts.join(' - ');
@@ -1168,6 +1118,14 @@ function showResult() {
             codeArticle += state.optionalOption1;
         }
 
+        if (state.finalOption) {
+            codeArticle += "+" + state.finalOption; // Ajout de l'option finale au code
+        }
+
+        if (state.guide) {
+            codeArticle += "+" + state.guide; // Ajout du guide au code
+        }
+
         const resultElement = document.getElementById('result');
         const designationElement = document.getElementById('designation');
         const weldabilityElement = document.getElementById('weldabilityInfo');
@@ -1242,7 +1200,7 @@ function showError(errorId) {
 function getWeldability(profile, width) {
     const weldabilityData = state.beltsData.weldability[profile];
     if (!weldabilityData) return 'NO';
-    
+
     // Vérifier si la largeur actuelle est faisable
     const currentWeldability = weldabilityData[width];
     if (currentWeldability === 'YES') {
@@ -1311,7 +1269,6 @@ function hideTooltip() {
 }
 
 // Ajouter ces deux fonctions juste avant la section "Fonctions utilitaires"
-
 function handleWidthKeydown(event) {
     if (event.key === 'Enter') {
         selectCustomWidth();
@@ -1322,7 +1279,27 @@ function handleLengthKeydown(event) {
     if (event.key === 'Enter') {
         validateSize();
     }
-} // Ajout de l'accolade manquante ici
+}
+
+function selectFinalOption(code, description, durete, couleur) {
+    state.finalOption = code;
+    state.finalOptionDesc = description;
+    state.finalOptionDurete = durete;
+    state.finalOptionCouleur = couleur;
+	if (code === '') {
+		state.finalOptionDesc = '';
+	}
+    navigateToStep(9); // Aller à l'étape 9 après la sélection de l'option finale
+}
+
+function selectGuide(guideCode) {
+    state.guideDesc = `avec Guide ${guideCode}`;
+    state.guide = guideCode;
+	if (guideCode === '') {
+		state.guideDesc = '';
+	}
+    showResult();
+}
 
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', initializeApp);
