@@ -692,7 +692,7 @@ function setupInitialUI() {
 function navigateToStep(nextStep) {
     console.log("Navigation vers l'étape:", nextStep);
     document.getElementById(`step${state.currentStep}`).classList.remove('active');
-    if (nextStep > 9) {
+    if (nextStep > 10) {
         showResult();
         return;
     }
@@ -706,7 +706,7 @@ function goBack(previousStep) {
 }
 
 function updateProgress(step) {
-    const totalSteps = 9;
+    const totalSteps = 10;
     const progressWidth = (step / totalSteps) * 100;
     document.getElementById('progress').style.width = `${progressWidth}%`;
 }
@@ -1005,7 +1005,11 @@ function generateDesignation() {
         }
 
         if (state.finalOptionDesc) {
-            designationParts.push(state.finalOptionDesc); // Ajout de la description de l'option finale
+			let coating = state.finalOptionDesc;
+			if (state.coatingThickness) {
+				coating += ` (${state.coatingThickness}mm)`;
+			}
+            designationParts.push(coating); // Ajout de la description du revêtement
         }
 
         if (state.guideDesc) {
@@ -1289,7 +1293,22 @@ function selectFinalOption(code, description, durete, couleur) {
 	if (code === '') {
 		state.finalOptionDesc = '';
 	}
-    navigateToStep(9); // Aller à l'étape 9 après la sélection de l'option finale
+	
+	if (requiresCoatingThickness(code)) {
+		navigateToStep(8.5);
+	} else {
+    	navigateToStep(9); // Aller à l'étape 9 après la sélection de l'option finale
+	}
+}
+
+function validateCoatingThickness() {
+	const thicknessInput = document.getElementById('coatingThicknessInput').value;
+	if (thicknessInput && !isNaN(thicknessInput)) {
+		state.coatingThickness = thicknessInput;
+		navigateToStep(9);
+	} else {
+		alert('Please enter a valid coating thickness.');
+	}
 }
 
 function selectGuide(guideCode) {
@@ -1299,6 +1318,11 @@ function selectGuide(guideCode) {
 		state.guideDesc = '';
 	}
     showResult();
+}
+
+function requiresCoatingThickness(code) {
+	const coatingsRequiringThickness = ['CFX', 'PUR70', 'PUR85', 'PY50', 'PY70', 'POR', 'SYL-B', 'SYL-V', 'SYL-M', 'FBPU', 'FBPVC', 'PVCW', 'PVCG', 'SG50T', 'LTX', 'LNP', 'LTR', 'TNX', 'VTN', 'RP400', 'CRX', 'APL', 'SLC', 'SLCPU', 'SLCF', 'TG50', 'TG70', 'CHRL', 'RIB-H-APL', 'RIB-H-PU70'];
+	return coatingsRequiringThickness.includes(code);
 }
 
 // Initialisation au chargement de la page

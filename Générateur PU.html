@@ -219,9 +219,17 @@
         </div>
     </div>
 
+	<!-- Étape 8.5: Épaisseur du revêtement -->
+	<div class="step" id="step8.5">
+		<button class="back-button" onclick="goBack(8)">Retour</button>
+		<h3>Entrez l'épaisseur du revêtement en mm</h3>
+		<input type="number" id="coatingThicknessInput" placeholder="Épaisseur en mm"  onkeydown="if (event.key === 'Enter') validateCoatingThickness()">
+		<button onclick="validateCoatingThickness()">Valider</button>
+	</div>
+
     <!-- Étape 9: Pose de Guide -->
     <div class="step" id="step9">
-        <button class="back-button" onclick="goBack(8)">Retour</button>
+        <button class="back-button" onclick="goBack(8.5)">Retour</button>
         <h3>Sélectionnez le type de guide</h3>
 		<button onclick="selectGuide('')" style="width: 200px;">Sans</button>
         <div class="category-buttons">
