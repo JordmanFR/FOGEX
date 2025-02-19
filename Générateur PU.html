@@ -118,13 +118,23 @@
         <button class="back-button" onclick="goBack(5)">Retour</button>
         <h3>Sélectionnez un revêtement en tissu</h3>
 		<button onclick="selectOptionalOption('', 'Sans')" style="width: 200px;">Sans</button>
-        <div id="coatingButtons">
-            <button onclick="selectOptionalOption('/Z', 'PAZ', 8)">PAZ</button>
-            <button onclick="selectOptionalOption('/R', 'PAR', 8)">PAR</button>
-            <button onclick="selectOptionalOption('/D', 'PAZ + PAR', 8)">PAZ + PAR</button>
-            <button onclick="selectOptionalOption('/ZS', 'PAZAS', 8)">PAZ Antistatique</button>
-            <button onclick="selectOptionalOption('/RS', 'PARAS', 8)">PAR Antistatique</button>
-            <button onclick="selectOptionalOption('/DS', 'PAZAS + PARAS', 8)">PAZ + PAR Antistatique</button>
+		<h4>Standard</h4>
+        <div class="category-buttons">
+            <button class="category-image-button" onclick="selectOptionalOption('/Z', 'PAZ', 8)">
+				<img src="images/PAZ.jpg" alt="PAZ">PAZ</button>
+            <button class="category-image-button" onclick="selectOptionalOption('/R', 'PAR', 8)">
+				<img src="images/PAR.jpg" alt="PAR">PAR</button>
+            <button class="category-image-button" onclick="selectOptionalOption('/D', 'PAZ + PAR', 8)">
+				<img src="images/PAZ-PAR.jpg" alt="PAZ + PAR">PAZ + PAR</button>
+        </div>
+		<h4>Antistatique</h4>
+		<div class="category-buttons">
+            <button class="category-image-button" onclick="selectOptionalOption('/ZS', 'PAZAS', 8)">
+				<img src="images/PAZAS.jpg" alt="PAZ Antistatique">PAZ Antistatique</button>
+            <button class="category-image-button" onclick="selectOptionalOption('/RS', 'PARAS', 8)">
+				<img src="images/PARAS.jpg" alt="PAR Antistatique">PAR Antistatique</button>
+            <button class="category-image-button" onclick="selectOptionalOption('/DS', 'PAZAS + PARAS', 8)">
+				<img src="images/PAZAS-PARAS.jpg" alt="PAZ + PAR Antistatique">PAZ + PAR Antistatique</button>
         </div>
     </div>
 
