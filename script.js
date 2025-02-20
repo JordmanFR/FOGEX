@@ -923,7 +923,7 @@ function updateSuggestedSizesUI(sizes) {
 
 // ** Étape 7 : Sélection du revêtement **
 function selectOptionalOption(value, desc) {
-    if (desc === 'PAZ' || desc === 'PAZAS') {
+    if (desc === 'PAZ' || desc === 'PAR' || desc === 'PAZAS' || desc === 'PARAS') {
         // Toggle PAZ/PAZAS options
         if (state.optionalOption1.includes(value)) {
             state.optionalOption1 = state.optionalOption1.replace(value, '');
@@ -933,7 +933,7 @@ function selectOptionalOption(value, desc) {
             state.optionalOption1Desc += desc;
         }
     } else {
-        // Handle other options (PUR85, Technogum)
+        // Handle other options
         state.optionalOption1 = value;
         state.optionalOption1Desc = desc;
     }
