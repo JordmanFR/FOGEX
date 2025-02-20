@@ -36,7 +36,7 @@ const beltsData = {
         "R": { "name": "Courroie ouverte Elatech" },
         "V": { "name": "Courroie soudée Elatech" },
         "F": { "name": "Courroie ElaFlex SD" },
-        "W": { "name": "Courroie Syncro MAX Elatech" },
+        "W": { "name": "Courroie Syncro Max Elatech" },
         "U": { "name": "Courroie iSync Elatech" }
 
     },
@@ -653,7 +653,6 @@ const compatibilityTable = (category) => {
         },
         'W': {
             "T10": { "K": true },
-            "AT10": { "K": true },
             "H": { "K": true }
         },
         'U': {
@@ -699,6 +698,11 @@ function navigateToStep(nextStep) {
     state.currentStep = nextStep;
     document.getElementById(`step${state.currentStep}`).classList.add('active');
     updateProgress(state.currentStep);
+    
+    // Ensure step 10 is only proposed for specific profiles
+    if (nextStep === 9 && !['AT10', 'H', 'AT20', 'XH'].includes(state.profile)) {
+        showResult();
+    }
 }
 
 function goBack(previousStep) {
@@ -750,7 +754,7 @@ function isProfileCompatibleWithCategory(profile, category) {
         "R": ["T2.5", "T5", "T10", "T20", "MXL", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "TK5-K6", "TK10-K6", "TK10-K13", "TK20-K13", "ATK10-K6", "ATK10-K13", "H-K13", "HT3", "HT5", "HT8", "HT14", "FT5", "FT10", "FAT5", "FAT10", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "E5", "E8", "E10", "E14", "SAT10", "ATF10", "ATM10", "ATF20", "PG14M", "PG20M", "F1", "F2", "F2.5", "F3", "F8.75"],
         "V": ["T2.5", "T5", "T10", "T20", "MXL", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "TK5-K6", "TK10-K6", "TK10-K13", "TK20-K13", "ATK10-K6", "ATK10-K13", "H-K13", "HT3", "HT5", "HT8", "HT14", "FT5", "FT10", "FAT5", "FAT10", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "E5", "E8", "E10", "E14", "SAT10", "ATF10", "ATM10", "ATF20", "PG14M", "PG20M", "F1", "F2", "F2.5", "F3", "F8.75"],
         "F": ["FT5", "FT10", "FAT5", "FAT10", "T5", "T10", "T20", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "ATK10-K6", "HT5", "HT8", "HT14", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "ATM10", "F2", "F2.5", "F3"],
-        "W": ["T10", "AT10", "H"],
+        "W": ["T10", "H"],
         "U": ["T2.5", "T5", "T10", "XL", "L", "AT5", "AT10"]
     };
 
@@ -765,8 +769,7 @@ function updateStep3Options() {
     if (state.category === 'W') {
         const specialWidths = {
             'H': ['254', '304', '406', '457', '508'],
-            'T10': ['250', '300', '350', '400', '450', '500'],
-            'AT10': ['250', '300', '350', '400', '450', '500']
+            'T10': ['250', '300', '350', '400', '450', '500']
         }[state.profile];
 
         if (specialWidths) {
@@ -920,12 +923,28 @@ function updateSuggestedSizesUI(sizes) {
 
 // ** Étape 7 : Sélection du revêtement **
 function selectOptionalOption(value, desc) {
-    state.optionalOption1 = value;
-    state.optionalOption1Desc = desc;
-	if (desc === 'Sans') {
-		state.optionalOption1Desc = '';
-	}
-    navigateToStep(8); // Aller à l'étape 8 après la sélection du revêtement
+    if (desc === 'PAZ' || desc === 'PAZAS') {
+        // Toggle PAZ/PAZAS options
+        if (state.optionalOption1.includes(value)) {
+            state.optionalOption1 = state.optionalOption1.replace(value, '');
+            state.optionalOption1Desc = state.optionalOption1Desc.replace(desc, '');
+        } else {
+            state.optionalOption1 += value;
+            state.optionalOption1Desc += desc;
+        }
+    } else {
+        // Handle other options (PUR85, Technogum)
+        state.optionalOption1 = value;
+        state.optionalOption1Desc = desc;
+    }
+
+    // Clean up descriptions
+    state.optionalOption1Desc = state.optionalOption1Desc.replace('Sans', '');
+    if (state.optionalOption1Desc === '') {
+        state.optionalOption1 = '';
+    }
+
+    navigateToStep(8);
 }
 
 // -----------------------------------------------------------------------------
@@ -1062,7 +1081,11 @@ function generateAlternativeCodeStock() {
     let selectedWidth = state.width;
     let baseCode = 'R100';
 
-    // Retirer les zéros en début de largeur sauf si c'est un profil Imperial
+    const profileGroup = getProfileGroup(state.profile);
+    const profileData = state.beltsData.profiles[profileGroup][state.profile];
+    const widths = profileData.widths.map(w => parseInt(w));
+	
+	// Retirer les zéros en début de largeur sauf si c'est un profil Imperial
     if (getProfileGroup(state.profile) === 'Imperial') {
         selectedWidth = selectedWidth.replace(/^0+/, '');
         baseCode = 'R400';
@@ -1070,12 +1093,29 @@ function generateAlternativeCodeStock() {
         selectedWidth = selectedWidth.replace(/^0+/, ''); // Retirer les zéros en début
     }
 
+    // Trouver la largeur alternative
+    let alternativeWidth = null;
+    let originalWidth = parseInt(selectedWidth);
+
+    // Parcourir les largeurs disponibles en ordre décroissant pour prioriser la valeur la plus élevée
+    for (let i = widths.length - 1; i >= 0; i--) {
+        let width = widths[i];
+        if (originalWidth % width === 0) {
+            alternativeWidth = width;
+            break;
+        }
+    }
+
+    if (alternativeWidth === null) {
+        return 'N/A'; // Si aucune largeur alternative valide n'est trouvée
+    }
+
     if (state.category === 'U') {
         alternativeCodeStock = 'N/A';
     } else if (state.category === 'R') {
-        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${selectedWidth}`;
+        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${alternativeWidth}`;
     } else if (state.category === 'V') {
-        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${selectedWidth}`;
+        alternativeCodeStock = `${baseCode}${state.profile}${state.cable}/P${alternativeWidth}`;
     } else if (state.category === 'F') {
         alternativeCodeStock = 'Impossible';
     }
