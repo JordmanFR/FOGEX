@@ -557,6 +557,38 @@ const beltsData = {
                 "widths": ["040", "055", "085", "115"]
             }
         },
+        "PGD": {
+            "PG14M": {
+                "pitch": 14,
+                "widths": ["050", "100", "150", "180"]
+            },
+            "PG20M": {
+                "pitch": 20,
+                "widths": ["050", "100", "150", "180"]
+            }
+        },
+        "Plate": {
+            "F1": {
+                "pitch": 1,
+                "widths": ["010","020","030","040","050", "100"]
+            },
+            "F2": {
+                "pitch": 2,
+                "widths": ["010","015","025","030","050","075", "100"]
+            },
+            "F2.5": {
+                "pitch": 2.5,
+                "widths": ["020","025","050","075","100", "120"]
+            },
+            "F3": {
+                "pitch": 3,
+                "widths": ["025","030","060","120", "150"]
+            },
+            "F8.75": {
+                "pitch": 8.75,
+                "widths": ["075", "150"]
+            }
+        },
         "Spéciaux": {
             "SAT10": {
                 "pitch": 10,
@@ -882,7 +914,7 @@ function validateSizeInput(size) {
     }
     
     const sizeValue = parseInt(size); // Convertir la taille en entier
-    if (sizeValue < 1000) {
+    if (state.category !== 'U' && sizeValue < 600) {
         showError('lengthError');
         return false;
     }
@@ -1051,7 +1083,7 @@ function generateCodeStock() {
     let selectedWidth = state.width;
 
     // Cherche la prochaine largeur faisable
-    if (getWeldability(state.profile, selectedWidth) !== 'YES') {
+    if (state.category !== 'R' && getWeldability(state.profile, selectedWidth) !== 'YES') {
         const nextWidth = getNextWeldableWidth(state.profile, selectedWidth);
         if (nextWidth !== null) {
             selectedWidth = nextWidth;
