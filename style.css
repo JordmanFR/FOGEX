@@ -1,171 +1,734 @@
-/* Styles généraux */
+/* Version optimisée - Suppression des redondances et organisation améliorée */
+
+/* ================= VARIABLES ET THÈMES ================= */
+:root {
+    --background-color: #f8f9fa;
+    --text-color: #333;
+    --border-color: #e0e0e0;
+    --button-bg: #f0f0f0;
+    --button-hover: #e0e0e0;
+    --step-bg: #ffffff;
+    --accent-color: #4caf50;
+    --error-color: #ff5252;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --header-color: #444;
+    --result-bg: #f9f9f9;
+    --result-border: #4caf50;
+    --card-bg: #fff;
+    --tooltip-bg: #fff;
+    --progress-bg: #f0f0f0;
+    --progress-color: #4caf50;
+    --back-button-bg: #ffcccc;
+    --back-button-border: #ff6666;
+    --back-button-hover: #ff9999;
+    --copy-icon-color: #888;
+    --copy-icon-hover: #4caf50;
+}
+
+/* Thème sombre */
+[data-theme="dark"] {
+    --background-color: #121212;
+    --text-color: #e0e0e0;
+    --border-color: #444;
+    --button-bg: #333;
+    --button-hover: #444;
+    --step-bg: #1e1e1e;
+    --accent-color: #6abf69;
+    --error-color: #ff7a7a;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --header-color: #ccc;
+    --result-bg: #2a2a2a;
+    --result-border: #6abf69;
+    --card-bg: #282828;
+    --tooltip-bg: #333;
+    --progress-bg: #333;
+    --progress-color: #6abf69;
+    --back-button-bg: #662222;
+    --back-button-border: #993333;
+    --back-button-hover: #bb4444;
+    --copy-icon-color: #aaa;
+    --copy-icon-hover: #6abf69;
+}
+
+/* Animation de transition du thème */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ================= STYLES DE BASE ================= */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     max-width: 1000px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.4;
 }
+
+h1, h2, h3, h4 {
+    color: var(--header-color);
+    margin: 10px 0;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+h3 {
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+/* ================= MODE SOMBRE SWITCH ================= */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background-color: var(--card-bg);
+    padding: 8px;
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    width: 48px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    background-color: white;
+    bottom: 4px;
+    content: "";
+    height: 16px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 16px;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--accent-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+.theme-switch-wrapper em {
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+/* ================= ÉTAPES ET NAVIGATION ================= */
 .step {
     display: none;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 15px;
     position: relative;
-    text-align: center; /* Ajoute cette ligne */
+    text-align: center;
+    background-color: var(--step-bg);
+    box-shadow: var(--shadow);
 }
+
 .active {
-    display: block;
+    display: block !important;
 }
-button {
-    padding: 10px 20px;
-    margin: 5px;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-}
-button:hover {
-    background-color: #e0e0e0;
-}
-select {
-    padding: 10px;
-    margin: 10px 0;
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-}
-.back-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #ffcccc;
-    border: 1px solid #ff6666;
-}
-.back-button:hover {
-    background-color: #ff9999;
-}
-.error {
-    color: red;
-    display: none;
-}
-.error-visible {
-    display: block;
-}
-.error-code {
-    color: red;
-}
-/* Styles pour la barre de progression */
+
+/* Barre de progression */
 #progressBar {
     width: 100%;
-    background-color: #f0f0f0;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    background-color: var(--progress-bg);
+    border-radius: 8px;
+    margin-bottom: 15px;
     overflow: hidden;
+    height: 8px;
 }
+
 #progress {
-    width: 0%; /* La largeur sera mise à jour dynamiquement */
-    height: 10px;
-    background-color: #4caf50; /* Couleur de la barre de progression */
-    border-radius: 5px;
-    transition: width 0.3s ease; /* Animation fluide */
+    width: 0%;
+    height: 100%;
+    background-color: var(--progress-color);
+    border-radius: 8px;
+    transition: width 0.5s ease;
 }
 
-/* Style commun pour le code article et la désignation */
-.result-style {
-    font-size: 24px;
-    color: green;
-    margin-top: 20px;
-    padding: 10px;
-    border: 2px dashed green;
-    background-color: #f9f9f9;
-    border-radius: 5px;
+/* Descriptions des étapes */
+.step-description {
+    font-size: 12px;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-bottom: 10px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
+/* ================= BOUTONS ================= */
+/* Styles généraux des boutons */
+button {
+    padding: 8px 12px;
+    margin: 5px;
+    cursor: pointer;
+    background-color: var (--button-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-color);
+    font-weight: 500;
+    box-shadow: var(--shadow);
+    transition: all 0.2s ease;
+    font-size: 13px;
+    display: inline-block;
+}
+
+/* Centre les boutons standard */
+.step button {
+    display: inline-block;
+    margin: 5px 8px;
+}
+
+/* Container pour centrer les boutons non-catégorie */
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 15px auto;
+    max-width: 800px;
+}
+
+button:hover {
+    background-color: var(--button-hover);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Boutons de navigation (retour/restart) */
+.nav-buttons {
+    position: absolute;
+    top: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 5px;
+    box-sizing: border-box;
+    left: 0;
+    max-width: 100%;
+}
+
+.back-button {
+    position: static;
+    background-color: var(--back-button-bg);
+    border: 1px solid var(--back-button-border);
+    font-size: 12px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    order: 2;
+}
+
+.back-button:hover {
+    background-color: var(--back-button-hover);
+}
+
+.restart-button {
+    background-color: #ccccff;
+    border: 1px solid #6666ff;
+    font-size: 12px;
+    padding: 5px 10px;
+    margin-left: 5px;
+    order: 1;
+}
+
+.restart-button:hover {
+    background-color: #9999ff;
+    transform: translateY(-2px);
+}
+
+/* ================= CHAMPS DE FORMULAIRE ================= */
+select, input[type="text"], input[type="number"] {
+    padding: 8px;
+    margin: 8px auto;
+    width: 100%;
+    max-width: 350px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    display: block;
+}
+
+select:focus, input:focus {
+    outline: 2px solid var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+/* Messages d'erreur */
 .error {
-    color: red;
+    color: var(--error-color);
     display: none;
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: rgba(255, 0, 0, 0.1);
+    font-size: 14px;
 }
+
 .error-visible {
     display: block;
 }
 
-#suggestedSizes button {
-    padding: 10px 20px;
-    margin: 5px;
-    cursor: pointer;
-    background-color: #e0e0e0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-#suggestedSizes button:hover {
-    background-color: #d0d0d0;
-}
-
-.tooltip {
-    position: absolute;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    z-index: 10;
-    display: none;
-    max-width: 300px;
-}
-
-/* Styles pour les boutons d'image de catégorie */
+/* ================= BOUTONS D'IMAGES ET CATÉGORIES ================= */
+/* Boutons d'image de catégorie - style de base */
 .category-image-button {
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     padding: 10px;
-    margin: 5px;
+    margin: 8px;
     cursor: pointer;
-    width: 150px; /* Ajustez selon vos besoins */
-    height: 150px; /* Ajustez selon vos besoins */
-    display: inline-block;
-    text-align: center;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: relative;
+    transition: all 0.2s ease, transform 0.3s ease;
+    overflow: hidden;
+    text-align: center;
 }
 
 .category-image-button img {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 70%;
+    max-height: 70%;
     display: block;
-    margin: 0 auto;
+    margin: 0 auto 5px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
 }
 
 .category-image-button:hover {
-    background-color: #e0e0e0;
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Always show tooltip for category buttons */
-.category-image-button .tooltip {
+.category-image-button:hover img {
+    transform: scale(1.1);
+}
+
+.category-image-button span {
     display: block;
-    position: relative;
-    bottom: auto;
-    left: auto;
-    width: 100%;
-    background-color: transparent;
-    color: black;
-    padding: 5px;
-    border-radius: 0;
-    font-size: 1em;
-    text-shadow: 1px 1px 2px white;
+    margin-top: 5px;
+    line-height: 1.2;
+    font-size: 0.9em;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Styles pour les titres de catégorie */
+/* Container pour les boutons de catégorie */
+.category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    margin: 10px auto; /* Ajout de auto pour centrer */
+    max-width: 900px; /* Largeur maximale pour le conteneur */
+}
+
 .category-buttons h4 {
+    width: 100%;
     text-align: center;
-    margin-bottom: 10px;
-    color: #555;
+    margin: 15px 0 8px;
+    font-size: 16px;
+    color: var(--header-color);
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 5px;
+    border-radius: 5px;
+    display: block;
 }
 
+/* Spécifications pour l'étape 8 */
+#step8 .category-buttons {
+    display: block;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 900px; /* Cohérence avec les autres étapes */
+}
+
+#step8 .category-buttons .buttons-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+    gap: 8px;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 850px;
+}
+
+/* Centre les boutons d'étapes spécifiques */
+#step4 #cableButtons, 
+#step9 .category-buttons,
+#step10 div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 10px auto;
+    max-width: 600px;
+}
+
+/* Centre les inputs et descriptions */
+.step input[type="text"], 
+.step input[type="number"], 
+.step select, 
 .step-description {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Styles personnalisés par étape */
+/* Étape 1 */
+#step1 .category-image-button {
+    width: 150px;
+    height: 150px;
+    padding: 15px 10px 25px; /* Augmentation du padding en bas pour placer l'indicateur */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+#step1 .category-image-button img {
+    max-width: 75%;
+    max-height: 75%;
+    margin-bottom: 8px;
+}
+
+#step1 .category-image-button span.button-text {
+    display: block;
+    font-size: 1em;
+    font-weight: 500;
+    margin-top: auto;
+}
+
+/* ================= TOOLTIPS ================= */
+/* Style des infobulles */
+.tooltip {
+    position: absolute;
+    background-color: var(--tooltip-bg);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    z-index: 100;
+    display: none;
+    max-width: 300px;
+    color: var(--text-color);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+    display: block;
+}
+
+/* Indicateur d'infobulle pour l'étape 1 */
+.hint-tooltip {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 10px;
+    color: var(--accent-color);
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.category-image-button:hover .hint-tooltip {
+    opacity: 1;
+}
+
+/* ================= RÉSULTATS ================= */
+#result-container {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Ajout des styles pour la page de résultats */
+#results-page {
+    text-align: center;
+}
+
+#results-page h2 {
+    margin-top: 20px;
+    font-size: 22px;
+    color: var(--header-color);
+}
+
+.selections-summary-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: left;
+    box-shadow: var(--shadow);
+}
+
+.selections-summary-container h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.selections-summary {
+    line-height: 1.6;
     font-size: 14px;
-    color: #666;
-    margin-bottom: 10px;
+}
+
+/* Style pour le bouton "Finaliser" */
+.finish-early-button {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 8px 15px;
+    margin: 15px 5px;
+    font-weight: 600;
+    width: 150px;
+    transition: all 0.2s ease;
+}
+
+.finish-early-button:hover {
+    background-color: var(--accent-color);
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+/* Dans la page de résultats, on veut que les cartes de résultat soient plus grandes */
+#results-page .result-card {
+    padding: 12px 16px;
+    margin-bottom: 12px;
+}
+
+/* Cartes de résultats */
+.result-card {
+    background-color: var(--result-bg);
+    border: 2px solid var(--result-border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    min-height: 40px;
+}
+
+.result-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+/* États des cartes de résultats */
+.result-card.in-progress {
+    background-color: rgba(255, 235, 59, 0.15);
+    border-color: #ffd600;
+    cursor: default;
+}
+
+.result-card.in-progress .copy-icon {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+.result-card.in-progress:hover {
+    transform: none;
+    box-shadow: var(--shadow);
+}
+
+.result-card.finalized {
+    animation: finalizeResult 1s ease forwards;
+}
+
+@keyframes finalizeResult {
+    0% { 
+        background-color: rgba(255, 235, 59, 0.15);
+        border-color: #ffd600;
+    }
+    100% { 
+        background-color: var(--result-bg); 
+        border-color: var(--result-border);
+    }
+}
+
+.result-card .copy-icon {
+    color: var(--copy-icon-color);
+    margin-left: 10px;
+    transition: color 0.2s ease;
+    font-size: 16px;
+    padding: 5px;
+}
+
+.result-card:hover .copy-icon {
+    color: var(--copy-icon-hover);
+}
+
+.result-card.copied {
+    animation: copied 0.5s ease-in-out;
+}
+
+@keyframes copied {
+    0% { background-color: var(--result-bg); }
+    50% { background-color: rgba(76, 175, 80, 0.3); }
+    100% { background-color: var(--result-bg); }
+}
+
+/* Tooltip de copie */
+.copy-tooltip {
+    position: absolute;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    top: -30px;
+    right: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.result-card:hover .copy-tooltip {
+    opacity: 1;
+}
+
+/* Info de soudabilité */
+#weldabilityInfo {
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    background-color: rgba(255, 255, 0, 0.1);
+}
+
+.weldability-ok {
+    background-color: rgba(76, 175, 80, 0.2) !important;
+}
+
+.weldability-warning {
+    background-color: rgba(255, 152, 0, 0.2) !important;
+}
+
+.weldability-attention {
+    background-color: rgba(244, 67, 54, 0.2) !important;
+}
+
+/* Conteneur de résultats compact */
+.compact-results-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+/* ================= RESPONSIVE ================= */
+/* Tablettes */
+@media (max-width: 768px) {
+    .category-buttons {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+    #step1 .category-image-button {
+        width: 130px;
+        height: 130px;
+    }
+    
+    #step7 .category-image-button,
+    #step8 .category-image-button {
+        width: 110px;
+        height: 110px;
+        font-size: 0.85em;
+    }
+    
+    .category-buttons h4 {
+        font-size: 14px;
+        margin: 12px 0 6px;
+    }
+    
+    #step8 .category-buttons .buttons-container {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+    
+    .compact-results-container {
+        grid-template-columns: 1fr;
+    }
+    
+    button, .category-image-button {
+        font-size: 12px;
+    }
+
+    /* Ajustements pour les conteneurs de boutons sur mobile */
+    .category-buttons,
+    .button-container,
+    #step4 #cableButtons, 
+    #step9 .category-buttons {
+        max-width: 100%;
+    }
+}
+
+/* Mobiles */
+@media (max-width: 480px) {
+    .category-buttons {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 4px;
+    }
+    
+    #step1 .category-image-button {
+        width: 110px;
+        height: 110px;
+        padding: 8px;
+    }
+    
+    #step8 .category-image-button {
+        width: 90px;
+        height: 90px;
+        font-size: 0.75em;
+    }
 }

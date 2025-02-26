@@ -19,7 +19,8 @@ const state = {
     finalOptionCouleur: '',
     guide: '',
     guideDesc: '',
-    falseTeeth: ''
+    falseTeeth: '',
+    coatingThickness: ''
 };
 
 // -----------------------------------------------------------------------------
@@ -709,11 +710,187 @@ function initializeApp() {
     console.log("Initialisation de l'application...");
     state.beltsData = beltsData;
     setupInitialUI();
+    setupThemeSwitcher();
+    setupCopyButtons();
+    setupTooltips(); // Initialiser les tooltips
     updateProgress(1);
+    
+    // Ajuster la taille des boutons et optimiser les grilles
+    adjustButtonSizes();
+    optimizeButtonGrids();
+    
+    // Afficher les conteneurs de résultats vides mais avec l'état "en cours"
+    initializeResultContainers();
+    
+    // Vérifier si la page est bien chargée
+    console.log("Application initialisée, étape actuelle:", state.currentStep);
+    console.log("Données chargées:", Object.keys(state.beltsData).length > 0 ? "Oui" : "Non");
 }
 
 function setupInitialUI() {
     createProfileSelect();
+}
+
+// Initialisation des conteneurs de résultats
+function initializeResultContainers() {
+    const resultCards = document.querySelectorAll('.result-card');
+    resultCards.forEach(card => {
+        card.style.display = 'flex'; // On affiche les cartes
+        card.classList.add('in-progress'); // On ajoute la classe "en cours"
+        
+        // On désactive temporairement les événements de copie
+        card.removeEventListener('click', handleResultCardClick);
+        card.style.cursor = 'default';
+        
+        const contentElement = card.querySelector('.result-content');
+        if (contentElement) {
+            // Initialiser avec des valeurs par défaut (textes plus courts)
+            if (contentElement.parentElement.id === 'result') {
+                contentElement.innerHTML = 'Code : <strong>En cours...</strong>';
+            } else if (contentElement.parentElement.id === 'designation') {
+                contentElement.innerHTML = 'Désignation : <strong>En cours...</strong>';
+            } else if (contentElement.parentElement.id === 'CodeStock') {
+                contentElement.innerHTML = 'Stock : <strong>En cours...</strong>';
+            } else if (contentElement.parentElement.id === 'alternativeCodeStock') {
+                contentElement.innerHTML = 'Alternative : <strong>En cours...</strong>';
+            }
+        }
+    });
+}
+
+// Configure le switch pour le mode sombre
+function setupThemeSwitcher() {
+    const themeSwitch = document.getElementById('checkbox');
+    if (!themeSwitch) {
+        console.error("Élément checkbox pour le thème non trouvé");
+        return;
+    }
+    
+    // Vérifier si l'utilisateur a déjà une préférence
+    const currentTheme = localStorage.getItem('theme') || 
+                        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    
+    console.log("Thème actuel:", currentTheme);
+    
+    // Appliquer le thème sauvegardé ou celui du système
+    if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeSwitch.checked = true;
+    }
+    
+    // Écouter les changements de thème
+    themeSwitch.addEventListener('change', function(e) {
+        console.log("Changement de thème détecté:", e.target.checked ? "dark" : "light");
+        if (e.target.checked) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+}
+
+// Configure les boutons de copie
+function setupCopyButtons() {
+    const resultCards = document.querySelectorAll('.result-card');
+    
+    resultCards.forEach(card => {
+        card.addEventListener('click', handleResultCardClick);
+    });
+}
+
+// Configuration globale des tooltips
+function setupTooltips() {
+    // S'assurer que le tooltip existe
+    let tooltip = document.getElementById('tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'tooltip';
+        tooltip.className = 'tooltip';
+        document.body.appendChild(tooltip);
+    }
+    
+    // Ajouter les événements aux éléments avec data-title
+    document.querySelectorAll('[data-title]').forEach(el => {
+        el.addEventListener('mouseenter', function() {
+            showTooltipEnhanced(this);
+        });
+        el.addEventListener('mouseleave', function() {
+            hideTooltipEnhanced();
+        });
+    });
+    
+    // Configurer les tooltips pour les boutons de l'étape 1 spécifiquement
+    document.querySelectorAll('.category-image-button').forEach(button => {
+        button.addEventListener('mouseenter', function(e) {
+            showTooltipEnhanced(this);
+        });
+        
+        button.addEventListener('mouseleave', function(e) {
+            hideTooltipEnhanced();
+        });
+    });
+}
+
+// Fonctions améliorées pour les tooltips
+function showTooltipEnhanced(element) {
+    if (!element.dataset.title) return;
+    
+    let tooltip = document.getElementById('tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'tooltip';
+        tooltip.className = 'tooltip';
+        document.body.appendChild(tooltip);
+    }
+    
+    // Remplir le tooltip avec le contenu formaté
+    tooltip.innerHTML = element.dataset.title;
+    tooltip.classList.add('visible');
+    
+    // Positionner le tooltip de manière optimale
+    const rect = element.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    
+    // Calculer la position optimale basée sur l'espace disponible
+    const spaceAbove = rect.top;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    
+    if (spaceBelow >= 150 || spaceBelow > spaceAbove) {
+        // Positionner en dessous si assez d'espace ou plus d'espace qu'au-dessus
+        tooltip.style.top = (rect.bottom + scrollTop + 10) + 'px';
+    } else {
+        // Sinon, positionner au-dessus
+        tooltip.style.top = (rect.top + scrollTop - tooltip.offsetHeight - 10) + 'px';
+    }
+    
+    // Centrer horizontalement avec limites de largeur d'écran
+    let leftPos = rect.left + scrollLeft + (rect.width / 2) - (tooltip.offsetWidth / 2);
+    
+    // Éviter de sortir de l'écran
+    const rightEdge = window.innerWidth - tooltip.offsetWidth - 10;
+    leftPos = Math.min(Math.max(10, leftPos), rightEdge);
+    
+    tooltip.style.left = leftPos + 'px';
+}
+
+function hideTooltipEnhanced() {
+    const tooltip = document.getElementById('tooltip');
+    if (tooltip) {
+        tooltip.classList.remove('visible');
+    }
+}
+
+// Remplacer la fonction showTooltip existante
+function showTooltip(element) {
+    showTooltipEnhanced(element);
+}
+
+// Remplacer la fonction hideTooltip existante
+function hideTooltip() {
+    hideTooltipEnhanced();
 }
 
 // -----------------------------------------------------------------------------
@@ -722,23 +899,80 @@ function setupInitialUI() {
 
 function navigateToStep(nextStep) {
     console.log("Navigation vers l'étape:", nextStep);
-    document.getElementById(`step${state.currentStep}`).classList.remove('active');
-    if (nextStep > 10) {
-        showResult();
+    
+    const currentStepElement = document.getElementById(`step${state.currentStep}`);
+    if (!currentStepElement) {
+        console.error(`Élément step${state.currentStep} non trouvé`);
         return;
     }
+    
+    currentStepElement.classList.remove('active');
+    
+    if (nextStep > 10) {
+        finalizeResult();
+        return;
+    }
+    
     state.currentStep = nextStep;
-    document.getElementById(`step${state.currentStep}`).classList.add('active');
+    
+    const nextStepElement = document.getElementById(`step${state.currentStep}`);
+    if (!nextStepElement) {
+        console.error(`Élément step${state.currentStep} non trouvé`);
+        return;
+    }
+    
+    nextStepElement.classList.add('active');
     updateProgress(state.currentStep);
+    
+    // Ajuster automatiquement la taille des boutons pour l'étape active
+    updateButtonSizesBasedOnSection(`#step${nextStep}`);
+    
+    // Optimiser les grilles de boutons pour l'étape active
+    setTimeout(optimizeButtonGrids, 10); // Petit délai pour laisser le DOM se mettre à jour
     
     // Ensure step 10 is only proposed for specific profiles
     if (nextStep === 9 && !['AT10', 'H', 'AT20', 'XH'].includes(state.profile)) {
-        showResult();
+        finalizeResult();
     }
+    
+    // Mettre à jour les résultats en temps réel
+    updateLiveResults();
 }
 
 function goBack(previousStep) {
+    console.log("Retour à l'étape:", previousStep);
+    
+    // Mettre les résultats en "mode en cours" lorsqu'on revient en arrière
+    resetResultsToInProgress();
+    
+    // Naviguer vers l'étape précédente
     navigateToStep(previousStep);
+}
+
+// Réinitialise l'état des résultats lorsqu'on revient en arrière
+function resetResultsToInProgress() {
+    document.querySelectorAll('.result-card').forEach(card => {
+        // Remettre les cartes en mode "en cours"
+        card.classList.add('in-progress');
+        card.classList.remove('finalized');
+        card.style.cursor = 'default';
+        
+        // Désactiver les événements de copie
+        card.removeEventListener('click', handleResultCardClick);
+    });
+    
+    // Mettre à jour le contenu des résultats avec "En cours..."
+    updateResultContainer('result', `Code : <strong>En cours...</strong>`);
+    updateResultContainer('designation', `Désignation : <strong>En cours...</strong>`);
+    updateResultContainer('CodeStock', `Stock : <strong>En cours...</strong>`);
+    updateResultContainer('alternativeCodeStock', `Alternative : <strong>En cours...</strong>`);
+    
+    // Masquer l'info de soudabilité
+    const weldabilityElement = document.getElementById('weldabilityInfo');
+    if (weldabilityElement) {
+        weldabilityElement.innerHTML = '';
+        weldabilityElement.className = 'weldability';
+    }
 }
 
 function updateProgress(step) {
@@ -797,6 +1031,7 @@ function isProfileCompatibleWithCategory(profile, category) {
 function updateStep3Options() {
     const widthOptionsDiv = document.getElementById('widthOptions');
     widthOptionsDiv.innerHTML = '';
+    widthOptionsDiv.className = 'button-container'; // Assure que le conteneur a la classe correcte
 
     if (state.category === 'W') {
         const specialWidths = {
@@ -851,6 +1086,7 @@ function validateCustomWidth(width) {
 function updateStep4Options() {
     const cableButtonsDiv = document.getElementById('cableButtons');
     cableButtonsDiv.innerHTML = '';
+    cableButtonsDiv.className = 'button-container'; // Assure que le conteneur a la classe correcte
 
     const profile = state.profile;
     const cables = state.beltsData.cables;
@@ -882,8 +1118,11 @@ function validateSize() {
         if (shouldSkipCoating()) {
             state.optionalOption1 = '/Z';
             state.optionalOption1Desc = 'PAZ';
-            showResult();
+            // Marquer les résultats comme "en cours" avant de passer à l'étape finale
+            resetResultsToInProgress();
+            finalizeResult();
         } else {
+            resetResultsToInProgress(); // Réinitialiser les résultats à "en cours"
             navigateToStep(7);
         }
     } else {
@@ -935,6 +1174,7 @@ function validateSizeInput(size) {
 function updateSuggestedSizesUI(sizes) {
     const suggestionsContainer = document.getElementById('suggestedSizes');
     suggestionsContainer.innerHTML = ''; // Effacer les suggestions précédentes
+    suggestionsContainer.className = 'button-container'; // Assure que le conteneur a la classe correcte
 
     sizes.forEach(size => {
         const button = document.createElement('button');
@@ -944,7 +1184,7 @@ function updateSuggestedSizesUI(sizes) {
             if (shouldSkipCoating()) {
                 state.optionalOption1 = '/Z';
                 state.optionalOption1Desc = 'PAZ';
-                showResult();
+                finalizeResult();
             } else {
                 navigateToStep(7);
             }
@@ -986,6 +1226,7 @@ function selectOptionalOption(value, desc) {
 function selectOption(prefix, value, nextStep) {
     console.log("Option sélectionnée:", value);
     console.log("Étape actuelle:", state.currentStep);
+    
     switch(state.currentStep) {
         case 1:
             state.category = value;
@@ -999,6 +1240,10 @@ function selectOption(prefix, value, nextStep) {
             state.cable = value;
             break;
     }
+    
+    // Mettre à jour les résultats en temps réel après chaque sélection
+    updateLiveResults();
+    
     navigateToStep(nextStep);
 }
 
@@ -1013,6 +1258,171 @@ function selectProfile() {
 // -----------------------------------------------------------------------------
 // Génération et affichage du code
 // -----------------------------------------------------------------------------
+
+// Fonction pour mettre à jour les résultats en temps réel
+function updateLiveResults() {
+    try {
+        // Génération des codes basés sur l'état actuel
+        let codeArticle = generateCodeArticle();
+        let designation = generateDesignation();
+        let codeStock = generateCodeStock();
+        let alternativeCodeStock = generateAlternativeCodeStock();
+        
+        // Mise à jour des conteneurs avec des textes plus courts
+        updateResultContainer('result', `Code : <strong>${codeArticle || 'En cours...'}</strong>`);
+        updateResultContainer('designation', `Désignation : <strong>${designation || 'En cours...'}</strong>`);
+        updateResultContainer('CodeStock', `Stock : <strong>${codeStock || 'En cours...'}</strong>`);
+        updateResultContainer('alternativeCodeStock', `Alternative : <strong>${alternativeCodeStock || 'En cours...'}</strong>`);
+        
+        // Mettre à jour l'info de soudabilité si c'est une courroie V
+        if (state.category === 'V' && state.profile && state.width) {
+            updateWeldabilityInfo();
+        }
+    } catch (error) {
+        console.error('Erreur dans updateLiveResults:', error);
+    }
+}
+
+function updateResultContainer(id, htmlContent) {
+    const container = document.getElementById(id);
+    if (container) {
+        const contentElement = container.querySelector('.result-content');
+        if (contentElement) {
+            contentElement.innerHTML = htmlContent;
+        }
+    }
+}
+
+function updateWeldabilityInfo() {
+    const weldabilityElement = document.getElementById('weldabilityInfo');
+    if (!weldabilityElement) return;
+    
+    const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
+    const cssClass = getWeldabilityClass(weldabilityMessage);
+    weldabilityElement.className = `weldability ${cssClass}`;
+    weldabilityElement.innerHTML = `<strong>Faisabilité :</strong> ${weldabilityMessage}`; // Texte simplifié
+}
+
+// Générer le code article en fonction de l'état actuel
+function generateCodeArticle() {
+    if (!state.category) return '';
+    
+    let codeArticle = '';
+    let width = state.width || '';
+    let size = state.size || '';
+
+    // Pour les profils impériaux, arrondir la longueur à l'entier inférieur
+    if (state.profile && getProfileGroup(state.profile) === 'Imperial' && size) {
+        size = Math.floor(parseInt(size)).toString().padStart(5, '0');
+    }
+
+    switch (state.category) {
+        case 'R':
+            codeArticle = `R${width}${state.profile || ''}${state.cable || ''}`;
+            break;
+        case 'V':
+            codeArticle = `V${width}${state.profile || ''}${state.cable || ''}${size}`;
+            break;
+        case 'F':
+            codeArticle = `F${width}${state.profile || ''}${state.cable || ''}${size}`;
+            break;
+        case 'W':
+            codeArticle = `W${width}${state.profile || ''}${state.cable || ''}${size}`;
+            break;
+        case 'U':
+            codeArticle = state.profile ? `${state.profile}${size ? '-' + parseInt(size) : ''}` : '';
+            break;
+        default:
+            codeArticle = 'Format non défini';
+    }
+
+    if (state.optionalOption1) {
+        codeArticle += state.optionalOption1;
+    }
+
+    if (state.finalOption) {
+        codeArticle += "+" + state.finalOption;
+    }
+
+    if (state.guide) {
+        codeArticle += "+" + state.guide;
+    }
+
+    if (state.falseTeeth) {
+        codeArticle += "+EFT" + state.falseTeeth;
+    }
+
+    return codeArticle;
+}
+
+// Finaliser les résultats et activer la copie
+function finalizeResult() {
+    // Appeler une dernière fois la mise à jour des résultats
+    updateLiveResults();
+    
+    // Marquer les résultats comme finalisés
+    document.querySelectorAll('.result-card').forEach(card => {
+        card.classList.remove('in-progress');
+        card.classList.add('finalized');
+        card.style.cursor = 'pointer';
+        
+        // Réactiver les événements de copie
+        card.addEventListener('click', handleResultCardClick);
+    });
+    
+    // Rendre visible les conteneurs de résultats sans défiler la page
+    // Seulement si le conteneur de résultats n'est pas déjà visible
+    const resultContainer = document.getElementById('result-container');
+    const containerRect = resultContainer.getBoundingClientRect();
+    
+    // Si le conteneur n'est pas visible dans la fenêtre actuelle
+    if (containerRect.bottom > window.innerHeight || containerRect.top < 0) {
+        resultContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'end',  // Aligner avec le bas de la fenêtre
+            inline: 'nearest' 
+        });
+    }
+}
+
+// Gestionnaire d'événement pour la copie du résultat
+function handleResultCardClick(event) {
+    const contentElement = this.querySelector('.result-content');
+    if (!contentElement) {
+        console.error("Élément de contenu non trouvé");
+        return;
+    }
+    
+    const content = contentElement.textContent;
+    const splitPosition = content.indexOf(':');
+    
+    if (splitPosition === -1) {
+        console.error("Format de contenu incorrect:", content);
+        return;
+    }
+    
+    const textToCopy = content.substring(splitPosition + 1).trim();
+    
+    navigator.clipboard.writeText(textToCopy)
+        .then(() => {
+            this.classList.add('copied');
+            
+            // Afficher une notification
+            const tooltip = this.querySelector('.copy-tooltip');
+            if (tooltip) {
+                const originalText = tooltip.textContent;
+                tooltip.textContent = 'Copié !';
+                
+                setTimeout(() => {
+                    this.classList.remove('copied');
+                    tooltip.textContent = originalText;
+                }, 2000);
+            }
+        })
+        .catch(err => {
+            console.error('Erreur lors de la copie: ', err);
+        });
+}
 
 function generateDesignation() {
     try {
@@ -1159,86 +1569,28 @@ function generateAlternativeCodeStock() {
     return alternativeCodeStock;
 }
 
-function showResult() {
-    try {
-        let codeArticle = '';
-        let width = state.width;
-        let size = state.size;
-
-        // Pour les profils impériaux, arrondir la longueur à l'entier inférieur
-        if (getProfileGroup(state.profile) === 'Imperial') {
-            size = Math.floor(parseInt(size)).toString().padStart(5, '0');
-        }
-
-        switch (state.category) {
-            case 'R':
-                codeArticle = `R${width}${state.profile}${state.cable}`;
-                break;
-            case 'V':
-                codeArticle = `V${width}${state.profile}${state.cable}${size}`;
-                break;
-            case 'F':
-                codeArticle = `F${width}${state.profile}${state.cable}${size}`;
-                break;
-            case 'W':
-                codeArticle = `W${width}${state.profile}${state.cable}${size}`;
-                break;
-            case 'U':
-                codeArticle = `${state.profile}-${parseInt(state.size)}`;
-                break;
-            default:
-                codeArticle = 'Format non défini';
-        }
-
-        if (state.optionalOption1) {
-            codeArticle += state.optionalOption1;
-        }
-
-        if (state.finalOption) {
-            codeArticle += "+" + state.finalOption; // Ajout de l'option finale au code
-        }
-
-        if (state.guide) {
-            codeArticle += "+" + state.guide; // Ajout du guide au code
-        }
-
-        const resultElement = document.getElementById('result');
-        const designationElement = document.getElementById('designation');
-        const weldabilityElement = document.getElementById('weldabilityInfo');
-        const CodeStockElement = document.getElementById('CodeStock');
-        const alternativeCodeStockElement = document.getElementById('alternativeCodeStock');
-
-        if (state.category === 'V') {
-            const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
-            const cssClass = getWeldabilityClass(weldabilityMessage);
-            weldabilityElement.className = `weldability ${cssClass}`;
-            weldabilityElement.innerHTML = `<strong>Information de faisabilité :</strong> ${weldabilityMessage}`;
-        } else {
-            weldabilityElement.innerHTML = '';
-        }
-
-        if (resultElement) {
-            resultElement.innerHTML = `Code article : <strong>${codeArticle}</strong>`;
-        }
-
-        const designation = generateDesignation();
-        if (designationElement) {
-            designationElement.innerHTML = `Désignation : <strong>${designation}</strong>`;
-        }
-
-        // Afficher le code stock
-        const CodeStock = generateCodeStock();
-        if (CodeStockElement) {
-            CodeStockElement.innerHTML = `Stock à contrôler : <strong>${CodeStock}</strong>`;
-        }
-
-        // Afficher le code stock alternatif
-        const alternativeCodeStock = generateAlternativeCodeStock();
-        if (alternativeCodeStockElement) {
-            alternativeCodeStockElement.innerHTML = `Ou alors : <strong>${alternativeCodeStock}</strong>`;
-        }
-    } catch (error) {
-        console.error('Erreur dans showResult:', error);
+function validateFalseTeeth(value) {
+    if (value === '') {
+        state.falseTeeth = '';
+        resetResultsToInProgress(); // Réinitialiser avant de finaliser
+        finalizeResult();
+        return;
+    }
+    
+    const input = document.getElementById('falseTeethInput');
+    if (!input) {
+        console.error('Élément falseTeethInput non trouvé');
+        return;
+    }
+    
+    const inputValue = input.value;
+    
+    if (inputValue && !isNaN(inputValue) && parseInt(inputValue) > 0) {
+        state.falseTeeth = inputValue;
+        resetResultsToInProgress(); // Réinitialiser avant de finaliser
+        finalizeResult();
+    } else {
+        alert('Veuillez entrer un nombre valide de fausses dents.');
     }
 }
 
@@ -1328,6 +1680,7 @@ function getWeldabilityMessage(profile, width) {
     return state.beltsData.messages[weldability] || 'Information non disponible';
 }
 
+// Fonctions améliorées pour les tooltips
 function showTooltip(element) {
     const tooltip = document.getElementById('tooltip');
     tooltip.innerHTML = element.dataset.title.replace(/;/g, '<br>');
@@ -1342,6 +1695,14 @@ function showTooltip(element) {
 function hideTooltip() {
     const tooltip = document.getElementById('tooltip');
     tooltip.style.display = 'none';
+}
+
+function showTooltip(element) {
+    showTooltipEnhanced(element);
+}
+
+function hideTooltip() {
+    hideTooltipEnhanced();
 }
 
 // Ajouter ces deux fonctions juste avant la section "Fonctions utilitaires"
@@ -1362,15 +1723,18 @@ function selectFinalOption(code, description, durete, couleur) {
     state.finalOptionDesc = description;
     state.finalOptionDurete = durete;
     state.finalOptionCouleur = couleur;
-	if (code === '') {
-		state.finalOptionDesc = '';
-	}
-	
-	if (requiresCoatingThickness(code)) {
-		navigateToStep(8.5);
-	} else {
-    	navigateToStep(9); // Aller à l'étape 9 après la sélection de l'option finale
-	}
+    if (code === '') {
+        state.finalOptionDesc = '';
+    }
+    
+    // Réinitialiser les résultats à "en cours"
+    resetResultsToInProgress();
+    
+    if (requiresCoatingThickness(code)) {
+        navigateToStep(8.5);
+    } else {
+        navigateToStep(9); // Aller à l'étape 9 après la sélection de l'option finale
+    }
 }
 
 function validateCoatingThickness() {
@@ -1384,12 +1748,12 @@ function validateCoatingThickness() {
 }
 
 function selectGuide(guideCode) {
-    state.guideDesc = `avec Guide ${guideCode}`;
+    state.guideDesc = guideCode ? `avec Guide ${guideCode}` : '';
     state.guide = guideCode;
-	if (guideCode === '') {
-		state.guideDesc = '';
-	}
-    showResult();
+    
+    // Réinitialiser les résultats à "en cours" avant de finaliser
+    resetResultsToInProgress();
+    finalizeResult();
 }
 
 function requiresCoatingThickness(code) {
@@ -1397,5 +1761,197 @@ function requiresCoatingThickness(code) {
 	return coatingsRequiringThickness.includes(code);
 }
 
+// Ajustement dynamique de la taille des boutons en fonction de leur nombre
+function adjustButtonSizes() {
+    // Pour l'étape 8 (revêtements)
+    const step8CategoryContainers = document.querySelectorAll('#step8 .category-buttons');
+    step8CategoryContainers.forEach(container => {
+        const buttonCount = container.querySelectorAll('.category-image-button').length;
+        if (buttonCount > 8) {
+            container.classList.add('high-density');
+            container.classList.remove('medium-density', 'low-density');
+        } else if (buttonCount > 5) {
+            container.classList.add('medium-density');
+            container.classList.remove('high-density', 'low-density');
+        } else {
+            container.classList.add('low-density');
+            container.classList.remove('high-density', 'medium-density');
+        }
+    });
+    
+    // Pour l'étape 1 (catégories)
+    const step1Container = document.querySelector('#step1 .category-buttons');
+    if (step1Container) {
+        const buttonCount = step1Container.querySelectorAll('.category-image-button').length;
+        if (buttonCount <= 5) {
+            step1Container.classList.add('low-density');
+        }
+    }
+}
+
+// Fonction pour modifier la taille des boutons selon la section
+function updateButtonSizesBasedOnSection(sectionId) {
+    const buttons = document.querySelectorAll(`${sectionId} .category-image-button`);
+    
+    // Définir les tailles en fonction de la section
+    let width, height;
+    
+    switch (sectionId) {
+        case '#step1': // Page d'accueil - grands boutons
+            width = '140px';
+            height = '140px';
+            break;
+        case '#step7': // Tissus - taille moyenne
+            width = '120px';
+            height = '120px';
+            break;
+        case '#step8': // Revêtements - petits boutons car nombreux
+            width = '100px';
+            height = '110px';
+            break;
+        default:
+            return; // Ne rien faire pour les autres sections
+    }
+    
+    // Appliquer les tailles
+    buttons.forEach(button => {
+        button.style.width = width;
+        button.style.height = height;
+    });
+}
+
+// Optimisation des grilles de boutons
+function optimizeButtonGrids() {
+    // Adapter les grilles en fonction du nombre de boutons
+    document.querySelectorAll('.category-buttons').forEach(container => {
+        const buttons = container.querySelectorAll('.category-image-button');
+        const buttonCount = buttons.length;
+        
+        // Centrer tous les conteneurs
+        container.style.marginLeft = 'auto';
+        container.style.marginRight = 'auto';
+        
+        // Si moins de 6 boutons, centrer la grille
+        if (buttonCount > 0 && buttonCount <= 5) {
+            container.style.display = 'flex';
+            container.style.flexWrap = 'wrap';
+            container.style.justifyContent = 'center';
+            container.style.maxWidth = `${buttonCount * 170}px`;
+        } else {
+            container.style.display = 'grid';
+            container.style.justifyItems = 'center';
+        }
+    });
+    
+    // Centrer les autres conteneurs de boutons
+    document.querySelectorAll('.button-container').forEach(container => {
+        container.style.display = 'flex';
+        container.style.flexWrap = 'wrap';
+        container.style.justifyContent = 'center';
+    });
+}
+
 // Initialisation au chargement de la page
-document.addEventListener('DOMContentLoaded', initializeApp);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM entièrement chargé");
+    try {
+        initializeApp();
+        console.log("Application initialisée avec succès");
+    } catch (error) {
+        console.error("Erreur lors de l'initialisation:", error);
+    }
+});
+
+// Ajout d'un gestionnaire d'erreurs global
+window.addEventListener('error', function(event) {
+    console.error("Erreur globale capturée:", event.message, "à", event.filename, ":", event.lineno);
+});
+
+// Assurer que la fonction s'exécute aussi lors du redimensionnement de la fenêtre
+window.addEventListener('resize', () => {
+    if (document.querySelector('.step.active')) {
+        optimizeButtonGrids();
+    }
+});
+
+// Réinitialise complètement l'application pour recommencer
+function restartApp() {
+    console.log("Redémarrage de l'application...");
+    
+    // Réinitialiser l'état
+    for (let key in state) {
+        if (key !== 'beltsData') { // Garder les données de référence
+            state[key] = '';
+        }
+    }
+    state.currentStep = 1;
+    
+    // Réinitialiser les éléments d'interface
+    resetResultsToInProgress();
+    
+    // Masquer toutes les étapes et afficher l'étape 1
+    document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active');
+    });
+    document.getElementById('step1').classList.add('active');
+    
+    // Mettre à jour la barre de progression
+    updateProgress(1);
+    
+    // Nettoyer les inputs si présents
+    const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+    inputs.forEach(input => input.value = '');
+    
+    // Réinitialiser le select du profil
+    const profileSelect = document.getElementById('profileSelect');
+    if (profileSelect) profileSelect.innerHTML = '';
+    
+    // Nettoyer les infos de soudabilité
+    const weldabilityElement = document.getElementById('weldabilityInfo');
+    if (weldabilityElement) {
+        weldabilityElement.innerHTML = '';
+        weldabilityElement.className = 'weldability';
+    }
+    
+    // Mettre à jour les boutons pour l'étape 1
+    adjustButtonSizes();
+    optimizeButtonGrids();
+    
+    console.log("Application redémarrée, retour à l'étape 1");
+}
+
+function goBack(previousStep) {
+    console.log("Retour à l'étape:", previousStep);
+    
+    // Mettre les résultats en "mode en cours" lorsqu'on revient en arrière
+    resetResultsToInProgress();
+    
+    // Naviguer vers l'étape précédente
+    navigateToStep(previousStep);
+}
+
+// Réinitialise l'état des résultats lorsqu'on revient en arrière
+function resetResultsToInProgress() {
+    document.querySelectorAll('.result-card').forEach(card => {
+        // Remettre les cartes en mode "en cours"
+        card.classList.add('in-progress');
+        card.classList.remove('finalized');
+        card.style.cursor = 'default';
+        
+        // Désactiver les événements de copie
+        card.removeEventListener('click', handleResultCardClick);
+    });
+    
+    // Mettre à jour le contenu des résultats avec "En cours..."
+    updateResultContainer('result', `Code : <strong>En cours...</strong>`);
+    updateResultContainer('designation', `Désignation : <strong>En cours...</strong>`);
+    updateResultContainer('CodeStock', `Stock : <strong>En cours...</strong>`);
+    updateResultContainer('alternativeCodeStock', `Alternative : <strong>En cours...</strong>`);
+    
+    // Masquer l'info de soudabilité
+    const weldabilityElement = document.getElementById('weldabilityInfo');
+    if (weldabilityElement) {
+        weldabilityElement.innerHTML = '';
+        weldabilityElement.className = 'weldability';
+    }
+}

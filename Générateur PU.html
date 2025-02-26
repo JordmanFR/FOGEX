@@ -4,9 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Générateur de code article</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider"></div>
+        </label>
+        <em>Mode sombre</em>
+    </div>
+
     <h1>Générateur de code article</h1>
     <!-- Barre de progression -->
     <div id="progressBar">
@@ -16,79 +25,87 @@
     <div class="step active" id="step1">
         <h3>Sélectionnez la catégorie</h3>
         <div class="step-description" id="step1-description">Le client peut désigner des courroies "fermées" ou "sans fin" qui correspondent généralement à des courroies soudées</div>
-        <div class="category-buttons">
+        <div class="category-buttons centered-grid">
             <button 
                 class="category-image-button"
                 onclick="selectOption('','R', 2)"
-                data-title="Elatech - Elatech M; Ammeraal - PU linéaire; Megadyne - Megalinear; Breco - Breco M; Optibelt - Alpha linear; Gates - Linear belt; Habasit - HabaSync; Forbo - Open Belt"
-                onmouseover="showTooltip(this)" 
-                onmouseout="hideTooltip()">
+                data-title="Équivalences:<br>Elatech - Elatech M<br>Ammeraal - PU linéaire<br>Megadyne - Megalinear<br>Breco - Breco M<br>Optibelt - Alpha linear<br>Gates - Linear belt<br>Habasit - HabaSync<br>Forbo - Open Belt">
                 <img src="images/R.jpg" alt="Courroie ouverte">
-                <span class="tooltip">Courroie ouverte</span>
+                <span class="button-text">Courroie ouverte</span>
+                <div class="hint-tooltip">ℹ️ Voir équivalences</div>
             </button>
             <button 
                 class="category-image-button"
                 onclick="selectOption('','V', 2)"
-                data-title="Elatech - Elatech V; Ammeraal - PU linéaire; Megadyne - Megalinear; Breco - Breco V; Optibelt - Alpha V; Gates - Linear belt; Habasit - HabaSync; Forbo - Endless Welded Belt"
-                onmouseover="showTooltip(this)" 
-                onmouseout="hideTooltip()">
+                data-title="Équivalences:<br>Elatech - Elatech V<br>Ammeraal - PU linéaire<br>Megadyne - Megalinear<br>Breco - Breco V<br>Optibelt - Alpha V<br>Gates - Linear belt<br>Habasit - HabaSync<br>Forbo - Endless Welded Belt">
                 <img src="images/V.jpg" alt="Courroie soudée">
-                <span class="tooltip">Courroie soudée</span>
+                <span class="button-text">Courroie soudée</span>
+                <div class="hint-tooltip">ℹ️ Voir équivalences</div>
             </button>
             <button 
                 class="category-image-button"
                 onclick="selectOption('','F', 2)"
-                data-title="Elatech - Elaflex SD; Ammeraal - PU Moulée; Megadyne - Mega power; Breco - Brecoflex; Optibelt - Alpha power / Alpha Torque / Alpha SRP; Gates - Synchro-Power; Habasit - HabaSync; Forbo - Trully Endless Belt"
-                onmouseover="showTooltip(this)" 
-                onmouseout="hideTooltip()">
+                data-title="Équivalences:<br>Elatech - Elaflex SD<br>Ammeraal - PU Moulée<br>Megadyne - Mega power<br>Breco - Brecoflex<br>Optibelt - Alpha power / Alpha Torque / Alpha SRP<br>Gates - Synchro-Power<br>Habasit - HabaSync<br>Forbo - Trully Endless Belt">
                 <img src="images/F.jpg" alt="ElaFlex SD">
-                <span class="tooltip">ElaFlex SD</span>
+                <span class="button-text">ElaFlex SD</span>
+                <div class="hint-tooltip">ℹ️ Voir équivalences</div>
             </button>
             <button 
                 class="category-image-button"
                 onclick="selectOption('','W', 2)"
-                data-title="Pas d'équivalence fournisseur pour Syncro Max"
-                onmouseover="showTooltip(this)" 
-                onmouseout="hideTooltip()">
+                data-title="Pas d'équivalence fournisseur pour Syncro Max">
                 <img src="images/W.jpg" alt="Syncro Max">
-                <span class="tooltip">Syncro Max</span>
+                <span class="button-text">Syncro Max</span>
+                <div class="hint-tooltip">ℹ️ Voir équivalences</div>
             </button>
             <button 
                 class="category-image-button"
                 onclick="selectOption('','U', 2)"
-                data-title="Elatech - Elatech iSync; Ammeraal - PU Torque; Megadyne - Mega flex; Breco - Brecoflex/Synchrofex; Optibelt - Alpha Flex; Habasit - HabaSync"
-                onmouseover="showTooltip(this)" 
-                onmouseout="hideTooltip()">
+                data-title="Équivalences:<br>Elatech - Elatech iSync<br>Ammeraal - PU Torque<br>Megadyne - Mega flex<br>Breco - Brecoflex/Synchrofex<br>Optibelt - Alpha Flex<br>Habasit - HabaSync">
                 <img src="images/U.jpg" alt="iSync">
-                <span class="tooltip">iSync</span>
+                <span class="button-text">iSync</span>
+                <div class="hint-tooltip">ℹ️ Voir équivalences</div>
             </button>
         </div>
     </div>
     <div id="tooltip" class="tooltip"></div>
     <!-- Étape 2: Sélection du profil -->
     <div class="step" id="step2">
-        <button class="back-button" onclick="goBack(1)">Retour</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(1)">Retour</button>
+        </div>
         <h3>Sélectionnez un profil dans la liste</h3>
         <div class="step-description" id="step2-description">Si le profil que vous cherchez n'est pas disponible vous n'êtes probablement pas dans la bonne catégorie</div>
         <select id="profileSelect" onchange="updateStep3Options()"></select>
-        <button onclick="selectProfile(); updateStep4Options()">Suivant</button>
+        <div class="button-container">
+            <button onclick="selectProfile(); updateStep4Options()">Suivant</button>
+        </div>
     </div>
     <!-- Étape 3: Sélection de la largeur -->
 	<div class="step" id="step3">
-    <button class="back-button" onclick="goBack(2)">Retour</button>
-    <h3>Sélectionnez la largeur</h3>
-    <div class="step-description" id="step3-description">Les valeurs indiquées ci-dessous sont les standard catalogue Elatech</div>
-    <div id="widthOptions"></div>
-    <input type="text" id="customWidthInput" placeholder="Entrez une largeur personnalisée (max 3 chiffres)" maxlength="3" onkeydown="handleWidthKeydown(event)">
-    <div id="customWidthError" class="error">Veuillez entrer une largeur valide (max 3 chiffres).</div>
-    <button onclick="selectCustomWidth()">Valider</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(2)">Retour</button>
+        </div>
+        <h3>Sélectionnez la largeur</h3>
+        <div class="step-description" id="step3-description">Les valeurs indiquées ci-dessous sont les standard catalogue Elatech</div>
+        <div id="widthOptions" class="button-container"></div>
+        <input type="text" id="customWidthInput" placeholder="Entrez une largeur personnalisée (max 3 chiffres)" maxlength="3" onkeydown="handleWidthKeydown(event)">
+        <div id="customWidthError" class="error">Veuillez entrer une largeur valide (max 3 chiffres).</div>
+        <div class="button-container">
+            <button onclick="selectCustomWidth()">Valider</button>
+        </div>
 	</div>
     <!-- Étape 4: Sélection du câble -->
     <div class="step" id="step4">
-        <button class="back-button" onclick="goBack(3)">Retour</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(3)">Retour</button>
+        </div>
         <h3>Sélectionnez le câble</h3>
         <div class="step-description" id="step4-description">Le standard hors alimentaire est le câble acier</div>
-        <div id="cableButtons">
+        <div id="cableButtons" class="button-container">
             <button onclick="selectOption('','A', 5)">Acier</button>
             <button onclick="selectOption('','K', 5)">Kevlar</button>
             <button onclick="selectOption('','S', 5)">Inox</button>
@@ -99,158 +116,196 @@
     </div>
     <!-- Étape 5: Saisie de la longueur -->
 	<div class="step" id="step5">
-    <button class="back-button" onclick="goBack(4)">Retour</button>
-    <h3>Entrez la longueur en mm</h3>
-    <div class="step-description" id="step5-description">Pas possible ici sous 1000mm, peut avoir des traces sous 1200mm</div>
-    <input type="text" id="sizeInput" placeholder="Entrez la longueur en mm" maxlength="5" onkeydown="handleLengthKeydown(event)">
-    <div id="sizeError" class="error">Veuillez entrer une taille valide.</div>
-    <div id="lengthError" class="error">La longueur doit être supérieure ou égale à 1000 mm.</div>
-    <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
-    <button onclick="validateSize()">Valider</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(4)">Retour</button>
+        </div>
+        <h3>Entrez la longueur en mm</h3>
+        <div class="step-description" id="step5-description">Pas possible ici sous 1000mm, peut avoir des traces sous 1200mm</div>
+        <input type="text" id="sizeInput" placeholder="Entrez la longueur en mm" maxlength="5" onkeydown="handleLengthKeydown(event)">
+        <div id="sizeError" class="error">Veuillez entrer une taille valide.</div>
+        <div id="lengthError" class="error">La longueur doit être supérieure ou égale à 1000 mm.</div>
+        <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
+        <div class="button-container">
+            <button onclick="validateSize()">Valider</button>
+        </div>
 	</div>
     <!-- Étape 6: Proposition de la longueur -->
     <div class="step" id="step6">
-        <button class="back-button" onclick="goBack(4)">Retour</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(4)">Retour</button>
+        </div>
         <h3>Longueurs suggérées (en mm)</h3>
         <div class="step-description" id="step6-description">Les longueurs ci-dessous permettent un nombre de dents entier</div>
-        <div id="suggestedSizes">
+        <div id="suggestedSizes" class="button-container">
             <!-- Les boutons de taille suggérée seront ajoutés ici par JavaScript -->
         </div>
     </div>
     <!-- Étape 7: Tissu -->
     <div class="step" id="step7">
-        <button class="back-button" onclick="goBack(5)">Retour</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(5)">Retour</button>
+        </div>
         <h3>Besoin d'un revêtement en tissu ?</h3>
         <div class="step-description" id="step7-description"></div>
-		<button onclick="selectOptionalOption('', 'Sans')" style="width: 200px;">Sans</button>
-		<h4>Standard</h4>
-        <div class="category-buttons">
-            <button class="category-image-button" onclick="selectOptionalOption('/Z', 'PAZ', 8)">
-				<img src="images/PAZ.jpg" alt="PAZ">Dents</button>
-            <button class="category-image-button" onclick="selectOptionalOption('/R', 'PAR', 8)">
-				<img src="images/PAR.jpg" alt="PAR">Dos</button>
-            <button class="category-image-button" onclick="selectOptionalOption('/D', 'PAZ + PAR', 8)">
-				<img src="images/PAD.jpg" alt="PAZ + PAR">Dents et dos</button>
+        <div class="button-container">
+            <button onclick="selectOptionalOption('', 'Sans')" style="width: 200px;">Sans</button>
         </div>
-		<h4>Antistatique</h4>
-		<div class="category-buttons">
+        <h4>Standard</h4>
+        <div class="category-buttons centered-grid">
+            <button class="category-image-button" onclick="selectOptionalOption('/Z', 'PAZ', 8)">
+                <img src="images/PAZ.jpg" alt="PAZ">
+                <span class="button-text">Dents</span>
+            </button>
+            <button class="category-image-button" onclick="selectOptionalOption('/R', 'PAR', 8)">
+                <img src="images/PAR.jpg" alt="PAR">
+                <span class="button-text">Dos</span>
+            </button>
+            <button class="category-image-button" onclick="selectOptionalOption('/D', 'PAZ + PAR', 8)">
+                <img src="images/PAD.jpg" alt="PAZ + PAR">
+                <span class="button-text">Dents et dos</span>
+            </button>
+        </div>
+        <h4>Antistatique</h4>
+        <div class="category-buttons centered-grid">
             <button class="category-image-button" onclick="selectOptionalOption('/ZS', 'PAZAS', 8)">
-				<img src="images/PAZAS.jpg" alt="PAZ Antistatique">Dents</button>
+                <img src="images/PAZAS.jpg" alt="PAZ Antistatique">Dents</button>
             <button class="category-image-button" onclick="selectOptionalOption('/RS', 'PARAS', 8)">
-				<img src="images/PARAS.jpg" alt="PAR Antistatique">Dos</button>
+                <img src="images/PARAS.jpg" alt="PAR Antistatique">Dos</button>
             <button class="category-image-button" onclick="selectOptionalOption('/DS', 'PAZAS + PARAS', 8)">
-				<img src="images/PADAS.jpg" alt="PAZ + PAR Antistatique">Dents et dos</button>
+                <img src="images/PADAS.jpg" alt="PAZ + PAR Antistatique">Dents et dos</button>
         </div>
     </div>
-
     <!-- Étape 8: Revêtement -->
     <div class="step" id="step8">
-        <button class="back-button" onclick="goBack(7)">Retour</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(7)">Retour</button>
+        </div>
         <h3>Besoin d'un revêtement collé ?</h3>
         <div class="step-description" id="step8-description">Nous avons un stock permanent en Linatex, Linatrile, PU et Supergrip</div>
-		<button onclick="selectFinalOption('', 'Sans', '', '')" style="width: 200px;">Sans</button>
+        <div class="button-container">
+            <button onclick="selectFinalOption('', 'Sans', '', '')" style="width: 200px;">Sans</button>
+        </div>
         <div class="category-buttons">
             <h4>Caoutchoucs</h4>
-            <button class="category-image-button" onclick="selectFinalOption('SG50T', 'Supergrip 50RT', '40 Sh', 'Rouge')" data-title="Dureté: 40 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SG50T.jpg" alt="Supergrip 50RT">Supergrip 50RT</button>
-            <button class="category-image-button" onclick="selectFinalOption('LTX', 'Linatex', '40 Sh', 'Rouge')" data-title="Dureté: 40 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/LTX.jpg" alt="Linatex">Linatex</button>
-            <button class="category-image-button" onclick="selectFinalOption('LNP', 'LinaPlus', '40 Sh', 'Blanc')" data-title="Dureté: 40 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/LNP.jpg" alt="LinaPlus">LinaPlus</button>
-            <button class="category-image-button" onclick="selectFinalOption('LTR', 'Linatrile', '55 Sh', 'Orange')" data-title="Dureté: 55 Sh; Couleur: Orange" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/LTR.jpg" alt="Linatrile">Linatrile</button>
-            <button class="category-image-button" onclick="selectFinalOption('NBR', 'Nitrile', '65 Sh', 'Noir')" data-title="Dureté: 65 Sh; Couleur: Noir" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/NBR.jpg" alt="Nitrile">Nitrile</button>
-            <button class="category-image-button" onclick="selectFinalOption('NBR-W', 'Nitrile Blanc', '65 Sh', 'Blanc')" data-title="Dureté: 65 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/NBR-W.jpg" alt="Nitrile Blanc">Nitrile Blanc</button>
-            <button class="category-image-button" onclick="selectFinalOption('TNX', 'Tenax', '40 Sh', 'Rouge')" data-title="Dureté: 40 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/TNX.jpg" alt="Tenax">Tenax</button>
-            <button class="category-image-button" onclick="selectFinalOption('VTN', 'Viton', '75 Sh', 'Noir')" data-title="Dureté: 75 Sh; Couleur: Noir" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/VTN.jpg" alt="Viton">Viton</button>
-            <button class="category-image-button" onclick="selectFinalOption('RP400', 'Caoutchouc Jaune', '35 Sh', 'Jaune')" data-title="Dureté: 35 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/RP400.jpg" alt="Caoutchouc Jaune">Caoutchouc Jaune</button>
-            <button class="category-image-button" onclick="selectFinalOption('CRX', 'Correx', '40 Sh', 'Crème')" data-title="Dureté: 40 Sh; Couleur: Crème" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/CRX.jpg" alt="Correx">Correx</button>
+            <div class="buttons-container">
+                <button class="category-image-button" onclick="selectFinalOption('SG50T', 'Supergrip 50RT', '40 Sh', 'Rouge')" data-title="Dureté: 40 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SG50T.jpg" alt="Supergrip 50RT">Supergrip 50RT</button>
+                <button class="category-image-button" onclick="selectFinalOption('LTX', 'Linatex', '40 Sh', 'Rouge')" data-title="Dureté: 40 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/LTX.jpg" alt="Linatex">Linatex</button>
+                <button class="category-image-button" onclick="selectFinalOption('LNP', 'LinaPlus', '40 Sh', 'Blanc')" data-title="Dureté: 40 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/LNP.jpg" alt="LinaPlus">LinaPlus</button>
+                <button class="category-image-button" onclick="selectFinalOption('LTR', 'Linatrile', '55 Sh', 'Orange')" data-title="Dureté: 55 Sh; Couleur: Orange" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/LTR.jpg" alt="Linatrile">Linatrile</button>
+                <button class="category-image-button" onclick="selectFinalOption('NBR', 'Nitrile', '65 Sh', 'Noir')" data-title="Dureté: 65 Sh; Couleur: Noir" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/NBR.jpg" alt="Nitrile">Nitrile</button>
+                <button class="category-image-button" onclick="selectFinalOption('NBR-W', 'Nitrile Blanc', '65 Sh', 'Blanc')" data-title="Dureté: 65 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/NBR-W.jpg" alt="Nitrile Blanc">Nitrile Blanc</button>
+                <button class="category-image-button" onclick="selectFinalOption('TNX', 'Tenax', '40 Sh', 'Rouge')" data-title="Dureté: 40 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/TNX.jpg" alt="Tenax">Tenax</button>
+                <button class="category-image-button" onclick="selectFinalOption('VTN', 'Viton', '75 Sh', 'Noir')" data-title="Dureté: 75 Sh; Couleur: Noir" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/VTN.jpg" alt="Viton">Viton</button>
+                <button class="category-image-button" onclick="selectFinalOption('RP400', 'Caoutchouc Jaune', '35 Sh', 'Jaune')" data-title="Dureté: 35 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/RP400.jpg" alt="Caoutchouc Jaune">Caoutchouc Jaune</button>
+                <button class="category-image-button" onclick="selectFinalOption('CRX', 'Correx', '40 Sh', 'Crème')" data-title="Dureté: 40 Sh; Couleur: Crème" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/CRX.jpg" alt="Correx">Correx</button>
+            </div>
         </div>
         <div class="category-buttons">
             <h4>PVC et PU</h4>
-            <button class="category-image-button" onclick="selectFinalOption('PUR70', 'PU Transparent 70', '70 Sh', 'Transparent')" data-title="Dureté: 70 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/PUR70.jpg" alt="PU Transparent 70">PU Transparent 70</button>
-            <button class="category-image-button" onclick="selectFinalOption('PUR85', 'PU Transparent 85', '85 Sh', 'Transparent')" data-title="Dureté: 85 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/PUR85.jpg" alt="PU Transparent 85">PU Transparent 85</button>
-            <button class="category-image-button" onclick="selectFinalOption('FBPU', 'Fishbone PU', '70 Sh', 'Transparent')" data-title="Dureté: 70 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/FBPU.jpg" alt="Fishbone PU">Fishbone PU</button>
-            <button class="category-image-button" onclick="selectFinalOption('FBPVC', 'Fishbone PVC', '65 Sh', 'Blanc')" data-title="Dureté: 65 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/FBPVC.jpg" alt="Fishbone PVC">Fishbone PVC</button>
-            <button class="category-image-button" onclick="selectFinalOption('PVCW', 'PVC Blanc', '65 Sh', 'Blanc')" data-title="Dureté: 65 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/PVCW.jpg" alt="PVC Blanc">PVC Blanc</button>
-            <button class="category-image-button" onclick="selectFinalOption('PVCG', 'PVC Vert', '40 Sh', 'Vert')" data-title="Dureté: 40 Sh; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/PVCG.jpg" alt="PVC Vert">PVC Vert</button>
-            <button class="category-image-button" onclick="selectFinalOption('SG50R', 'Supergrip 50 R', '50 Sh', 'Rouge')" data-title="Dureté: 50 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SG50R.jpg" alt="Supergrip 50 R">Supergrip 50 R</button>
-            <button class="category-image-button" onclick="selectFinalOption('SG60', 'Supergrip 60 GL', '60 Sh', 'Vert')" data-title="Dureté: 60 Sh; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SG60.jpg" alt="Supergrip 60 GL">Supergrip 60 GL</button>
-            <button class="category-image-button" onclick="selectFinalOption('SG70', 'Supergrip 70Y', '70 Sh', 'Jaune')" data-title="Dureté: 70 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SG70.jpg" alt="Supergrip 70Y">Supergrip 70Y</button>
-            <button class="category-image-button" onclick="selectFinalOption('MG', 'Minigrip PVC', '65 Sh', 'Vert')" data-title="Dureté: 65 Sh; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/MG.jpg" alt="Minigrip PVC">Minigrip PVC</button>
+            <div class="buttons-container">
+                <button class="category-image-button" onclick="selectFinalOption('PUR70', 'PU Transparent 70', '70 Sh', 'Transparent')" data-title="Dureté: 70 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/PUR70.jpg" alt="PU Transparent 70">PU Transparent 70</button>
+                <button class="category-image-button" onclick="selectFinalOption('PUR85', 'PU Transparent 85', '85 Sh', 'Transparent')" data-title="Dureté: 85 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/PUR85.jpg" alt="PU Transparent 85">PU Transparent 85</button>
+                <button class="category-image-button" onclick="selectFinalOption('FBPU', 'Fishbone PU', '70 Sh', 'Transparent')" data-title="Dureté: 70 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/FBPU.jpg" alt="Fishbone PU">Fishbone PU</button>
+                <button class="category-image-button" onclick="selectFinalOption('FBPVC', 'Fishbone PVC', '65 Sh', 'Blanc')" data-title="Dureté: 65 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/FBPVC.jpg" alt="Fishbone PVC">Fishbone PVC</button>
+                <button class="category-image-button" onclick="selectFinalOption('PVCW', 'PVC Blanc', '65 Sh', 'Blanc')" data-title="Dureté: 65 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/PVCW.jpg" alt="PVC Blanc">PVC Blanc</button>
+                <button class="category-image-button" onclick="selectFinalOption('PVCG', 'PVC Vert', '40 Sh', 'Vert')" data-title="Dureté: 40 Sh; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/PVCG.jpg" alt="PVC Vert">PVC Vert</button>
+                <button class="category-image-button" onclick="selectFinalOption('SG50R', 'Supergrip 50 R', '50 Sh', 'Rouge')" data-title="Dureté: 50 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SG50R.jpg" alt="Supergrip 50 R">Supergrip 50 R</button>
+                <button class="category-image-button" onclick="selectFinalOption('SG60', 'Supergrip 60 GL', '60 Sh', 'Vert')" data-title="Dureté: 60 Sh; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SG60.jpg" alt="Supergrip 60 GL">Supergrip 60 GL</button>
+                <button class="category-image-button" onclick="selectFinalOption('SG70', 'Supergrip 70Y', '70 Sh', 'Jaune')" data-title="Dureté: 70 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SG70.jpg" alt="Supergrip 70Y">Supergrip 70Y</button>
+                <button class="category-image-button" onclick="selectFinalOption('MG', 'Minigrip PVC', '65 Sh', 'Vert')" data-title="Dureté: 65 Sh; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/MG.jpg" alt="Minigrip PVC">Minigrip PVC</button>
+            </div>
         </div>
         <div class="category-buttons">
             <h4>Cellulaires</h4>
-            <button class="category-image-button" onclick="selectFinalOption('CFX', 'Celloflex', '', 'Crème')" data-title="Dureté: N/A; Couleur: Crème" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/CFX.jpg" alt="Celloflex">Celloflex</button>
-            <button class="category-image-button" onclick="selectFinalOption('PY50', 'PU Jaune 50', '50 Sh', 'Jaune')" data-title="Dureté: 50 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/PY50.jpg" alt="PU Jaune 50">PU Jaune 50</button>
-            <button class="category-image-button" onclick="selectFinalOption('PY70', 'PU Jaune 70', '70 Sh', 'Jaune')" data-title="Dureté: 70 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/PY70.jpg" alt="PU Jaune 70">PU Jaune 70</button>
-            <button class="category-image-button" onclick="selectFinalOption('POR', 'Porol', '15 Sh', 'Noir')" data-title="Dureté: 15 Sh; Couleur: Noir" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/POR.jpg" alt="Porol">Porol</button>
-            <button class="category-image-button" onclick="selectFinalOption('SYL-B', 'Sylomer Blue', '', 'Bleu')" data-title="Dureté: N/A; Couleur: Bleu" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SYL-B.jpg" alt="Sylomer Blue">Sylomer Blue</button>
-            <button class="category-image-button" onclick="selectFinalOption('SYL-V', 'Sylomer Green', '', 'Vert')" data-title="Dureté: N/A; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SYL-V.jpg" alt="Sylomer Green">Sylomer Green</button>
-            <button class="category-image-button" onclick="selectFinalOption('SYL-M', 'Sylomer Brown', '', 'Marron')" data-title="Dureté: N/A; Couleur: Marron" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SYL-M.jpg" alt="Sylomer Brown">Sylomer Brown</button>
+            <div class="buttons-container">
+                <button class="category-image-button" onclick="selectFinalOption('CFX', 'Celloflex', '', 'Crème')" data-title="Dureté: N/A; Couleur: Crème" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/CFX.jpg" alt="Celloflex">Celloflex</button>
+                <button class="category-image-button" onclick="selectFinalOption('PY50', 'PU Jaune 50', '50 Sh', 'Jaune')" data-title="Dureté: 50 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/PY50.jpg" alt="PU Jaune 50">PU Jaune 50</button>
+                <button class="category-image-button" onclick="selectFinalOption('PY70', 'PU Jaune 70', '70 Sh', 'Jaune')" data-title="Dureté: 70 Sh; Couleur: Jaune" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/PY70.jpg" alt="PU Jaune 70">PU Jaune 70</button>
+                <button class="category-image-button" onclick="selectFinalOption('POR', 'Porol', '15 Sh', 'Noir')" data-title="Dureté: 15 Sh; Couleur: Noir" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/POR.jpg" alt="Porol">Porol</button>
+                <button class="category-image-button" onclick="selectFinalOption('SYL-B', 'Sylomer Blue', '', 'Bleu')" data-title="Dureté: N/A; Couleur: Bleu" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SYL-B.jpg" alt="Sylomer Blue">Sylomer Blue</button>
+                <button class="category-image-button" onclick="selectFinalOption('SYL-V', 'Sylomer Green', '', 'Vert')" data-title="Dureté: N/A; Couleur: Vert" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SYL-V.jpg" alt="Sylomer Green">Sylomer Green</button>
+                <button class="category-image-button" onclick="selectFinalOption('SYL-M', 'Sylomer Brown', '', 'Marron')" data-title="Dureté: N/A; Couleur: Marron" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SYL-M.jpg" alt="Sylomer Brown">Sylomer Brown</button>
+            </div>
         </div>
         <div class="category-buttons">
             <h4>Spéciaux</h4>
-            <button class="category-image-button" onclick="selectFinalOption('APL', 'APL', '55 Sh', 'Rouge')" data-title="Dureté: 55 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/APL.jpg" alt="APL">APL</button>
-            <button class="category-image-button" onclick="selectFinalOption('SLC', 'Silicone', '30 Sh', 'Transparent')" data-title="Dureté: 30 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SLC.jpg" alt="Silicone">Silicone</button>
-            <button class="category-image-button" onclick="selectFinalOption('SLCPU', 'Silicone PU', '60 Sh', 'Blanc')" data-title="Dureté: 60 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SLCPU.jpg" alt="Silicone PU">Silicone PU</button>
-            <button class="category-image-button" onclick="selectFinalOption('SLCF', 'Silicone FDA', '30 Sh', 'Bleu')" data-title="Dureté: 30 Sh; Couleur: Bleu" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/SLCF.jpg" alt="Silicone FDA">Silicone FDA</button>
-            <button class="category-image-button" onclick="selectFinalOption('TG50', 'Technogum 50', '50 Sh', 'Rouge')" data-title="Dureté: 50 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/TG50.jpg" alt="Technogum 50">Technogum 50</button>
-            <button class="category-image-button" onclick="selectFinalOption('TG70', 'Technogum 70', '70 Sh', 'Rouge')" data-title="Dureté: 70 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/TG70.jpg" alt="Technogum 70">Technogum 70</button>
-            <button class="category-image-button" onclick="selectFinalOption('CHRL', 'Chrome Cuir', '65 Sh', 'Gris')" data-title="Dureté: 65 Sh; Couleur: Gris" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/CHRL.jpg" alt="Chrome Cuir">Chrome Cuir</button>
-            <button class="category-image-button" onclick="selectFinalOption('RIB-H-APL', 'Multirib', '55 Sh', 'Rouge')" data-title="Dureté: 55 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/RIB-H-APL.jpg" alt="Multirib APL">Multirib APL</button>
-            <button class="category-image-button" onclick="selectFinalOption('RIB-H-PU70', 'Multirib', '70 Sh', 'Transparent')" data-title="Dureté: 70 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
-                <img src="images/RIB-H-PU70.jpg" alt="Multirib PU70">Multirib PU70</button>
+            <div class="buttons-container">
+                <button class="category-image-button" onclick="selectFinalOption('APL', 'APL', '55 Sh', 'Rouge')" data-title="Dureté: 55 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/APL.jpg" alt="APL">APL</button>
+                <button class="category-image-button" onclick="selectFinalOption('SLC', 'Silicone', '30 Sh', 'Transparent')" data-title="Dureté: 30 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SLC.jpg" alt="Silicone">Silicone</button>
+                <button class="category-image-button" onclick="selectFinalOption('SLCPU', 'Silicone PU', '60 Sh', 'Blanc')" data-title="Dureté: 60 Sh; Couleur: Blanc" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SLCPU.jpg" alt="Silicone PU">Silicone PU</button>
+                <button class="category-image-button" onclick="selectFinalOption('SLCF', 'Silicone FDA', '30 Sh', 'Bleu')" data-title="Dureté: 30 Sh; Couleur: Bleu" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/SLCF.jpg" alt="Silicone FDA">Silicone FDA</button>
+                <button class="category-image-button" onclick="selectFinalOption('TG50', 'Technogum 50', '50 Sh', 'Rouge')" data-title="Dureté: 50 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/TG50.jpg" alt="Technogum 50">Technogum 50</button>
+                <button class="category-image-button" onclick="selectFinalOption('TG70', 'Technogum 70', '70 Sh', 'Rouge')" data-title="Dureté: 70 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/TG70.jpg" alt="Technogum 70">Technogum 70</button>
+                <button class="category-image-button" onclick="selectFinalOption('CHRL', 'Chrome Cuir', '65 Sh', 'Gris')" data-title="Dureté: 65 Sh; Couleur: Gris" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/CHRL.jpg" alt="Chrome Cuir">Chrome Cuir</button>
+                <button class="category-image-button" onclick="selectFinalOption('RIB-H-APL', 'Multirib', '55 Sh', 'Rouge')" data-title="Dureté: 55 Sh; Couleur: Rouge" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/RIB-H-APL.jpg" alt="Multirib APL">Multirib APL</button>
+                <button class="category-image-button" onclick="selectFinalOption('RIB-H-PU70', 'Multirib', '70 Sh', 'Transparent')" data-title="Dureté: 70 Sh; Couleur: Transparent" onmouseover="showTooltip(this)" onmouseout="hideTooltip()">
+                    <img src="images/RIB-H-PU70.jpg" alt="Multirib PU70">Multirib PU70</button>
+            </div>
         </div>
     </div>
-
-	<!-- Étape 8.5: Épaisseur du revêtement -->
+    <!-- Étape 8.5: Épaisseur du revêtement -->
 	<div class="step" id="step8.5">
-		<button class="back-button" onclick="goBack(8)">Retour</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(8)">Retour</button>
+        </div>
 		<h3>Entrez l'épaisseur du revêtement en mm</h3>
         <div class="step-description" id="step8.5-description"></div>
 		<input type="number" id="coatingThicknessInput" placeholder="Épaisseur en mm"  onkeydown="if (event.key === 'Enter') validateCoatingThickness()">
-		<button onclick="validateCoatingThickness()">Valider</button>
+		<div class="button-container">
+            <button onclick="validateCoatingThickness()">Valider</button>
+        </div>
 	</div>
 
     <!-- Étape 9: Pose de Guide -->
     <div class="step" id="step9">
-        <button class="back-button" onclick="goBack(8.5)">Retour</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(8.5)">Retour</button>
+        </div>
         <h3>Besoin d'un guide ?</h3>
         <div class="step-description" id="step9-description">Pensez à préciser en désignation si le guide doit être excentré</div>
-		<button onclick="selectGuide('')" style="width: 200px;">Sans</button>
-        <div class="category-buttons">
+        <div class="button-container">
+            <button onclick="selectGuide('')" style="width: 200px;">Sans</button>
             <button onclick="selectGuide('K6')">K6</button>
             <button onclick="selectGuide('K10')">K10</button>
             <button onclick="selectGuide('K13')">K13</button>
@@ -259,24 +314,64 @@
 
     <!-- Étape 10: Ajout de fausses dents -->
     <div class="step" id="step10">
-        <button class="back-button" onclick="goBack(9)">Retour</button>
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+            <button class="back-button" onclick="goBack(9)">Retour</button>
+        </div>
         <h3>Besoin de fausses dents ?</h3>
         <div class="step-description" id="step10-description">Description de l'étape 10</div>
-		<button onclick="validateFalseTeeth('')" style="width: 200px;">Sans</button>
-		<div>
-        	<input type="number" id="falseTeethInput" placeholder="Nombre de fausses dents">
-        	<button onclick="validateFalseTeeth()">Valider</button>
-		</div>
+        <div class="button-container">
+            <button onclick="validateFalseTeeth('')" style="width: 200px;">Sans</button>
+        </div>
+        <div class="button-container">
+            <input type="number" id="falseTeethInput" placeholder="Nombre de fausses dents">
+            <button onclick="validateFalseTeeth()">Valider</button>
+        </div>
     </div>
 
     <!-- Résultat -->
     <div id="result-container">
         <div id="weldabilityInfo"></div>
-        <div id="result" class="result-style"></div>
-        <div id="designation" class="result-style"></div>
-        <div id="CodeStock" class="result-style"></div>
-        <div id="alternativeCodeStock" class="result-style"></div>
-    </div>
-    <script src="script.js"></script> <!-- Assurez-vous que ce fichier existe et est dans le bon chemin -->
+        
+        <!-- Version compacte des résultats -->
+        <div class="compact-results-container">
+            <div id="result" class="result-card">
+                <div class="result-content">Code article : <strong>En attente...</strong></div>
+                <div class="copy-icon">
+                    <i class="fas fa-copy"></i>
+                    <span class="copy-tooltip">Copier</span>
+                </div>
+            </div>
+            
+            <div id="CodeStock" class="result-card">
+                <div class="result-content">Stock : <strong>En attente...</strong></div>
+                <div class="copy-icon">
+                    <i class="fas fa-copy"></i>
+                    <span class="copy-tooltip">Copier</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="compact-results-container">
+            <div id="designation" class="result-card">
+                <div class="result-content">Désignation : <strong>En attente...</strong></div>
+                <div class="copy-icon">
+                    <i class="fas fa-copy"></i>
+                    <span class="copy-tooltip">Copier</span>
+                </div>
+            </div>
+            
+            <div id="alternativeCodeStock" class="result-card">
+                <div class="result-content">Alternative : <strong>En attente...</strong></div>
+                <div class="copy-icon">
+                    <i class="fas fa-copy"></i>
+                    <span class="copy-tooltip">Copier</span>
+                </div>
+            </div>
+        </div>
+        
+    
+    <!-- Important: Chargez le script JavaScript à la fin du body pour s'assurer que tous les éléments sont chargés -->
+    <script src="script.js"></script>
 </body>
 </html>
