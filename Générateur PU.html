@@ -91,7 +91,7 @@
         <h3>Sélectionnez la largeur</h3>
         <div class="step-description" id="step3-description">Les valeurs indiquées ci-dessous sont les standard catalogue Elatech</div>
         <div id="widthOptions" class="button-container"></div>
-        <input type="text" id="customWidthInput" placeholder="Entrez une largeur personnalisée (max 3 chiffres)" maxlength="3" onkeydown="handleWidthKeydown(event)">
+        <input type="number" id="customWidthInput" placeholder="Entrez une largeur personnalisée (max 3 chiffres)" min="1" max="999" onkeydown="handleWidthKeydown(event)">
         <div id="customWidthError" class="error">Veuillez entrer une largeur valide (max 3 chiffres).</div>
         <div class="button-container">
             <button onclick="selectCustomWidth()">Valider</button>
@@ -121,8 +121,8 @@
             <button class="back-button" onclick="goBack(4)">Retour</button>
         </div>
         <h3>Entrez la longueur en mm</h3>
-        <div class="step-description" id="step5-description">Pas possible ici sous 1000mm, peut avoir des traces sous 1200mm</div>
-        <input type="text" id="sizeInput" placeholder="Entrez la longueur en mm" maxlength="5" onkeydown="handleLengthKeydown(event)">
+        <div class="step-description" id="step5-description">Soudure pas possible ici sous 1000mm et il peut y avoir des traces sous 1200mm</div>
+        <input type="number" id="sizeInput" placeholder="Entrez la longueur en mm" min="1" max="99999" onkeydown="handleLengthKeydown(event)">
         <div id="sizeError" class="error">Veuillez entrer une taille valide.</div>
         <div id="lengthError" class="error">La longueur doit être supérieure ou égale à 1000 mm.</div>
         <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
@@ -290,7 +290,7 @@
         </div>
 		<h3>Entrez l'épaisseur du revêtement en mm</h3>
         <div class="step-description" id="step8.5-description"></div>
-		<input type="number" id="coatingThicknessInput" placeholder="Épaisseur en mm"  onkeydown="if (event.key === 'Enter') validateCoatingThickness()">
+		<input type="number" id="coatingThicknessInput" placeholder="Épaisseur en mm" min="0.1" step="0.1" onkeydown="if (event.key === 'Enter') validateCoatingThickness()">
 		<div class="button-container">
             <button onclick="validateCoatingThickness()">Valider</button>
         </div>
@@ -329,48 +329,64 @@
         </div>
     </div>
 
-    <!-- Résultat -->
-    <div id="result-container">
-        <div id="weldabilityInfo"></div>
+    <!-- Page de résultats dédiée -->
+    <div class="step" id="results-page">
+        <div class="nav-buttons">
+            <button class="restart-button" onclick="restartApp()">Recommencer</button>
+        </div>
+        <h2>Résultats</h2>
         
-        <!-- Version compacte des résultats -->
-        <div class="compact-results-container">
-            <div id="result" class="result-card">
-                <div class="result-content">Code article : <strong>En attente...</strong></div>
-                <div class="copy-icon">
-                    <i class="fas fa-copy"></i>
-                    <span class="copy-tooltip">Copier</span>
-                </div>
-            </div>
-            
-            <div id="CodeStock" class="result-card">
-                <div class="result-content">Stock : <strong>En attente...</strong></div>
-                <div class="copy-icon">
-                    <i class="fas fa-copy"></i>
-                    <span class="copy-tooltip">Copier</span>
-                </div>
+        <!-- Affichage récapitulatif des sélections -->
+        <div class="selections-summary-container">
+            <h3>Récapitulatif de vos sélections</h3>
+            <div id="selections-summary" class="selections-summary">
+                <!-- Sera rempli dynamiquement par JavaScript -->
             </div>
         </div>
         
-        <div class="compact-results-container">
-            <div id="designation" class="result-card">
-                <div class="result-content">Désignation : <strong>En attente...</strong></div>
-                <div class="copy-icon">
-                    <i class="fas fa-copy"></i>
-                    <span class="copy-tooltip">Copier</span>
+        <!-- Conteneur de résultats -->
+        <div id="result-container">
+            <div id="weldabilityInfo"></div>
+            
+            <!-- Version compacte des résultats -->
+            <div class="compact-results-container">
+                <div id="result" class="result-card">
+                    <div class="result-content">Code article : <strong>En attente...</strong></div>
+                    <div class="copy-icon">
+                        <i class="fas fa-copy"></i>
+                        <span class="copy-tooltip">Copier</span>
+                    </div>
+                </div>
+                
+                <div id="designation" class="result-card">
+                    <div class="result-content">Désignation : <strong>En attente...</strong></div>
+                    <div class="copy-icon">
+                        <i class="fas fa-copy"></i>
+                        <span class="copy-tooltip">Copier</span>
+                    </div>
                 </div>
             </div>
             
-            <div id="alternativeCodeStock" class="result-card">
-                <div class="result-content">Alternative : <strong>En attente...</strong></div>
-                <div class="copy-icon">
-                    <i class="fas fa-copy"></i>
-                    <span class="copy-tooltip">Copier</span>
+            <div class="compact-results-container">
+                <div id="CodeStock" class="result-card">
+                    <div class="result-content">Stock : <strong>En attente...</strong></div>
+                    <div class="copy-icon">
+                        <i class="fas fa-copy"></i>
+                        <span class="copy-tooltip">Copier</span>
+                    </div>
+                </div>
+                
+                <div id="alternativeCodeStock" class="result-card">
+                    <div class="result-content">Alternative : <strong>En attente...</strong></div>
+                    <div class="copy-icon">
+                        <i class="fas fa-copy"></i>
+                        <span class="copy-tooltip">Copier</span>
+                    </div>
                 </div>
             </div>
         </div>
-        
-    
+    </div>
+
     <!-- Important: Chargez le script JavaScript à la fin du body pour s'assurer que tous les éléments sont chargés -->
     <script src="script.js"></script>
 </body>

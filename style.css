@@ -444,23 +444,25 @@ select:focus, input:focus {
     position: absolute;
     background-color: var(--tooltip-bg);
     border: 1px solid var(--border-color);
-    padding: 12px;
+    padding: 8px 12px;
     border-radius: 6px;
+    font-size: 14px;
     box-shadow: var(--shadow);
-    z-index: 100;
-    display: none;
     max-width: 300px;
-    color: var(--text-color);
-    pointer-events: none;
+    z-index: 1000;
+    display: none;
+    transform: translateY(10px);
     opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    color: var(--text-color);
+    text-align: left;
 }
 
 .tooltip.visible {
-    opacity: 1;
-    visibility: visible;
     display: block;
+    transform: translateY(0);
+    opacity: 1;
 }
 
 /* Indicateur d'infobulle pour l'étape 1 */
