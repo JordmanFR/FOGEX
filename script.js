@@ -21,8 +21,8 @@ const state = {
     guideDesc: '',
     falseTeeth: '',
     coatingThickness: '',
-    fabricOption: '', // Renommage de optionalOption1 pour fabricOption
-    fabricOptionDesc: '' // Renommage de optionalOption1Desc pour fabricOptionDesc
+    fabricOption: '', 
+    fabricOptionDesc: '' 
 };
 
 // -----------------------------------------------------------------------------
@@ -639,7 +639,10 @@ const compatibilityTable = (category) => {
             "PG14M": { "A": true }, "PG20M": { "A": true },
             "F1": { "A": true, "K": true, "F": true }, "F2": { "A": true, "K": true, "S": true },
             "F2.5": { "A": true, "K": true, "S": true }, "F3": { "A": true, "K": true },
-            "F8.75": { "A": true, "P": true }
+            "F8.75": { "A": true, "P": true },
+            "FT5": { "K": true, "S": true },
+            "FT10": { "K": true, "S": true }, "FAT5": { "K": true, "S": true },
+            "FAT10": { "K": true, "S": true }
         },
         'V': {
             "T2.5": { "A": true }, "T5": { "A": true, "K": true },
@@ -885,16 +888,6 @@ function hideTooltipEnhanced() {
     }
 }
 
-// Remplacer la fonction showTooltip existante
-function showTooltip(element) {
-    showTooltipEnhanced(element);
-}
-
-// Remplacer la fonction hideTooltip existante
-function hideTooltip() {
-    hideTooltipEnhanced();
-}
-
 // Correction de la fonction updateProgress pour faire fonctionner la barre de progression
 function updateProgress(step) {
     const progressBar = document.getElementById('progress');
@@ -908,19 +901,6 @@ function updateProgress(step) {
     progressBar.style.width = `${percentage}%`;
     
     console.log(`Progression mise à jour: ${percentage}%`);
-}
-
-// Fonction pour mettre à jour le bouton "Finaliser"
-function updateFinishEarlyButton(step) {
-    const finishEarlyButton = document.getElementById('finishEarlyButton');
-    if (!finishEarlyButton) return;
-    
-    // Afficher le bouton à partir de l'étape 5
-    if (step >= 5) {
-        finishEarlyButton.style.display = 'block';
-    } else {
-        finishEarlyButton.style.display = 'none';
-    }
 }
 
 // -----------------------------------------------------------------------------
@@ -965,9 +945,6 @@ function navigateToStep(nextStep) {
     
     // Mettre à jour les résultats en temps réel
     updateLiveResults();
-    
-    // Afficher le bouton "Finaliser" pour les étapes 5 et suivantes
-    updateFinishEarlyButton(nextStep);
     
     // Si on arrive à l'étape 8 et que le profil commence par "E" ou contient "K", on saute l'étape 9
     if (nextStep === 8 && (state.profile.startsWith('E') || state.profile.includes('K'))) {
@@ -1195,14 +1172,15 @@ function validateSize() {
         state.size = size.padStart(5, '0');
         
         // Pour les profils spécifiques, on saute les options de revêtement
-        if (shouldSkipCoating()) {
-            state.fabricOption = '/Z'; // Renommage de optionalOption1 pour fabricOption
-            state.fabricOptionDesc = 'PAZ'; // Renommage de optionalOption1Desc pour fabricOptionDesc
+        if (skipFabric()) {
             resetResultsToInProgress();
             finalizeResult();
             // Pour les courroies ouvertes (R), on finalise après le tissu
             if (state.category === 'R') {
                 showResultsPage();
+            } else if (state.category === 'V') {
+                // Pour les courroies soudées, on continue vers le tissu
+                navigateToStep(9);
             }
             return;
         }
@@ -1267,13 +1245,15 @@ function updateSuggestedSizesUI(sizes) {
         button.onclick = () => {
             state.size = String(size).padStart(5, '0');
             
-            if (shouldSkipCoating()) {
-                state.fabricOption = '/Z'; // Renommage de optionalOption1 pour fabricOption
-                state.fabricOptionDesc = 'PAZ'; // Renommage de optionalOption1Desc pour fabricOptionDesc
+            if (skipFabric()) {
+                resetResultsToInProgress();
                 finalizeResult();
                 // Pour les courroies ouvertes (R), on finalise après le tissu
                 if (state.category === 'R') {
                     showResultsPage();
+                } else if (state.category === 'V') {
+                    // Pour les courroies soudées, on continue vers le tissu
+                    navigateToStep(7);
                 }
                 return;
             }
@@ -1289,23 +1269,23 @@ function updateSuggestedSizesUI(sizes) {
 function selectOptionalOption(value, desc) {
     if (desc === 'PAZ' || desc === 'PAR' || desc === 'PAZAS' || desc === 'PARAS') {
         // Toggle PAZ/PAZAS options
-        if (state.fabricOption.includes(value)) { // Renommage de optionalOption1 pour fabricOption
-            state.fabricOption = state.fabricOption.replace(value, ''); // Renommage de optionalOption1 pour fabricOption
-            state.fabricOptionDesc = state.fabricOptionDesc.replace(desc, ''); // Renommage de optionalOption1Desc pour fabricOptionDesc
+        if (state.fabricOption.includes(value)) { 
+            state.fabricOption = state.fabricOption.replace(value, ''); 
+            state.fabricOptionDesc = state.fabricOptionDesc.replace(desc, ''); 
         } else {
-            state.fabricOption += value; // Renommage de optionalOption1 pour fabricOption
-            state.fabricOptionDesc += desc; // Renommage de optionalOption1Desc pour fabricOptionDesc
+            state.fabricOption += value; 
+            state.fabricOptionDesc += desc; 
         }
     } else {
         // Handle other options
-        state.fabricOption = value; // Renommage de optionalOption1 pour fabricOption
-        state.fabricOptionDesc = desc; // Renommage de optionalOption1Desc pour fabricOptionDesc
+        state.fabricOption = value; 
+        state.fabricOptionDesc = desc; 
     }
 
     // Clean up descriptions
-    state.fabricOptionDesc = state.fabricOptionDesc.replace('Sans', ''); // Renommage de optionalOption1Desc pour fabricOptionDesc
-    if (state.fabricOptionDesc === '') { // Renommage de optionalOption1Desc pour fabricOptionDesc
-        state.fabricOption = ''; // Renommage de optionalOption1 pour fabricOption
+    state.fabricOptionDesc = state.fabricOptionDesc.replace('Sans', ''); 
+    if (state.fabricOptionDesc === '') { 
+        state.fabricOption = ''; 
     }
 
     // Pour les courroies ouvertes (R), finaliser après le choix du tissu
@@ -1315,7 +1295,11 @@ function selectOptionalOption(value, desc) {
         showResultsPage();
     } else {
         // Pour les autres types, continuer vers l'étape du revêtement
-        navigateToStep(8);
+        if (skipCoating()) {
+            navigateToStep(9);
+        } else {
+            navigateToStep(8);
+        }
     }
 }
 
@@ -1438,8 +1422,8 @@ function generateCodeArticle() {
 
     // Ajouter les options supplémentaires uniquement pour les courroies non ouvertes
     if (state.category !== 'R') {
-        if (state.fabricOption) { // Renommage de optionalOption1 pour fabricOption
-            codeArticle += state.fabricOption; // Renommage de optionalOption1 pour fabricOption
+        if (state.fabricOption) { 
+            codeArticle += state.fabricOption; 
         }
 
         if (state.finalOption) {
@@ -1564,8 +1548,8 @@ function generateDesignation() {
                 }
 
                 // Ajouter les options supplémentaires uniquement pour les courroies non ouvertes
-                if (state.fabricOptionDesc && state.fabricOptionDesc !== 'Sans') { // Renommage de optionalOption1Desc pour fabricOptionDesc
-                    designationParts.push(state.fabricOptionDesc); // Renommage de optionalOption1Desc pour fabricOptionDesc
+                if (state.fabricOptionDesc && state.fabricOptionDesc !== 'Sans') { 
+                    designationParts.push(state.fabricOptionDesc); 
                 }
                 
                 if (state.finalOptionDesc && state.finalOptionDesc !== 'Sans') {
@@ -1583,6 +1567,10 @@ function generateDesignation() {
                 if (state.falseTeeth) {
                     designationParts.push(`${state.falseTeeth} EFT`);
                 }
+            }
+            // Pour les courroies de type R, ajouter l'option de tissu si elle existe
+            else if (state.category === 'R' && state.fabricOptionDesc && state.fabricOptionDesc !== 'Sans') {
+                designationParts.push(state.fabricOptionDesc);
             }
         }
 
@@ -1643,8 +1631,8 @@ function generateCodeStock() {
         codeStock = 'Impossible';
     }
 
-    if (state.fabricOption) { // Renommage de optionalOption1 pour fabricOption
-        codeStock += state.fabricOption; // Renommage de optionalOption1 pour fabricOption
+    if (state.fabricOption) { 
+        codeStock += state.fabricOption; 
     }
 
     return codeStock;
@@ -1694,8 +1682,8 @@ function generateAlternativeCodeStock() {
         alternativeCodeStock = 'Impossible';
     }
 
-    if (state.fabricOption) { // Renommage de optionalOption1 pour fabricOption
-        alternativeCodeStock += state.fabricOption.replace(/^\//, ''); // Renommage de optionalOption1 pour fabricOption
+    if (state.fabricOption) { 
+        alternativeCodeStock += state.fabricOption.replace(/^\//, ''); 
     }
 
     return alternativeCodeStock;
@@ -1742,10 +1730,31 @@ function getProfileGroup(profileCode) {
     )[0];
 }
 
-function shouldSkipCoating() {
-    return state.profile.startsWith('ST') || 
-           state.profile.startsWith('RP') || 
-           state.profile.startsWith('E');
+function skipFabric() {
+    if (state.profile.startsWith('ST') ||
+        state.profile.startsWith('RP') ||
+        state.profile.startsWith('E')) {
+        // Mode 1: Forcer "PAZ"
+        state.fabricOption = '/Z';
+        state.fabricOptionDesc = 'PAZ';
+        return true;
+    } else if (state.profile.startsWith('FT') ||
+               state.profile.startsWith('FAT')) {
+        // Mode 2: Forcer "Sans"
+        state.fabricOption = '';
+        state.fabricOptionDesc = 'Sans';
+        return true;
+    }
+    return false;
+}
+
+function skipCoating() {
+    const fabricOptions = ['PAR', 'PAZ + PAR', 'PARAS', 'PAZAS + PARAS'];
+    if (fabricOptions.includes(state.fabricOptionDesc) || state.profile.startsWith('FT') || state.profile.startsWith('FAT')) {
+        selectFinalOption('', 'Sans', '', ''); // Sélectionner "Sans"
+        return true;
+    }
+    return false;
 }
 
 function resetErrors() {
@@ -1813,23 +1822,6 @@ function getWeldabilityMessage(profile, width) {
     return state.beltsData.messages[weldability] || 'Information non disponible';
 }
 
-// Fonctions améliorées pour les tooltips
-function showTooltip(element) {
-    const tooltip = document.getElementById('tooltip');
-    tooltip.innerHTML = element.dataset.title.replace(/;/g, '<br>');
-    tooltip.style.display = 'block';
-
-    // Positionner l'info-bulle à côté du bouton
-    const rect = element.getBoundingClientRect();
-    tooltip.style.top = (rect.bottom + window.scrollY) + 'px';
-    tooltip.style.left = (rect.left + window.scrollX) + 'px';
-}
-
-function hideTooltip() {
-    const tooltip = document.getElementById('tooltip');
-    tooltip.style.display = 'none';
-}
-
 // Ajouter ces deux fonctions juste avant la section "Fonctions utilitaires"
 function handleWidthKeydown(event) {
     if (event.key === 'Enter') {
@@ -1880,7 +1872,7 @@ function selectGuide(guideCode) {
     resetResultsToInProgress();
     
     // Si le profil nécessite l'étape des fausses dents, la proposer
-    if (['AT10', 'H', 'AT20', 'XH'].includes(state.profile)) {
+    if (['AT10', 'FAT10', 'H', 'AT20', 'XH'].includes(state.profile)) {
         navigateToStep(10);
     } else {
         // Sinon, finaliser directement
