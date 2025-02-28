@@ -20,7 +20,9 @@ const state = {
     guide: '',
     guideDesc: '',
     falseTeeth: '',
-    coatingThickness: ''
+    coatingThickness: '',
+    fabricOption: '', // Renommage de optionalOption1 pour fabricOption
+    fabricOptionDesc: '' // Renommage de optionalOption1Desc pour fabricOptionDesc
 };
 
 // -----------------------------------------------------------------------------
@@ -961,27 +963,19 @@ function navigateToStep(nextStep) {
     // Optimiser les grilles de boutons pour l'étape active
     setTimeout(optimizeButtonGrids, 10); // Petit délai pour laisser le DOM se mettre à jour
     
-    // Gérer les profils spéciaux qui nécessitent l'étape 10 (fausses dents)
-    if (nextStep === 9) {
-        // CORRECTION: Ne pas finaliser immédiatement pour les profils non concernés
-        // Passer à l'étape 10 uniquement pour AT10, H, AT20, XH
-        if (['AT10', 'H', 'AT20', 'XH'].includes(state.profile)) {
-            // Ces profils auront besoin de l'étape des fausses dents
-            console.log("Profil nécessitant l'étape des fausses dents détecté");
-        } else {
-            // Pour les autres profils, finaliser directement
-            console.log("Profil standard détecté, finalisation directe");
-            resetResultsToInProgress();
-            finalizeResult();
-            showResultsPage(); // Afficher la page de résultats
-        }
-    }
-    
     // Mettre à jour les résultats en temps réel
     updateLiveResults();
     
     // Afficher le bouton "Finaliser" pour les étapes 5 et suivantes
     updateFinishEarlyButton(nextStep);
+    
+    // Si on arrive à l'étape 8 et que le profil commence par "E" ou contient "K", on saute l'étape 9
+    if (nextStep === 8 && (state.profile.startsWith('E') || state.profile.includes('K'))) {
+        console.log("Profil EAGLE ou avec guide détecté, on saute l'étape 9");
+        resetResultsToInProgress();
+        finalizeResult();
+        showResultsPage();
+    }
 }
 
 // Ajout d'une fonction pour afficher la page de résultats
@@ -1042,8 +1036,8 @@ function updateSelectionsSummary() {
     }
     
     // Options supplémentaires
-    if (state.optionalOption1Desc && state.optionalOption1Desc !== 'Sans') {
-        summary += `<p><strong>Tissu:</strong> ${state.optionalOption1Desc}</p>`;
+    if (state.fabricOptionDesc && state.fabricOptionDesc !== 'Sans') {
+        summary += `<p><strong>Tissu:</strong> ${state.fabricOptionDesc}</p>`;
     }
     
     if (state.finalOptionDesc && state.finalOptionDesc !== 'Sans') {
@@ -1202,8 +1196,8 @@ function validateSize() {
         
         // Pour les profils spécifiques, on saute les options de revêtement
         if (shouldSkipCoating()) {
-            state.optionalOption1 = '/Z';
-            state.optionalOption1Desc = 'PAZ';
+            state.fabricOption = '/Z'; // Renommage de optionalOption1 pour fabricOption
+            state.fabricOptionDesc = 'PAZ'; // Renommage de optionalOption1Desc pour fabricOptionDesc
             resetResultsToInProgress();
             finalizeResult();
             // Pour les courroies ouvertes (R), on finalise après le tissu
@@ -1274,8 +1268,8 @@ function updateSuggestedSizesUI(sizes) {
             state.size = String(size).padStart(5, '0');
             
             if (shouldSkipCoating()) {
-                state.optionalOption1 = '/Z';
-                state.optionalOption1Desc = 'PAZ';
+                state.fabricOption = '/Z'; // Renommage de optionalOption1 pour fabricOption
+                state.fabricOptionDesc = 'PAZ'; // Renommage de optionalOption1Desc pour fabricOptionDesc
                 finalizeResult();
                 // Pour les courroies ouvertes (R), on finalise après le tissu
                 if (state.category === 'R') {
@@ -1295,23 +1289,23 @@ function updateSuggestedSizesUI(sizes) {
 function selectOptionalOption(value, desc) {
     if (desc === 'PAZ' || desc === 'PAR' || desc === 'PAZAS' || desc === 'PARAS') {
         // Toggle PAZ/PAZAS options
-        if (state.optionalOption1.includes(value)) {
-            state.optionalOption1 = state.optionalOption1.replace(value, '');
-            state.optionalOption1Desc = state.optionalOption1Desc.replace(desc, '');
+        if (state.fabricOption.includes(value)) { // Renommage de optionalOption1 pour fabricOption
+            state.fabricOption = state.fabricOption.replace(value, ''); // Renommage de optionalOption1 pour fabricOption
+            state.fabricOptionDesc = state.fabricOptionDesc.replace(desc, ''); // Renommage de optionalOption1Desc pour fabricOptionDesc
         } else {
-            state.optionalOption1 += value;
-            state.optionalOption1Desc += desc;
+            state.fabricOption += value; // Renommage de optionalOption1 pour fabricOption
+            state.fabricOptionDesc += desc; // Renommage de optionalOption1Desc pour fabricOptionDesc
         }
     } else {
         // Handle other options
-        state.optionalOption1 = value;
-        state.optionalOption1Desc = desc;
+        state.fabricOption = value; // Renommage de optionalOption1 pour fabricOption
+        state.fabricOptionDesc = desc; // Renommage de optionalOption1Desc pour fabricOptionDesc
     }
 
     // Clean up descriptions
-    state.optionalOption1Desc = state.optionalOption1Desc.replace('Sans', '');
-    if (state.optionalOption1Desc === '') {
-        state.optionalOption1 = '';
+    state.fabricOptionDesc = state.fabricOptionDesc.replace('Sans', ''); // Renommage de optionalOption1Desc pour fabricOptionDesc
+    if (state.fabricOptionDesc === '') { // Renommage de optionalOption1Desc pour fabricOptionDesc
+        state.fabricOption = ''; // Renommage de optionalOption1 pour fabricOption
     }
 
     // Pour les courroies ouvertes (R), finaliser après le choix du tissu
@@ -1444,8 +1438,8 @@ function generateCodeArticle() {
 
     // Ajouter les options supplémentaires uniquement pour les courroies non ouvertes
     if (state.category !== 'R') {
-        if (state.optionalOption1) {
-            codeArticle += state.optionalOption1;
+        if (state.fabricOption) { // Renommage de optionalOption1 pour fabricOption
+            codeArticle += state.fabricOption; // Renommage de optionalOption1 pour fabricOption
         }
 
         if (state.finalOption) {
@@ -1570,8 +1564,8 @@ function generateDesignation() {
                 }
 
                 // Ajouter les options supplémentaires uniquement pour les courroies non ouvertes
-                if (state.optionalOption1Desc && state.optionalOption1Desc !== 'Sans') {
-                    designationParts.push(state.optionalOption1Desc);
+                if (state.fabricOptionDesc && state.fabricOptionDesc !== 'Sans') { // Renommage de optionalOption1Desc pour fabricOptionDesc
+                    designationParts.push(state.fabricOptionDesc); // Renommage de optionalOption1Desc pour fabricOptionDesc
                 }
                 
                 if (state.finalOptionDesc && state.finalOptionDesc !== 'Sans') {
@@ -1649,8 +1643,8 @@ function generateCodeStock() {
         codeStock = 'Impossible';
     }
 
-    if (state.optionalOption1) {
-        codeStock += state.optionalOption1;
+    if (state.fabricOption) { // Renommage de optionalOption1 pour fabricOption
+        codeStock += state.fabricOption; // Renommage de optionalOption1 pour fabricOption
     }
 
     return codeStock;
@@ -1700,8 +1694,8 @@ function generateAlternativeCodeStock() {
         alternativeCodeStock = 'Impossible';
     }
 
-    if (state.optionalOption1) {
-        alternativeCodeStock += state.optionalOption1.replace(/^\//, '');
+    if (state.fabricOption) { // Renommage de optionalOption1 pour fabricOption
+        alternativeCodeStock += state.fabricOption.replace(/^\//, ''); // Renommage de optionalOption1 pour fabricOption
     }
 
     return alternativeCodeStock;
@@ -1987,6 +1981,7 @@ function optimizeButtonGrids() {
         container.style.flexWrap = 'wrap';
         container.style.justifyContent = 'center';
     });
+    
 }
 
 // Initialisation au chargement de la page
