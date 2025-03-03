@@ -1178,9 +1178,8 @@ function validateSize() {
             // Pour les courroies ouvertes (R), on finalise après le tissu
             if (state.category === 'R') {
                 showResultsPage();
-            } else if (state.category === 'V') {
-                // Pour les courroies soudées, on continue vers le tissu
-                navigateToStep(9);
+            } else {
+                showResultsPage();
             }
             return;
         }
@@ -1246,14 +1245,10 @@ function updateSuggestedSizesUI(sizes) {
             state.size = String(size).padStart(5, '0');
             
             if (skipFabric()) {
-                resetResultsToInProgress();
                 finalizeResult();
                 // Pour les courroies ouvertes (R), on finalise après le tissu
                 if (state.category === 'R') {
                     showResultsPage();
-                } else if (state.category === 'V') {
-                    // Pour les courroies soudées, on continue vers le tissu
-                    navigateToStep(7);
                 }
                 return;
             }
@@ -1293,13 +1288,13 @@ function selectOptionalOption(value, desc) {
         resetResultsToInProgress();
         finalizeResult();
         showResultsPage();
+        return;
+    }
+     // Pour les autres types, continuer vers l'étape du revêtement
+    if (skipCoating()) {
+        navigateToStep(9);
     } else {
-        // Pour les autres types, continuer vers l'étape du revêtement
-        if (skipCoating()) {
-            navigateToStep(9);
-        } else {
-            navigateToStep(8);
-        }
+        navigateToStep(8);
     }
 }
 
@@ -1757,6 +1752,22 @@ function skipCoating() {
     return false;
 }
 
+function skipGuide() {
+    if (state.profile.startsWith('E') ||
+        state.profile.startsWith('TK') ||
+        state.profile.startsWith('ATK') ||
+        state.profile === 'H-K13') {
+        state.guide = '';
+        state.guideDesc = '';
+        return true;
+    }
+    return false;
+}
+
+function skipFalseTeeth() {
+    return !(['AT10', 'H', 'AT20', 'XH'].includes(state.profile));
+}
+
 function resetErrors() {
     ['sizeError', 'lengthError', 'teethError'].forEach(id => {
         document.getElementById(id).style.display = 'none';
@@ -1850,7 +1861,12 @@ function selectFinalOption(code, description, durete, couleur) {
     if (requiresCoatingThickness(code)) {
         navigateToStep(8.5);
     } else {
-        navigateToStep(9); // Aller à l'étape 9 après la sélection de l'option finale
+        if (skipGuide()) {
+            finalizeResult();
+            showResultsPage();
+        } else {
+            navigateToStep(9); // Aller à l'étape 9 après la sélection de l'option finale
+        }
     }
 }
 
@@ -1871,22 +1887,26 @@ function selectGuide(guideCode) {
     // Réinitialiser les résultats à "en cours"
     resetResultsToInProgress();
     
+    // Pour les courroies ouvertes (R), finaliser après le choix du tissu
+    if (state.category === 'R') {
+        finalizeResult();
+        showResultsPage();
+        return;
+    }
+    
     // Si le profil nécessite l'étape des fausses dents, la proposer
-    if (['AT10', 'FAT10', 'H', 'AT20', 'XH'].includes(state.profile)) {
-        navigateToStep(10);
-    } else {
+    if (skipFalseTeeth()) {
         // Sinon, finaliser directement
         finalizeResult();
         showResultsPage();
+    } else {
+        navigateToStep(10);
     }
 }
 
-function requiresCoatingThickness(code) {
-	const coatingsRequiringThickness = ['CFX', 'PUR70', 'PUR85', 'PY50', 'PY70', 'POR', 'SYL-B', 'SYL-V', 'SYL-M', 'FBPU', 'FBPVC', 'PVCW', 'PVCG', 'SG50T', 'LTX', 'LNP', 'LTR', 'TNX', 'VTN', 'RP400', 'CRX', 'APL', 'SLC', 'SLCPU', 'SLCF', 'TG50', 'TG70', 'CHRL', 'RIB-H-APL', 'RIB-H-PU70'];
-	return coatingsRequiringThickness.includes(code);
-}
-
+// -----------------------------------------------------------------------------
 // Ajustement dynamique de la taille des boutons en fonction de leur nombre
+// -----------------------------------------------------------------------------
 function adjustButtonSizes() {
     // Pour l'étape 8 (revêtements)
     const step8CategoryContainers = document.querySelectorAll('#step8 .category-buttons');
@@ -2126,3 +2146,10 @@ function resetResultsToInProgress() {
         }
     });
 }
+
+function requiresCoatingThickness(code) {
+    // Vérifier si le code nécessite une épaisseur de revêtement
+    const excludedCodes = ['', 'SG50T', 'FBPU', 'FBPVC', 'SG50R', 'SG60', 'SG70', 'MG'];
+    return !excludedCodes.includes(code);
+}
+

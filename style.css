@@ -195,7 +195,7 @@ button {
     padding: 8px 12px;
     margin: 5px;
     cursor: pointer;
-    background-color: var (--button-bg);
+    background-color: var(--button-bg);
     border: 1px solid var(--border-color);
     border-radius: 6px;
     color: var(--text-color);
@@ -247,6 +247,7 @@ button:active {
     position: static;
     background-color: var(--back-button-bg);
     border: 1px solid var(--back-button-border);
+    color: var(--text-color); /* Ensure text is readable */
     font-size: 12px;
     padding: 5px 10px;
     margin-right: 5px;
@@ -260,6 +261,7 @@ button:active {
 .restart-button {
     background-color: #ccccff;
     border: 1px solid #6666ff;
+    color: var(--text-color); /* Ensure text is readable */
     font-size: 12px;
     padding: 5px 10px;
     margin-left: 5px;
