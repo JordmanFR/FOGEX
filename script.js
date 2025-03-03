@@ -1,7 +1,14 @@
+// =============================================================================
+// FOGEX - Configurateur de courroie polyuréthane
+// =============================================================================
+
 // -----------------------------------------------------------------------------
-// État de l'application
+// 1. CONFIGURATION ET ÉTAT DE L'APPLICATION
 // -----------------------------------------------------------------------------
 
+/**
+ * État global de l'application - stocke toutes les sélections utilisateur
+ */
 const state = {
     currentStep: 1,
     category: '',
@@ -25,10 +32,9 @@ const state = {
     fabricOptionDesc: '' 
 };
 
-// -----------------------------------------------------------------------------
-// Initialisation des données
-// -----------------------------------------------------------------------------
-
+/**
+ * Données des courroies - définition des catégories, profils, câbles et compatibilités
+ */
 const beltsData = {
     "messages": {
         "YES": "Peut être soudée même à l'unité",
@@ -613,7 +619,11 @@ const beltsData = {
     }
 };
 
-// Table de compatibilité
+/**
+ * Table de compatibilité entre catégories, profils et câbles
+ * @param {string} category - La catégorie de courroie
+ * @returns {Object} Table de compatibilité pour la catégorie
+ */
 const compatibilityTable = (category) => {
     const table = {
         'R': {
@@ -707,10 +717,12 @@ const compatibilityTable = (category) => {
 };
 
 // -----------------------------------------------------------------------------
-// Initialisation de l'interface utilisateur
+// 2. INITIALISATION ET CONFIGURATION DE L'INTERFACE UTILISATEUR
 // -----------------------------------------------------------------------------
 
-// Initialisation
+/**
+ * Initialisation de l'application
+ */
 function initializeApp() {
     console.log("Initialisation de l'application...");
     state.beltsData = beltsData;
@@ -732,11 +744,16 @@ function initializeApp() {
     console.log("Données chargées:", Object.keys(state.beltsData).length > 0 ? "Oui" : "Non");
 }
 
+/**
+ * Configuration initiale de l'interface
+ */
 function setupInitialUI() {
     createProfileSelect();
 }
 
-// Initialisation des conteneurs de résultats
+/**
+ * Initialisation des conteneurs de résultats
+ */
 function initializeResultContainers() {
     const resultCards = document.querySelectorAll('.result-card');
     resultCards.forEach(card => {
@@ -763,7 +780,9 @@ function initializeResultContainers() {
     });
 }
 
-// Configure le switch pour le mode sombre
+/**
+ * Configuration du sélecteur de thème sombre/clair
+ */
 function setupThemeSwitcher() {
     const themeSwitch = document.getElementById('checkbox');
     if (!themeSwitch) {
@@ -796,7 +815,9 @@ function setupThemeSwitcher() {
     });
 }
 
-// Configure les boutons de copie
+/**
+ * Configuration des boutons de copie
+ */
 function setupCopyButtons() {
     const resultCards = document.querySelectorAll('.result-card');
     
@@ -805,7 +826,9 @@ function setupCopyButtons() {
     });
 }
 
-// Configuration globale des tooltips
+/**
+ * Configuration des tooltips
+ */
 function setupTooltips() {
     // S'assurer que le tooltip existe
     let tooltip = document.getElementById('tooltip');
@@ -838,7 +861,10 @@ function setupTooltips() {
     });
 }
 
-// Fonctions améliorées pour les tooltips
+/**
+ * Affiche un tooltip amélioré
+ * @param {HTMLElement} element - Élément déclencheur du tooltip
+ */
 function showTooltipEnhanced(element) {
     if (!element.dataset.title) return;
     
@@ -881,6 +907,9 @@ function showTooltipEnhanced(element) {
     tooltip.style.left = leftPos + 'px';
 }
 
+/**
+ * Cache le tooltip
+ */
 function hideTooltipEnhanced() {
     const tooltip = document.getElementById('tooltip');
     if (tooltip) {
@@ -888,7 +917,10 @@ function hideTooltipEnhanced() {
     }
 }
 
-// Correction de la fonction updateProgress pour faire fonctionner la barre de progression
+/**
+ * Met à jour la barre de progression
+ * @param {number} step - Étape actuelle
+ */
 function updateProgress(step) {
     const progressBar = document.getElementById('progress');
     if (!progressBar) {
@@ -903,10 +935,111 @@ function updateProgress(step) {
     console.log(`Progression mise à jour: ${percentage}%`);
 }
 
+/**
+ * Ajuste la taille des boutons en fonction de leur nombre
+ */
+function adjustButtonSizes() {
+    // Pour l'étape 8 (revêtements)
+    const step8CategoryContainers = document.querySelectorAll('#step8 .category-buttons');
+    step8CategoryContainers.forEach(container => {
+        const buttonCount = container.querySelectorAll('.category-image-button').length;
+        if (buttonCount > 8) {
+            container.classList.add('high-density');
+            container.classList.remove('medium-density', 'low-density');
+        } else if (buttonCount > 5) {
+            container.classList.add('medium-density');
+            container.classList.remove('high-density', 'low-density');
+        } else {
+            container.classList.add('low-density');
+            container.classList.remove('high-density', 'medium-density');
+        }
+    });
+    
+    // Pour l'étape 1 (catégories)
+    const step1Container = document.querySelector('#step1 .category-buttons');
+    if (step1Container) {
+        const buttonCount = step1Container.querySelectorAll('..category-image-button').length;
+        if (buttonCount <= 5) {
+            step1Container.classList.add('low-density');
+        }
+    }
+}
+
+/**
+ * Modifie la taille des boutons selon la section
+ * @param {string} sectionId - Sélecteur CSS de la section
+ */
+function updateButtonSizesBasedOnSection(sectionId) {
+    const buttons = document.querySelectorAll(`${sectionId} .category-image-button`);
+    
+    // Définir les tailles en fonction de la section
+    let width, height;
+    switch (sectionId) {
+        case '#step1': // Page d'accueil - grands boutons
+            width = '140px';
+            height = '140px';
+            break;
+        case '#step7': // Tissus - taille moyenne
+            width = '120px';
+            height = '120px';
+            break;
+        case '#step8': // Revêtements - petits boutons car nombreux
+            width = '100px';
+            height = '110px';
+            break;
+        default:
+            return; // Ne rien faire pour les autres sections
+    }
+    
+    // Appliquer les tailles
+    buttons.forEach(button => {
+        button.style.width = width;
+        button.style.height = height;
+    });
+}
+
+/**
+ * Optimise les grilles de boutons
+ */
+function optimizeButtonGrids() {
+    // Adapter les grilles en fonction du nombre de boutons
+    document.querySelectorAll('.category-buttons').forEach(container => {
+        const buttons = container.querySelectorAll('.category-image-button');
+        const buttonCount = buttons.length;
+        
+        // Centrer tous les conteneurs
+        container.style.marginLeft = 'auto';
+        container.style.marginRight = 'auto';
+        
+        // Si moins de 6 boutons, centrer la grille
+        if (buttonCount > 0 && buttonCount <= 5) {
+            container.style.display = 'flex';
+            container.style.flexWrap = 'wrap';
+            container.style.justifyContent = 'center';
+            container.style.maxWidth = `${buttonCount * 170}px`;
+        } else {
+            container.style.display = 'grid';
+            container.style.justifyItems = 'center';
+        }
+    });
+    
+    // Centrer les autres conteneurs de boutons
+    document.querySelectorAll('.button-container').forEach(container => {
+        container.style.display = 'flex';
+        container.style.flexWrap = 'wrap';
+        container.style.justifyContent = 'center';
+    });
+    
+}
+
 // -----------------------------------------------------------------------------
-// Fonctions de navigation
+// 3. NAVIGATION ET GESTION DES ÉTAPES
 // -----------------------------------------------------------------------------
 
+/**
+ * Navigation entre les étapes de l'application
+ * @param {number} nextStep - Numéro de l'étape suivante
+ */
 function navigateToStep(nextStep) {
     console.log("Navigation vers l'étape:", nextStep);
     
@@ -955,7 +1088,9 @@ function navigateToStep(nextStep) {
     }
 }
 
-// Ajout d'une fonction pour afficher la page de résultats
+/**
+ * Affiche la page de résultats finale
+ */
 function showResultsPage() {
     // Masquer l'étape courante
     const currentStepElement = document.getElementById(`step${state.currentStep}`);
@@ -975,7 +1110,9 @@ function showResultsPage() {
     }
 }
 
-// Fonction pour mettre à jour le récapitulatif des sélections
+/**
+ * Met à jour le récapitulatif des sélections
+ */
 function updateSelectionsSummary() {
     const summaryContainer = document.getElementById('selections-summary');
     if (!summaryContainer) return;
@@ -1036,14 +1173,87 @@ function updateSelectionsSummary() {
     summaryContainer.innerHTML = summary;
 }
 
+/**
+ * Retourne à une étape précédente
+ * @param {number} previousStep - Numéro de l'étape précédente
+ */
+function goBack(previousStep) {
+    console.log("Retour à l'étape:", previousStep);
+    resetResultsToInProgress();
+    navigateToStep(previousStep);
+}
+
+/**
+ * Redémarre l'application depuis le début
+ */
+function restartApp() {
+    console.log("Redémarrage de l'application...");
+    
+    for (let key in state) {
+        if (key !== 'beltsData') {
+            state[key] = '';
+        }
+    }
+    state.currentStep = 1;
+    
+    resetResultsToInProgress();
+    
+    document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active');
+    });
+    document.getElementById('step1').classList.add('active');
+    
+    const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+    inputs.forEach(input => input.value = '');
+    
+    const profileSelect = document.getElementById('profileSelect');
+    if (profileSelect) profileSelect.innerHTML = '';
+    
+    const weldabilityElement = document.getElementById('weldabilityInfo');
+    if (weldabilityElement) {
+        weldabilityElement.innerHTML = '';
+        weldabilityElement.className = 'weldability';
+    }
+    
+    updateProgress(1);
+    
+    adjustButtonSizes();
+    optimizeButtonGrids();
+    
+    console.log("Application redémarrée, retour à l'étape 1");
+}
+
+/**
+ * Réinitialise les résultats à "en cours"
+ */
+function resetResultsToInProgress() {
+    document.querySelectorAll('.result-card').forEach(card => {
+        card.classList.remove('finalized');
+        card.classList.add('in-progress');
+        card.style.cursor = 'default';
+        
+        card.removeEventListener('click', handleResultCardClick);
+        
+        updateResultContainer('result', `Code : <strong>En cours...</strong>`);
+        updateResultContainer('designation', `Désignation : <strong>En cours...</strong>`);
+        updateResultContainer('CodeStock', `Stock : <strong>En cours...</strong>`);
+        updateResultContainer('alternativeCodeStock', `Alternative : <strong>En cours...</strong>`);
+        
+        const weldabilityElement = document.getElementById('weldabilityInfo');
+        if (weldabilityElement) {
+            weldabilityElement.className = 'weldability';
+            weldabilityElement.innerHTML = '';
+        }
+    });
+}
+
 // -----------------------------------------------------------------------------
-// Fonctions spécifiques à l'étape
+// 4. GESTION DES SÉLECTIONS UTILISATEUR
 // -----------------------------------------------------------------------------
 
-// ** Étape 1 : Sélection de la catégorie **
-// Aucune fonction spécifique nécessaire, l'interface est gérée directement dans le HTML
-
-// ** Étape 2 : Sélection du profil **
+/**
+ * Création du sélecteur de profil
+ */
 function createProfileSelect() {
     const select = document.getElementById('profileSelect');
     select.innerHTML = '';
@@ -1070,6 +1280,12 @@ function createProfileSelect() {
     }
 }
 
+/**
+ * Vérifie si un profil est compatible avec une catégorie
+ * @param {string} profile - Code du profil
+ * @param {string} category - Code de la catégorie
+ * @returns {boolean} - Vrai si compatible
+ */
 function isProfileCompatibleWithCategory(profile, category) {
     const compatibleCategories = {
         "R": ["T2.5", "T5", "T10", "T20", "MXL", "XL", "L", "H", "XH", "AT3", "AT5", "AT10", "AT15", "AT20", "ATK5-K6", "TK5-K6", "TK10-K6", "TK10-K13", "TK20-K13", "ATK10-K6", "ATK10-K13", "H-K13", "HT3", "HT5", "HT8", "HT14", "FT5", "FT10", "FAT5", "FAT10", "ST5", "ST8", "ST14", "RP5", "RP8", "RP14", "E5", "E8", "E10", "E14", "SAT10", "ATF10", "ATM10", "ATF20", "PG14M", "PG20M", "F1", "F2", "F2.5", "F3", "F8.75"],
@@ -1082,11 +1298,13 @@ function isProfileCompatibleWithCategory(profile, category) {
     return compatibleCategories[category]?.includes(profile) || false;
 }
 
-// ** Étape 3 : Sélection de la largeur **
+/**
+ * Met à jour les options de largeur pour l'étape 3
+ */
 function updateStep3Options() {
     const widthOptionsDiv = document.getElementById('widthOptions');
     widthOptionsDiv.innerHTML = '';
-    widthOptionsDiv.className = 'button-container'; // Assure que le conteneur a la classe correcte
+    widthOptionsDiv.className = 'button-container';
 
     if (state.category === 'W') {
         const specialWidths = {
@@ -1111,6 +1329,12 @@ function updateStep3Options() {
     });
 }
 
+/**
+ * Crée un bouton de sélection de largeur
+ * @param {string} width - Valeur de la largeur
+ * @param {HTMLElement} container - Conteneur des boutons
+ * @param {string} label - Texte du bouton
+ */
 function createWidthButton(width, container, label = `${width}mm`) {
     const button = document.createElement('button');
     button.textContent = label;
@@ -1118,6 +1342,9 @@ function createWidthButton(width, container, label = `${width}mm`) {
     container.appendChild(button);
 }
 
+/**
+ * Sélectionne une largeur personnalisée
+ */
 function selectCustomWidth() {
     const customWidthInput = document.getElementById('customWidthInput');
     let customWidth = customWidthInput.value.trim();
@@ -1133,16 +1360,22 @@ function selectCustomWidth() {
     }
 }
 
+/**
+ * Valide une largeur personnalisée
+ * @param {string} width - Largeur à valider
+ * @returns {boolean} - Vrai si valide
+ */
 function validateCustomWidth(width) {
-    // Vérifier que la largeur est positive
     return width.length > 0 && !isNaN(width) && width.length <= 3 && parseInt(width) > 0;
 }
 
-// ** Étape 4 : Sélection du câble **
+/**
+ * Met à jour les options de câble pour l'étape 4
+ */
 function updateStep4Options() {
     const cableButtonsDiv = document.getElementById('cableButtons');
     cableButtonsDiv.innerHTML = '';
-    cableButtonsDiv.className = 'button-container'; // Assure que le conteneur a la classe correcte
+    cableButtonsDiv.className = 'button-container';
 
     const profile = state.profile;
     const cables = state.beltsData.cables;
@@ -1157,11 +1390,19 @@ function updateStep4Options() {
     }
 }
 
+/**
+ * Vérifie la compatibilité entre un profil et un câble
+ * @param {string} profile - Code du profil
+ * @param {string} cable - Code du câble
+ * @returns {boolean} - Vrai si compatible
+ */
 function isCompatible(profile, cable) {
     return compatibilityTable(state.category)[profile] && compatibilityTable(state.category)[profile][cable];
 }
 
-// ** Étape 5 : Saisie de la taille **
+/**
+ * Valide la taille saisie
+ */
 function validateSize() {
     const sizeInput = document.getElementById('sizeInput');
     const size = sizeInput.value.trim();
@@ -1171,11 +1412,9 @@ function validateSize() {
     if (validateSizeInput(size)) {
         state.size = size.padStart(5, '0');
         
-        // Pour les profils spécifiques, on saute les options de revêtement
         if (skipFabric()) {
             resetResultsToInProgress();
             finalizeResult();
-            // Pour les courroies ouvertes (R), on finalise après le tissu
             if (state.category === 'R') {
                 showResultsPage();
             } else {
@@ -1184,11 +1423,9 @@ function validateSize() {
             return;
         }
         
-        // Toujours naviguer vers l'étape du tissu (7)
         resetResultsToInProgress();
         navigateToStep(7);
     } else {
-        // Proposer les tailles valides les plus proches
         const profileGroup = getProfileGroup(state.profile);
         const profile = state.beltsData.profiles[profileGroup][state.profile];
         const pitch = profile.pitch;
@@ -1201,20 +1438,25 @@ function validateSize() {
 
         if (state.suggestedSizes.length > 0) {
             updateSuggestedSizesUI(state.suggestedSizes);
-            navigateToStep(6); // Aller à l'étape de suggestion
+            navigateToStep(6);
         } else {
-            showError('lengthError'); // Si aucune suggestion, afficher l'erreur de longueur
+            showError('lengthError');
         }
     }
 }
 
+/**
+ * Valide la saisie de taille
+ * @param {string} size - Taille à valider
+ * @returns {boolean} - Vrai si valide
+ */
 function validateSizeInput(size) {
     if (!size || isNaN(size) || size.length > 5 || parseInt(size) <= 0) {
         showError('sizeError');
         return false;
     }
     
-    const sizeValue = parseInt(size); // Convertir la taille en entier
+    const sizeValue = parseInt(size);
     if (state.category !== 'U' && state.category !== 'R' && sizeValue < 600) {
         showError('lengthError');
         return false;
@@ -1222,7 +1464,7 @@ function validateSizeInput(size) {
     
     const profileGroup = getProfileGroup(state.profile);
     const profile = state.beltsData.profiles[profileGroup][state.profile];
-    const numberOfTeeth = sizeValue / profile.pitch; // Utiliser la valeur entière pour le calcul
+    const numberOfTeeth = sizeValue / profile.pitch;
     
     if (!Number.isInteger(numberOfTeeth)) {
         showError('teethError');
@@ -1232,11 +1474,14 @@ function validateSizeInput(size) {
     return true;
 }
 
-// ** Étape 6 : Tailles suggérées **
+/**
+ * Met à jour l'interface avec les tailles suggérées
+ * @param {Array} sizes - Tableau des tailles suggérées
+ */
 function updateSuggestedSizesUI(sizes) {
     const suggestionsContainer = document.getElementById('suggestedSizes');
-    suggestionsContainer.innerHTML = ''; // Effacer les suggestions précédentes
-    suggestionsContainer.className = 'button-container'; // Assure que le conteneur a la classe correcte
+    suggestionsContainer.innerHTML = '';
+    suggestionsContainer.className = 'button-container';
 
     sizes.forEach(size => {
         const button = document.createElement('button');
@@ -1246,24 +1491,25 @@ function updateSuggestedSizesUI(sizes) {
             
             if (skipFabric()) {
                 finalizeResult();
-                // Pour les courroies ouvertes (R), on finalise après le tissu
                 if (state.category === 'R') {
                     showResultsPage();
                 }
                 return;
             }
             
-            // Toujours naviguer vers l'étape du tissu (7)
             navigateToStep(7);
         };
         suggestionsContainer.appendChild(button);
     });
 }
 
-// ** Étape 7 : Sélection du revêtement **
+/**
+ * Sélectionne une option facultative
+ * @param {string} value - Valeur de l'option
+ * @param {string} desc - Description de l'option
+ */
 function selectOptionalOption(value, desc) {
     if (desc === 'PAZ' || desc === 'PAR' || desc === 'PAZAS' || desc === 'PARAS') {
-        // Toggle PAZ/PAZAS options
         if (state.fabricOption.includes(value)) { 
             state.fabricOption = state.fabricOption.replace(value, ''); 
             state.fabricOptionDesc = state.fabricOptionDesc.replace(desc, ''); 
@@ -1272,25 +1518,21 @@ function selectOptionalOption(value, desc) {
             state.fabricOptionDesc += desc; 
         }
     } else {
-        // Handle other options
         state.fabricOption = value; 
         state.fabricOptionDesc = desc; 
     }
 
-    // Clean up descriptions
     state.fabricOptionDesc = state.fabricOptionDesc.replace('Sans', ''); 
     if (state.fabricOptionDesc === '') { 
         state.fabricOption = ''; 
     }
 
-    // Pour les courroies ouvertes (R), finaliser après le choix du tissu
     if (state.category === 'R') {
         resetResultsToInProgress();
         finalizeResult();
         showResultsPage();
         return;
     }
-     // Pour les autres types, continuer vers l'étape du revêtement
     if (skipCoating()) {
         navigateToStep(9);
     } else {
@@ -1298,10 +1540,12 @@ function selectOptionalOption(value, desc) {
     }
 }
 
-// -----------------------------------------------------------------------------
-// Sélection générique d'options
-// -----------------------------------------------------------------------------
-
+/**
+ * Sélection générique d'options
+ * @param {string} prefix - Préfixe de l'option
+ * @param {string} value - Valeur de l'option
+ * @param {number} nextStep - Étape suivante
+ */
 function selectOption(prefix, value, nextStep) {
     console.log("Option sélectionnée:", value);
     console.log("Étape actuelle:", state.currentStep);
@@ -1320,12 +1564,14 @@ function selectOption(prefix, value, nextStep) {
             break;
     }
     
-    // Mettre à jour les résultats en temps réel après chaque sélection
     updateLiveResults();
     
     navigateToStep(nextStep);
 }
 
+/**
+ * Sélectionne un profil
+ */
 function selectProfile() {
     const profileSelect = document.getElementById('profileSelect');
     state.profile = profileSelect.value;
@@ -1335,25 +1581,24 @@ function selectProfile() {
 }
 
 // -----------------------------------------------------------------------------
-// Génération et affichage du code
+// 5. GÉNÉRATION ET AFFICHAGE DU CODE
 // -----------------------------------------------------------------------------
 
-// Fonction pour mettre à jour les résultats en temps réel
+/**
+ * Met à jour les résultats en temps réel
+ */
 function updateLiveResults() {
     try {
-        // Génération des codes basés sur l'état actuel
         let codeArticle = generateCodeArticle();
         let designation = generateDesignation();
         let codeStock = generateCodeStock();
         let alternativeCodeStock = generateAlternativeCodeStock();
         
-        // Mise à jour des conteneurs avec des textes plus courts
         updateResultContainer('result', `Code : <strong>${codeArticle || 'En cours...'}</strong>`);
         updateResultContainer('designation', `Désignation : <strong>${designation || 'En cours...'}</strong>`);
         updateResultContainer('CodeStock', `Stock : <strong>${codeStock || 'En cours...'}</strong>`);
         updateResultContainer('alternativeCodeStock', `Alternative : <strong>${alternativeCodeStock || 'En cours...'}</strong>`);
         
-        // Mettre à jour l'info de soudabilité si c'est une courroie V
         if (state.category === 'V' && state.profile && state.width) {
             updateWeldabilityInfo();
         }
@@ -1362,6 +1607,11 @@ function updateLiveResults() {
     }
 }
 
+/**
+ * Met à jour le conteneur de résultat
+ * @param {string} id - ID du conteneur
+ * @param {string} htmlContent - Contenu HTML à insérer
+ */
 function updateResultContainer(id, htmlContent) {
     const container = document.getElementById(id);
     if (container) {
@@ -1372,6 +1622,9 @@ function updateResultContainer(id, htmlContent) {
     }
 }
 
+/**
+ * Met à jour les informations de soudabilité
+ */
 function updateWeldabilityInfo() {
     const weldabilityElement = document.getElementById('weldabilityInfo');
     if (!weldabilityElement) return;
@@ -1379,10 +1632,13 @@ function updateWeldabilityInfo() {
     const weldabilityMessage = getWeldabilityMessage(state.profile, state.width);
     const cssClass = getWeldabilityClass(weldabilityMessage);
     weldabilityElement.className = `weldability ${cssClass}`;
-    weldabilityElement.innerHTML = `<strong>Faisabilité :</strong> ${weldabilityMessage}`; // Texte simplifié
+    weldabilityElement.innerHTML = `<strong>Faisabilité :</strong> ${weldabilityMessage}`;
 }
 
-// Générer le code article en fonction de l'état actuel
+/**
+ * Génère le code article en fonction de l'état actuel
+ * @returns {string} - Code article généré
+ */
 function generateCodeArticle() {
     if (!state.category) return '';
     
@@ -1390,7 +1646,6 @@ function generateCodeArticle() {
     let width = state.width || '';
     let size = state.size || '';
 
-    // Pour les profils impériaux, arrondir la longueur à l'entier inférieur
     if (state.profile && getProfileGroup(state.profile) === 'Imperial' && size) {
         size = Math.floor(parseInt(size)).toString().padStart(5, '0');
     }
@@ -1415,7 +1670,6 @@ function generateCodeArticle() {
             codeArticle = 'Format non défini';
     }
 
-    // Ajouter les options supplémentaires uniquement pour les courroies non ouvertes
     if (state.category !== 'R') {
         if (state.fabricOption) { 
             codeArticle += state.fabricOption; 
@@ -1437,37 +1691,36 @@ function generateCodeArticle() {
     return codeArticle;
 }
 
-// Finaliser les résultats et activer la copie
+/**
+ * Finalise les résultats et active la copie
+ */
 function finalizeResult() {
-    // Appeler une dernière fois la mise à jour des résultats
     updateLiveResults();
     
-    // Marquer les résultats comme finalisés
     document.querySelectorAll('.result-card').forEach(card => {
         card.classList.remove('in-progress');
         card.classList.add('finalized');
         card.style.cursor = 'pointer';
         
-        // Réactiver les événements de copie
         card.addEventListener('click', handleResultCardClick);
     });
     
-    // Rendre visible les conteneurs de résultats sans défiler la page
-    // Seulement si le conteneur de résultats n'est pas déjà visible
     const resultContainer = document.getElementById('result-container');
     const containerRect = resultContainer.getBoundingClientRect();
     
-    // Si le conteneur n'est pas visible dans la fenêtre actuelle
     if (containerRect.bottom > window.innerHeight || containerRect.top < 0) {
         resultContainer.scrollIntoView({ 
             behavior: 'smooth', 
-            block: 'end',  // Aligner avec le bas de la fenêtre
+            block: 'end',  
             inline: 'nearest' 
         });
     }
 }
 
-// Gestionnaire d'événement pour la copie du résultat
+/**
+ * Gestionnaire d'événement pour la copie du résultat
+ * @param {Event} event - Événement de clic
+ */
 function handleResultCardClick(event) {
     const contentElement = this.querySelector('.result-content');
     if (!contentElement) {
@@ -1489,7 +1742,6 @@ function handleResultCardClick(event) {
         .then(() => {
             this.classList.add('copied');
             
-            // Afficher une notification
             const tooltip = this.querySelector('.copy-tooltip');
             if (tooltip) {
                 const originalText = tooltip.textContent;
@@ -1506,6 +1758,10 @@ function handleResultCardClick(event) {
         });
 }
 
+/**
+ * Génère la désignation en fonction de l'état actuel
+ * @returns {string} - Désignation générée
+ */
 function generateDesignation() {
     try {
         const designationParts = [];
@@ -1519,7 +1775,6 @@ function generateDesignation() {
         }
 
         if (state.category === 'U') {
-            // Format de désignation iSync : "COURROIE PU ISYNC" [longueur]-[profil]
             designationParts.push(`COURROIE PU ISYNC ${parseInt(state.size)}-${state.profile}`);
         } else {
             designationParts.push(category.name);
@@ -1533,7 +1788,6 @@ function generateDesignation() {
 
             designationParts.push(cable.name);
 
-            // Pour les courroies qui ne sont pas de type R et qui ont une taille définie
             if (state.category !== 'R' && state.size) {
                 const profileGroup = getProfileGroup(state.profile);
                 const profile = state.beltsData.profiles[profileGroup][state.profile];
@@ -1542,7 +1796,6 @@ function generateDesignation() {
                     designationParts.push(`${numberOfTeeth} dents`);
                 }
 
-                // Ajouter les options supplémentaires uniquement pour les courroies non ouvertes
                 if (state.fabricOptionDesc && state.fabricOptionDesc !== 'Sans') { 
                     designationParts.push(state.fabricOptionDesc); 
                 }
@@ -1563,7 +1816,6 @@ function generateDesignation() {
                     designationParts.push(`${state.falseTeeth} EFT`);
                 }
             }
-            // Pour les courroies de type R, ajouter l'option de tissu si elle existe
             else if (state.category === 'R' && state.fabricOptionDesc && state.fabricOptionDesc !== 'Sans') {
                 designationParts.push(state.fabricOptionDesc);
             }
@@ -1576,21 +1828,22 @@ function generateDesignation() {
     }
 }
 
+/**
+ * Génère le code stock en fonction de l'état actuel
+ * @returns {string} - Code stock généré
+ */
 function generateCodeStock() {
     let codeStock = '';
     let selectedWidth = state.width;
 
-    // Pour les courroies R ou V, cherche la largeur standard disponible supérieure
     if (state.category === 'R' || state.category === 'V') {
         const profileGroup = getProfileGroup(state.profile);
         const profileData = state.beltsData.profiles[profileGroup][state.profile];
         
         if (profileData && profileData.widths) {
-            // Convertir la largeur actuelle en nombre pour comparaison
             const currentWidthNum = parseInt(selectedWidth);
             let foundStandardWidth = false;
             
-            // Chercher la première largeur standard supérieure ou égale
             for (const stdWidth of profileData.widths) {
                 const stdWidthNum = parseInt(stdWidth);
                 if (stdWidthNum >= currentWidthNum) {
@@ -1600,14 +1853,12 @@ function generateCodeStock() {
                 }
             }
             
-            // Si aucune largeur supérieure n'est trouvée, prendre la plus grande disponible
             if (!foundStandardWidth && profileData.widths.length > 0) {
                 selectedWidth = profileData.widths[profileData.widths.length - 1];
             }
         }
     }
 
-    // Cherche la prochaine largeur faisable pour les courroies V
     if (state.category === 'V' && getWeldability(state.profile, selectedWidth) !== 'YES') {
         const nextWidth = getNextWeldableWidth(state.profile, selectedWidth);
         if (nextWidth !== null) {
@@ -1616,7 +1867,6 @@ function generateCodeStock() {
     }
 
     if (state.category === 'U') {
-        // Format de code stock iSync : [longueur][profil]
         codeStock = `${parseInt(state.size)}${state.profile}`;
     } else if (state.category === 'R') {
         codeStock = `R${selectedWidth}${state.profile}${state.cable}`;
@@ -1633,6 +1883,10 @@ function generateCodeStock() {
     return codeStock;
 }
 
+/**
+ * Génère le code stock alternatif en fonction de l'état actuel
+ * @returns {string} - Code stock alternatif généré
+ */
 function generateAlternativeCodeStock() {
     let alternativeCodeStock = '';
     let selectedWidth = state.width;
@@ -1642,19 +1896,16 @@ function generateAlternativeCodeStock() {
     const profileData = state.beltsData.profiles[profileGroup][state.profile];
     const widths = profileData.widths.map(w => parseInt(w));
 
-    // Retirer les zéros en début de largeur sauf si c'est un profil Imperial
     if (getProfileGroup(state.profile) === 'Imperial') {
         selectedWidth = selectedWidth.replace(/^0+/, '');
         baseCode = 'R400';
     } else {
-        selectedWidth = selectedWidth.replace(/^0+/, ''); // Retirer les zéros en début
+        selectedWidth = selectedWidth.replace(/^0+/, '');
     }
 
-    // Trouver la largeur alternative
     let alternativeWidth = null;
     let originalWidth = parseInt(selectedWidth);
 
-    // Parcourir les largeurs disponibles en ordre décroissant pour prioriser la valeur la plus élevée
     for (let i = widths.length - 1; i >= 0; i--) {
         let width = widths[i];
         if (originalWidth % width === 0) {
@@ -1664,7 +1915,7 @@ function generateAlternativeCodeStock() {
     }
 
     if (alternativeWidth === null) {
-        return 'N/A'; // Si aucune largeur alternative valide n'est trouvée
+        return 'N/A';
     }
 
     if (state.category === 'U') {
@@ -1684,12 +1935,16 @@ function generateAlternativeCodeStock() {
     return alternativeCodeStock;
 }
 
+/**
+ * Valide le nombre de fausses dents
+ * @param {string} value - Valeur saisie
+ */
 function validateFalseTeeth(value) {
     if (value === '') {
         state.falseTeeth = '';
-        resetResultsToInProgress(); // Réinitialiser avant de finaliser
+        resetResultsToInProgress();
         finalizeResult();
-        showResultsPage(); // Afficher la page de résultats
+        showResultsPage();
         return;
     }
     
@@ -1703,7 +1958,7 @@ function validateFalseTeeth(value) {
     
     if (inputValue && !isNaN(inputValue) && parseInt(inputValue) > 0) {
         state.falseTeeth = inputValue;
-        resetResultsToInProgress(); // Réinitialiser avant de finaliser
+        resetResultsToInProgress();
         finalizeResult();
         showResultsPage();
     } else {
@@ -1712,30 +1967,43 @@ function validateFalseTeeth(value) {
 }
 
 // -----------------------------------------------------------------------------
-// Fonctions utilitaires
+// 6. FONCTIONS UTILITAIRES
 // -----------------------------------------------------------------------------
+
+/**
+ * Convertit une valeur en millimètres en pouces
+ * @param {number} mmValue - Valeur en millimètres
+ * @returns {string} - Valeur convertie en pouces
+ */
 function convertToInches(mmValue) {
     const inchesValue = (mmValue / 100).toFixed(2);
     return `${inchesValue}po`;
 }
 
+/**
+ * Obtient le groupe de profil pour un code de profil donné
+ * @param {string} profileCode - Code du profil
+ * @returns {string} - Groupe de profil
+ */
 function getProfileGroup(profileCode) {
     return Object.entries(state.beltsData.profiles).find(([group, profiles]) => 
         Object.keys(profiles).includes(profileCode)
     )[0];
 }
 
+/**
+ * Vérifie si l'étape de sélection de tissu doit être sautée
+ * @returns {boolean} - Vrai si l'étape doit être sautée
+ */
 function skipFabric() {
     if (state.profile.startsWith('ST') ||
         state.profile.startsWith('RP') ||
         state.profile.startsWith('E')) {
-        // Mode 1: Forcer "PAZ"
         state.fabricOption = '/Z';
         state.fabricOptionDesc = 'PAZ';
         return true;
     } else if (state.profile.startsWith('FT') ||
                state.profile.startsWith('FAT')) {
-        // Mode 2: Forcer "Sans"
         state.fabricOption = '';
         state.fabricOptionDesc = 'Sans';
         return true;
@@ -1743,15 +2011,23 @@ function skipFabric() {
     return false;
 }
 
+/**
+ * Vérifie si l'étape de sélection de revêtement doit être sautée
+ * @returns {boolean} - Vrai si l'étape doit être sautée
+ */
 function skipCoating() {
     const fabricOptions = ['PAR', 'PAZ + PAR', 'PARAS', 'PAZAS + PARAS'];
     if (fabricOptions.includes(state.fabricOptionDesc) || state.profile.startsWith('FT') || state.profile.startsWith('FAT')) {
-        selectFinalOption('', 'Sans', '', ''); // Sélectionner "Sans"
+        selectFinalOption('', 'Sans', '', '');
         return true;
     }
     return false;
 }
 
+/**
+ * Vérifie si l'étape de sélection de guide doit être sautée
+ * @returns {boolean} - Vrai si l'étape doit être sautée
+ */
 function skipGuide() {
     if (state.profile.startsWith('E') ||
         state.profile.startsWith('TK') ||
@@ -1764,31 +2040,46 @@ function skipGuide() {
     return false;
 }
 
+/**
+ * Vérifie si l'étape de sélection de fausses dents doit être sautée
+ * @returns {boolean} - Vrai si l'étape doit être sautée
+ */
 function skipFalseTeeth() {
     return !(['AT10', 'H', 'AT20', 'XH'].includes(state.profile));
 }
 
+/**
+ * Réinitialise les messages d'erreur
+ */
 function resetErrors() {
     ['sizeError', 'lengthError', 'teethError'].forEach(id => {
         document.getElementById(id).style.display = 'none';
     });
 }
 
+/**
+ * Affiche un message d'erreur
+ * @param {string} errorId - ID de l'élément d'erreur
+ */
 function showError(errorId) {
     document.getElementById(errorId).style.display = 'block';
 }
 
+/**
+ * Obtient la faisabilité de soudure pour un profil et une largeur donnés
+ * @param {string} profile - Code du profil
+ * @param {string} width - Largeur
+ * @returns {string} - Faisabilité de soudure
+ */
 function getWeldability(profile, width) {
     const weldabilityData = state.beltsData.weldability[profile];
     if (!weldabilityData) return 'NO';
 
-    // Vérifier si la largeur actuelle est faisable
     const currentWeldability = weldabilityData[width];
     if (currentWeldability === 'YES') {
         return 'YES';
     }
 
-    // Vérifier les largeurs supérieures pour un YES atteignable
     const profileGroup = getProfileGroup(profile);
     const profileData = state.beltsData.profiles[profileGroup][profile];
     const widths = profileData.widths;
@@ -1803,6 +2094,12 @@ function getWeldability(profile, width) {
     return currentWeldability || 'NO';
 }
 
+/**
+ * Obtient la prochaine largeur soudable pour un profil donné
+ * @param {string} profile - Code du profil
+ * @param {string} currentWidth - Largeur actuelle
+ * @returns {string|null} - Prochaine largeur soudable ou null
+ */
 function getNextWeldableWidth(profile, currentWidth) {
     const profileGroup = getProfileGroup(profile);
     const profileData = state.beltsData.profiles[profileGroup][profile];
@@ -1816,9 +2113,14 @@ function getNextWeldableWidth(profile, currentWidth) {
         }
     }
 
-    return null; // Si aucune largeur faisable plus grande n'est trouvée, retourner null
+    return null;
 }
 
+/**
+ * Obtient la classe CSS de faisabilité de soudure
+ * @param {string} message - Message de faisabilité
+ * @returns {string} - Classe CSS
+ */
 function getWeldabilityClass(message) {
     if (message === state.beltsData.messages.YES) {
         return 'weldability-ok';
@@ -1828,24 +2130,44 @@ function getWeldabilityClass(message) {
     return 'weldability-attention';
 }
 
+/**
+ * Obtient le message de faisabilité de soudure
+ * @param {string} profile - Code du profil
+ * @param {string} width - Largeur
+ * @returns {string} - Message de faisabilité
+ */
 function getWeldabilityMessage(profile, width) {
     const weldability = getWeldability(profile, width);
     return state.beltsData.messages[weldability] || 'Information non disponible';
 }
 
-// Ajouter ces deux fonctions juste avant la section "Fonctions utilitaires"
+/**
+ * Gère l'événement de touche pour la largeur
+ * @param {Event} event - Événement de touche
+ */
 function handleWidthKeydown(event) {
     if (event.key === 'Enter') {
         selectCustomWidth();
     }
 }
 
+/**
+ * Gère l'événement de touche pour la longueur
+ * @param {Event} event - Événement de touche
+ */
 function handleLengthKeydown(event) {
     if (event.key === 'Enter') {
         validateSize();
     }
 }
 
+/**
+ * Sélectionne l'option finale
+ * @param {string} code - Code de l'option
+ * @param {string} description - Description de l'option
+ * @param {string} durete - Dureté de l'option
+ * @param {string} couleur - Couleur de l'option
+ */
 function selectFinalOption(code, description, durete, couleur) {
     state.finalOption = code;
     state.finalOptionDesc = description;
@@ -1855,7 +2177,6 @@ function selectFinalOption(code, description, durete, couleur) {
         state.finalOptionDesc = '';
     }
     
-    // Réinitialiser les résultats à "en cours"
     resetResultsToInProgress();
     
     if (requiresCoatingThickness(code)) {
@@ -1865,11 +2186,14 @@ function selectFinalOption(code, description, durete, couleur) {
             finalizeResult();
             showResultsPage();
         } else {
-            navigateToStep(9); // Aller à l'étape 9 après la sélection de l'option finale
+            navigateToStep(9);
         }
     }
 }
 
+/**
+ * Valide l'épaisseur du revêtement
+ */
 function validateCoatingThickness() {
 	const thicknessInput = document.getElementById('coatingThicknessInput').value;
 	if (thicknessInput && !isNaN(thicknessInput) && parseFloat(thicknessInput) > 0) {
@@ -1880,120 +2204,28 @@ function validateCoatingThickness() {
 	}
 }
 
+/**
+ * Sélectionne un guide
+ * @param {string} guideCode - Code du guide
+ */
 function selectGuide(guideCode) {
     state.guide = guideCode;
     state.guideDesc = guideCode ? `avec Guide ${guideCode}` : '';
     
-    // Réinitialiser les résultats à "en cours"
     resetResultsToInProgress();
     
-    // Pour les courroies ouvertes (R), finaliser après le choix du tissu
     if (state.category === 'R') {
         finalizeResult();
         showResultsPage();
         return;
     }
     
-    // Si le profil nécessite l'étape des fausses dents, la proposer
     if (skipFalseTeeth()) {
-        // Sinon, finaliser directement
         finalizeResult();
         showResultsPage();
     } else {
         navigateToStep(10);
     }
-}
-
-// -----------------------------------------------------------------------------
-// Ajustement dynamique de la taille des boutons en fonction de leur nombre
-// -----------------------------------------------------------------------------
-function adjustButtonSizes() {
-    // Pour l'étape 8 (revêtements)
-    const step8CategoryContainers = document.querySelectorAll('#step8 .category-buttons');
-    step8CategoryContainers.forEach(container => {
-        const buttonCount = container.querySelectorAll('.category-image-button').length;
-        if (buttonCount > 8) {
-            container.classList.add('high-density');
-            container.classList.remove('medium-density', 'low-density');
-        } else if (buttonCount > 5) {
-            container.classList.add('medium-density');
-            container.classList.remove('high-density', 'low-density');
-        } else {
-            container.classList.add('low-density');
-            container.classList.remove('high-density', 'medium-density');
-        }
-    });
-    
-    // Pour l'étape 1 (catégories)
-    const step1Container = document.querySelector('#step1 .category-buttons');
-    if (step1Container) {
-        const buttonCount = step1Container.querySelectorAll('..category-image-button').length;
-        if (buttonCount <= 5) {
-            step1Container.classList.add('low-density');
-        }
-    }
-}
-
-// Fonction pour modifier la taille des boutons selon la section
-function updateButtonSizesBasedOnSection(sectionId) {
-    const buttons = document.querySelectorAll(`${sectionId} .category-image-button`);
-    
-    // Définir les tailles en fonction de la section
-    let width, height;
-    switch (sectionId) {
-        case '#step1': // Page d'accueil - grands boutons
-            width = '140px';
-            height = '140px';
-            break;
-        case '#step7': // Tissus - taille moyenne
-            width = '120px';
-            height = '120px';
-            break;
-        case '#step8': // Revêtements - petits boutons car nombreux
-            width = '100px';
-            height = '110px';
-            break;
-        default:
-            return; // Ne rien faire pour les autres sections
-    }
-    
-    // Appliquer les tailles
-    buttons.forEach(button => {
-        button.style.width = width;
-        button.style.height = height;
-    });
-}
-
-// Optimisation des grilles de boutons
-function optimizeButtonGrids() {
-    // Adapter les grilles en fonction du nombre de boutons
-    document.querySelectorAll('.category-buttons').forEach(container => {
-        const buttons = container.querySelectorAll('.category-image-button');
-        const buttonCount = buttons.length;
-        
-        // Centrer tous les conteneurs
-        container.style.marginLeft = 'auto';
-        container.style.marginRight = 'auto';
-        
-        // Si moins de 6 boutons, centrer la grille
-        if (buttonCount > 0 && buttonCount <= 5) {
-            container.style.display = 'flex';
-            container.style.flexWrap = 'wrap';
-            container.style.justifyContent = 'center';
-            container.style.maxWidth = `${buttonCount * 170}px`;
-        } else {
-            container.style.display = 'grid';
-            container.style.justifyItems = 'center';
-        }
-    });
-    
-    // Centrer les autres conteneurs de boutons
-    document.querySelectorAll('.button-container').forEach(container => {
-        container.style.display = 'flex';
-        container.style.flexWrap = 'wrap';
-        container.style.justifyContent = 'center';
-    });
-    
 }
 
 // Initialisation au chargement de la page
@@ -2003,16 +2235,16 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeApp();
         console.log("Application initialisée avec succès");
         
-        // Ajouter des attributs min aux champs numériques
         setupInputValidation();
     } catch (error) {
         console.error("Erreur lors de l'initialisation:", error);
     }
 });
 
-// Fonction pour configurer la validation des inputs
+/**
+ * Configuration de la validation des inputs
+ */
 function setupInputValidation() {
-    // Empêcher les valeurs négatives dans les champs numériques
     const numericInputs = [
         document.getElementById('customWidthInput'),
         document.getElementById('sizeInput'),
@@ -2021,29 +2253,22 @@ function setupInputValidation() {
     
     numericInputs.forEach(input => {
         if (input) {
-            // Ajouter l'attribut min pour empêcher les valeurs négatives dans l'UI
             input.setAttribute('min', '1');
             
-            // Écouter les événements input pour filtrer les caractères non autorisés
             input.addEventListener('input', function(e) {
-                // Remplacer tout caractère non numérique
                 this.value = this.value.replace(/[^0-9]/g, '');
                 
-                // Si la valeur commence par 0, la supprimer (sauf si c'est juste "0")
                 if (this.value.length > 1 && this.value.startsWith('0')) {
                     this.value = this.value.substring(1);
                 }
                 
-                // Si la valeur est vide ou 0, ne rien faire
                 if (this.value === '' || this.value === '0') {
-                    // On laisse l'utilisateur continuer à taper
                     return;
                 }
             });
         }
     });
     
-    // Mise à jour des messages d'erreur
     const customWidthError = document.getElementById('customWidthError');
     if (customWidthError) {
         customWidthError.textContent = 'Veuillez entrer une largeur valide (nombre positif, max 3 chiffres).';
@@ -2067,88 +2292,12 @@ window.addEventListener('resize', () => {
     }
 });
 
-// Réinitialise complètement l'application pour recommencer
-function restartApp() {
-    console.log("Redémarrage de l'application...");
-    
-    // Réinitialiser l'état
-    for (let key in state) {
-        if (key !== 'beltsData') { // Garder les données de référence
-            state[key] = '';
-        }
-    }
-    state.currentStep = 1;
-    
-    // Réinitialiser les éléments d'interface
-    resetResultsToInProgress();
-    
-    // Masquer toutes les étapes et afficher l'étape 1
-    document.querySelectorAll('.step').forEach(step => {
-        step.classList.remove('active');
-    });
-    document.getElementById('step1').classList.add('active');
-    
-    // Nettoyer les inputs si présents
-    const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
-    inputs.forEach(input => input.value = '');
-    
-    // Réinitialiser le select du profil
-    const profileSelect = document.getElementById('profileSelect');
-    if (profileSelect) profileSelect.innerHTML = '';
-    
-    // Nettoyer les infos de soudabilité
-    const weldabilityElement = document.getElementById('weldabilityInfo');
-    if (weldabilityElement) {
-        weldabilityElement.innerHTML = '';
-        weldabilityElement.className = 'weldability';
-    }
-    
-    // Mettre à jour la barre de progression
-    updateProgress(1);
-    
-    // Mettre à jour les boutons pour l'étape 1
-    adjustButtonSizes();
-    optimizeButtonGrids();
-    
-    console.log("Application redémarrée, retour à l'étape 1");
-}
-
-function goBack(previousStep) {
-    console.log("Retour à l'étape:", previousStep);
-    
-    // Naviguer vers l'étape précédente
-    resetResultsToInProgress(); // Mettre les résultats en "mode en cours" lorsqu'on revient en arrière
-    navigateToStep(previousStep);
-}
-
-// Réinitialiser les résultats à "en cours"
-function resetResultsToInProgress() {
-    document.querySelectorAll('.result-card').forEach(card => {
-        // Remettre les cartes en mode "en cours"
-        card.classList.remove('finalized');
-        card.classList.add('in-progress');
-        card.style.cursor = 'default';
-        
-        // Désactiver les événements de copie
-        card.removeEventListener('click', handleResultCardClick);
-        
-        // Mettre à jour le contenu des résultats avec "En cours..."
-        updateResultContainer('result', `Code : <strong>En cours...</strong>`);
-        updateResultContainer('designation', `Désignation : <strong>En cours...</strong>`);
-        updateResultContainer('CodeStock', `Stock : <strong>En cours...</strong>`);
-        updateResultContainer('alternativeCodeStock', `Alternative : <strong>En cours...</strong>`);
-        
-        // Masquer l'info de soudabilité
-        const weldabilityElement = document.getElementById('weldabilityInfo');
-        if (weldabilityElement) {
-            weldabilityElement.className = 'weldability';
-            weldabilityElement.innerHTML = '';
-        }
-    });
-}
-
+/**
+ * Vérifie si une option nécessite une épaisseur de revêtement
+ * @param {string} code - Code de l'option
+ * @returns {boolean} - Vrai si une épaisseur est requise
+ */
 function requiresCoatingThickness(code) {
-    // Vérifier si le code nécessite une épaisseur de revêtement
     const excludedCodes = ['', 'SG50T', 'FBPU', 'FBPVC', 'SG50R', 'SG60', 'SG70', 'MG'];
     return !excludedCodes.includes(code);
 }
