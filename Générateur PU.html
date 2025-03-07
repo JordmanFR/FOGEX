@@ -120,12 +120,18 @@
             <button class="restart-button" onclick="restartApp()">Recommencer</button>
             <button class="back-button" onclick="goBack(4)">Retour</button>
         </div>
-        <h3>Entrez la longueur en mm</h3>
+        <h3 id="lengthTitleLabel">Entrez la longueur en mm</h3>
         <div class="step-description" id="step5-description">Soudure pas possible ici sous 1000mm et il peut y avoir des traces sous 1200mm</div>
-        <input type="number" id="sizeInput" placeholder="Entrez la longueur en mm" min="1" max="99999" onkeydown="handleLengthKeydown(event)">
-        <div id="sizeError" class="error">Veuillez entrer une taille valide.</div>
-        <div id="lengthError" class="error">La longueur doit être supérieure ou égale à 1000 mm.</div>
-        <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
+        <div id="mm-input-container">
+            <input type="number" id="sizeInput" placeholder="Entrez la longueur en mm" min="1" max="99999" onkeydown="handleLengthKeydown(event)">
+            <div id="sizeError" class="error">Veuillez entrer une taille valide.</div>
+            <div id="lengthError" class="error">La longueur doit être supérieure ou égale à 1000 mm.</div>
+            <div id="teethError" class="error">La longueur saisie ne donne pas un nombre de dents entier.</div>
+        </div>
+        <div id="m-input-container" style="display: none;">
+            <input type="number" id="sizeMeterInput" placeholder="Entrez la longueur en mètres" min="1" max="500" step="0.1" onkeydown="handleMeterLengthKeydown(event)">
+            <div id="meterSizeError" class="error">Veuillez entrer une longueur valide.</div>
+        </div>
         <div class="button-container">
             <button onclick="validateSize()">Valider</button>
         </div>
@@ -151,30 +157,30 @@
         <h3>Besoin d'un revêtement en tissu ?</h3>
         <div class="step-description" id="step7-description">Une surcouche polyamide permet un meilleur engagement de la dent et une réduction du bruit</div>
         <div class="button-container">
-            <button onclick="selectOptionalOption('', 'Sans')" style="width: 200px;">Sans</button>
+            <button onclick="selectFabric('', 'Sans')" style="width: 200px;">Sans</button>
         </div>
         <h4>Standard</h4>
         <div class="category-buttons centered-grid">
-            <button class="category-image-button" onclick="selectOptionalOption('/Z', 'PAZ', 8)">
+            <button class="category-image-button" onclick="selectFabric('/Z', 'PAZ', 8)">
                 <img src="images/PAZ.jpg" alt="PAZ">
                 <span class="button-text">Dents</span>
             </button>
-            <button class="category-image-button" onclick="selectOptionalOption('/R', 'PAR', 8)">
+            <button class="category-image-button" onclick="selectFabric('/R', 'PAR', 8)">
                 <img src="images/PAR.jpg" alt="PAR">
                 <span class="button-text">Dos</span>
             </button>
-            <button class="category-image-button" onclick="selectOptionalOption('/D', 'PAZ + PAR', 8)">
+            <button class="category-image-button" onclick="selectFabric('/D', 'PAZ + PAR', 8)">
                 <img src="images/PAD.jpg" alt="PAZ + PAR">
                 <span class="button-text">Dents et dos</span>
             </button>
         </div>
         <h4>Antistatique</h4>
         <div class="category-buttons centered-grid">
-            <button class="category-image-button" onclick="selectOptionalOption('/ZS', 'PAZAS', 8)">
+            <button class="category-image-button" onclick="selectFabric('/ZS', 'PAZAS', 8)">
                 <img src="images/PAZAS.jpg" alt="PAZ Antistatique">Dents</button>
-            <button class="category-image-button" onclick="selectOptionalOption('/RS', 'PARAS', 8)">
+            <button class="category-image-button" onclick="selectFabric('/RS', 'PARAS', 8)">
                 <img src="images/PARAS.jpg" alt="PAR Antistatique">Dos</button>
-            <button class="category-image-button" onclick="selectOptionalOption('/DS', 'PAZAS + PARAS', 8)">
+            <button class="category-image-button" onclick="selectFabric('/DS', 'PAZAS + PARAS', 8)">
                 <img src="images/PADAS.jpg" alt="PAZ + PAR Antistatique">Dents et dos</button>
         </div>
     </div>

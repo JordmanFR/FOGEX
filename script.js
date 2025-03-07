@@ -16,8 +16,8 @@ const state = {
     profile: '',
     cable: '',
     size: '',
-    optionalOption1: '',
-    optionalOption1Desc: '',
+    Fabric1: '',
+    Fabric1Desc: '',
     beltsData: {},
     suggestedSizes: [],
     finalOption: '',
@@ -1078,14 +1078,6 @@ function navigateToStep(nextStep) {
     
     // Mettre à jour les résultats en temps réel
     updateLiveResults();
-    
-    // Si on arrive à l'étape 8 et que le profil commence par "E" ou contient "K", on saute l'étape 9
-    if (nextStep === 8 && (state.profile.startsWith('E') || state.profile.includes('K'))) {
-        console.log("Profil EAGLE ou avec guide détecté, on saute l'étape 9");
-        resetResultsToInProgress();
-        finalizeResult();
-        showResultsPage();
-    }
 }
 
 /**
@@ -1412,19 +1404,24 @@ function validateSize() {
     if (validateSizeInput(size)) {
         state.size = size.padStart(5, '0');
         
+        let nextStep = 7; // Étape par défaut : sélection du tissu
+
         if (skipFabric()) {
-            resetResultsToInProgress();
-            finalizeResult();
-            if (state.category === 'R') {
-                showResultsPage();
+            if (skipCoating()) {
+                if (skipGuide()) {
+                    finalizeResult();
+                    showResultsPage();
+                    return;
+                } else {
+                    nextStep = 9; // Guide
+                }
             } else {
-                showResultsPage();
+                nextStep = 8; // Revêtement
             }
-            return;
         }
         
         resetResultsToInProgress();
-        navigateToStep(7);
+        navigateToStep(nextStep);
     } else {
         const profileGroup = getProfileGroup(state.profile);
         const profile = state.beltsData.profiles[profileGroup][state.profile];
@@ -1508,7 +1505,7 @@ function updateSuggestedSizesUI(sizes) {
  * @param {string} value - Valeur de l'option
  * @param {string} desc - Description de l'option
  */
-function selectOptionalOption(value, desc) {
+function selectFabric(value, desc) {
     if (desc === 'PAZ' || desc === 'PAR' || desc === 'PAZAS' || desc === 'PARAS') {
         if (state.fabricOption.includes(value)) { 
             state.fabricOption = state.fabricOption.replace(value, ''); 
@@ -1533,11 +1530,20 @@ function selectOptionalOption(value, desc) {
         showResultsPage();
         return;
     }
+
+    let nextStep = 8; // Par défaut, aller à l'étape 8 (revêtement)
+
     if (skipCoating()) {
-        navigateToStep(9);
-    } else {
-        navigateToStep(8);
+        if (skipGuide()) {
+            finalizeResult();
+            showResultsPage();
+            return;
+        } else {
+            nextStep = 9; // Si on saute le revêtement, aller à l'étape 9 (guide)
+        }
     }
+
+    navigateToStep(nextStep);
 }
 
 /**
@@ -2002,8 +2008,7 @@ function skipFabric() {
         state.fabricOption = '/Z';
         state.fabricOptionDesc = 'PAZ';
         return true;
-    } else if (state.profile.startsWith('FT') ||
-               state.profile.startsWith('FAT')) {
+    } else if (state.profile.startsWith('F') ) {
         state.fabricOption = '';
         state.fabricOptionDesc = 'Sans';
         return true;
@@ -2045,7 +2050,7 @@ function skipGuide() {
  * @returns {boolean} - Vrai si l'étape doit être sautée
  */
 function skipFalseTeeth() {
-    return !(['AT10', 'H', 'AT20', 'XH'].includes(state.profile));
+    return !(['AT10', 'FAT10', 'H', 'AT20', 'XH'].includes(state.profile));
 }
 
 /**
@@ -2182,12 +2187,19 @@ function selectFinalOption(code, description, durete, couleur) {
     if (requiresCoatingThickness(code)) {
         navigateToStep(8.5);
     } else {
+        let nextStep = 9; // Étape par défaut : sélection du guide
+
         if (skipGuide()) {
-            finalizeResult();
-            showResultsPage();
-        } else {
-            navigateToStep(9);
+            if (skipFalseTeeth()) {
+                finalizeResult();
+                showResultsPage();
+                return;
+            } else {
+                nextStep = 10; // Fausses dents
+            }
         }
+
+        navigateToStep(nextStep);
     }
 }
 
