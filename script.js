@@ -19,6 +19,7 @@ const state = {
     Fabric1: '',
     Fabric1Desc: '',
     beltsData: {},
+    tariffData: {},
     suggestedSizes: [],
     finalOption: '',
     finalOptionDesc: '',
@@ -726,6 +727,7 @@ const compatibilityTable = (category) => {
 function initializeApp() {
     console.log("Initialisation de l'application...");
     state.beltsData = beltsData;
+    loadTariffData(); // Load tariff data
     setupInitialUI();
     setupThemeSwitcher();
     setupCopyButtons();
@@ -742,6 +744,23 @@ function initializeApp() {
     // Vérifier si la page est bien chargée
     console.log("Application initialisée, étape actuelle:", state.currentStep);
     console.log("Données chargées:", Object.keys(state.beltsData).length > 0 ? "Oui" : "Non");
+}
+
+/**
+ * Chargement des données de tarification depuis le fichier JSON
+ */
+async function loadTariffData() {
+    try {
+        const response = await fetch('tarif.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        state.tariffData = data;
+        console.log("Données de tarification chargées avec succès");
+    } catch (error) {
+        console.error("Échec du chargement des données de tarification:", error);
+    }
 }
 
 /**
@@ -775,6 +794,8 @@ function initializeResultContainers() {
                 contentElement.innerHTML = 'Stock : <strong>En cours...</strong>';
             } else if (contentElement.parentElement.id === 'alternativeCodeStock') {
                 contentElement.innerHTML = 'Alternative : <strong>En cours...</strong>';
+            } else if (contentElement.parentElement.id === 'priceResult') {
+                contentElement.innerHTML = 'Prix estimé : <strong>En cours...</strong>';
             }
         }
     });
@@ -1180,38 +1201,7 @@ function goBack(previousStep) {
  */
 function restartApp() {
     console.log("Redémarrage de l'application...");
-    
-    for (let key in state) {
-        if (key !== 'beltsData') {
-            state[key] = '';
-        }
-    }
-    state.currentStep = 1;
-    
-    resetResultsToInProgress();
-    
-    document.querySelectorAll('.step').forEach(step => {
-        step.classList.remove('active');
-    });
-    document.getElementById('step1').classList.add('active');
-    
-    const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
-    inputs.forEach(input => input.value = '');
-    
-    const profileSelect = document.getElementById('profileSelect');
-    if (profileSelect) profileSelect.innerHTML = '';
-    
-    const weldabilityElement = document.getElementById('weldabilityInfo');
-    if (weldabilityElement) {
-        weldabilityElement.innerHTML = '';
-        weldabilityElement.className = 'weldability';
-    }
-    
-    updateProgress(1);
-    
-    adjustButtonSizes();
-    optimizeButtonGrids();
-    
+    location.reload();
     console.log("Application redémarrée, retour à l'étape 1");
 }
 
@@ -1230,6 +1220,7 @@ function resetResultsToInProgress() {
         updateResultContainer('designation', `Désignation : <strong>En cours...</strong>`);
         updateResultContainer('CodeStock', `Stock : <strong>En cours...</strong>`);
         updateResultContainer('alternativeCodeStock', `Alternative : <strong>En cours...</strong>`);
+        updateResultContainer('priceResult', `Prix estimé : <strong>En cours...</strong>`);
         
         const weldabilityElement = document.getElementById('weldabilityInfo');
         if (weldabilityElement) {
@@ -1676,22 +1667,20 @@ function generateCodeArticle() {
             codeArticle = 'Format non défini';
     }
 
-    if (state.category !== 'R') {
-        if (state.fabricOption) { 
-            codeArticle += state.fabricOption; 
-        }
+    if (state.fabricOption) { 
+        codeArticle += state.fabricOption; 
+    }
 
-        if (state.finalOption) {
-            codeArticle += "+" + state.finalOption;
-        }
+    if (state.finalOption) {
+        codeArticle += "+" + state.finalOption;
+    }
 
-        if (state.guide) {
-            codeArticle += "+" + state.guide;
-        }
+    if (state.guide) {
+        codeArticle += "+" + state.guide;
+    }
 
-        if (state.falseTeeth) {
-            codeArticle += "+EFT" + state.falseTeeth;
-        }
+    if (state.falseTeeth) {
+        codeArticle += "+EFT" + state.falseTeeth;
     }
 
     return codeArticle;
@@ -1702,6 +1691,14 @@ function generateCodeArticle() {
  */
 function finalizeResult() {
     updateLiveResults();
+    
+    // Calculer et afficher le prix
+    const price = calculatePrice();
+    if (price !== null) {
+        updateResultContainer('priceResult', `Prix estimé : <strong>${price.toFixed(2)}€</strong>`);
+    } else {
+        updateResultContainer('priceResult', `Prix estimé : <strong>Non disponible</strong>`);
+    }
     
     document.querySelectorAll('.result-card').forEach(card => {
         card.classList.remove('in-progress');
@@ -2312,5 +2309,81 @@ window.addEventListener('resize', () => {
 function requiresCoatingThickness(code) {
     const excludedCodes = ['', 'SG50T', 'FBPU', 'FBPVC', 'SG50R', 'SG60', 'SG70', 'MG'];
     return !excludedCodes.includes(code);
+}
+
+/**
+ * Calcule le prix en fonction des sélections utilisateur
+ * @returns {number|null} - Prix calculé ou null si non disponible
+ */
+function calculatePrice() {
+    if (!state.tariffData || Object.keys(state.tariffData).length === 0) {
+        console.error("Données de tarification non chargées");
+        return null;
+    }
+    
+    let price = 0;
+    const tariff = state.tariffData;
+    
+    // Obtenir le prix de base
+    if (state.category && state.profile && state.width) {
+        let categoryData = tariff.categories[state.category];
+        
+        // Gérer la référence de catégorie (comme V référençant R)
+        if (categoryData && categoryData.reference_to) {
+            categoryData = tariff.categories[categoryData.reference_to];
+        }
+        
+        if (!categoryData) {
+            console.error("Catégorie non trouvée dans les données de tarification");
+            return null;
+        }
+        
+        // Trouver le groupe de profil
+        const profileGroup = getProfileGroup(state.profile);
+        if (profileGroup && categoryData.profiles && 
+            categoryData.profiles[profileGroup] && 
+            categoryData.profiles[profileGroup][state.profile]) {
+            
+            const widths = categoryData.profiles[profileGroup][state.profile].widths;
+            if (widths && widths[state.width] !== undefined) {
+                const basePrice = widths[state.width];
+                
+                if (basePrice !== null) {
+                    // Si le prix est au mètre et que nous avons une taille
+                    if (categoryData.price_per_meter && state.size) {
+                        const sizeInMeters = parseInt(state.size) / 1000;
+                        price = basePrice * sizeInMeters;
+                    } else {
+                        price = basePrice;
+                    }
+                    
+                    // Appliquer le facteur de câble
+                    if (state.cable && tariff.cables[state.cable]) {
+                        price *= tariff.cables[state.cable].factor;
+                    }
+                    
+                    // Appliquer le facteur de tissu
+                    if (state.fabricOption && tariff.options.revêtement_tissu[state.fabricOption]) {
+                        price *= tariff.options.revêtement_tissu[state.fabricOption].factor;
+                    }
+                    
+                    // Ajouter le prix du guide
+                    if (state.guide && tariff.options.guide[state.guide]) {
+                        const guidePrice = tariff.options.guide[state.guide].price_meter;
+                        if (state.size) {
+                            price += (guidePrice * (parseInt(state.size) / 1000));
+                        }
+                    }
+                    
+                    // Ajouter le prix des fausses dents
+                    if (state.falseTeeth && tariff.options.fausses_dents) {
+                        price += (parseInt(state.falseTeeth) * tariff.options.fausses_dents.price_per_tooth);
+                    }
+                }
+            }
+        }
+    }
+    
+    return price > 0 ? price : null;
 }
 
