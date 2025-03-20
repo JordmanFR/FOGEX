@@ -793,7 +793,7 @@ function initializeResultContainers() {
             } else if (contentElement.parentElement.id === 'CodeStock') {
                 contentElement.innerHTML = 'Stock : <strong>En cours...</strong>';
             } else if (contentElement.parentElement.id === 'alternativeCodeStock') {
-                contentElement.innerHTML = 'Alternative : <strong>En cours...</strong>';
+                contentElement.innerHTML = 'Stock avec : <strong>En cours...</strong>';
             } else if (contentElement.parentElement.id === 'priceResult') {
                 contentElement.innerHTML = 'Prix estimé : <strong>En cours...</strong>';
             }
@@ -1219,7 +1219,7 @@ function resetResultsToInProgress() {
         updateResultContainer('result', `Code : <strong>En cours...</strong>`);
         updateResultContainer('designation', `Désignation : <strong>En cours...</strong>`);
         updateResultContainer('CodeStock', `Stock : <strong>En cours...</strong>`);
-        updateResultContainer('alternativeCodeStock', `Alternative : <strong>En cours...</strong>`);
+        updateResultContainer('alternativeCodeStock', `Stock avec MOQ : <strong>En cours...</strong>`);
         updateResultContainer('priceResult', `Prix estimé : <strong>En cours...</strong>`);
         
         const weldabilityElement = document.getElementById('weldabilityInfo');
@@ -1594,7 +1594,7 @@ function updateLiveResults() {
         updateResultContainer('result', `Code : <strong>${codeArticle || 'En cours...'}</strong>`);
         updateResultContainer('designation', `Désignation : <strong>${designation || 'En cours...'}</strong>`);
         updateResultContainer('CodeStock', `Stock : <strong>${codeStock || 'En cours...'}</strong>`);
-        updateResultContainer('alternativeCodeStock', `Alternative : <strong>${alternativeCodeStock || 'En cours...'}</strong>`);
+        updateResultContainer('alternativeCodeStock', `Stock avec MOQ : <strong>${alternativeCodeStock || 'En cours...'}</strong>`);
         
         if (state.category === 'V' && state.profile && state.width) {
             updateWeldabilityInfo();
@@ -1698,6 +1698,14 @@ function finalizeResult() {
         updateResultContainer('priceResult', `Prix estimé : <strong>${price.toFixed(2)}€</strong>`);
     } else {
         updateResultContainer('priceResult', `Prix estimé : <strong>Non disponible</strong>`);
+    }
+
+    // Calculer et afficher le prix alternatif basé sur une largeur de 100mm
+    const alternativePrice = calculateAlternativePrice();
+    if (alternativePrice !== null) {
+        updateResultContainer('alternativePriceResult', `Prix avec MOQ : <strong>${alternativePrice.toFixed(2)}€</strong>`);
+    } else {
+        updateResultContainer('alternativePriceResult', `Prix avec MOQ : <strong>Non disponible</strong>`);
     }
     
     document.querySelectorAll('.result-card').forEach(card => {
@@ -2404,7 +2412,19 @@ function calculatePrice() {
                                 const pricePerSquareMeter = selectedOption.price_per_roll / rollSurfaceArea;
                                 
                                 // Calculer la surface de la courroie
-                                const beltWidth = parseInt(state.width) / 1000; // en m
+                                let beltWidth = parseInt(state.width) / 1000; // en m
+                                
+                                // Règle spéciale pour courroies soudées revêtues
+                                if (state.category === 'V') {
+                                    const widthValue = parseInt(state.width);
+                                    if (widthValue <= 50) {
+                                        beltWidth = 50 / 1000; // Minimum 50mm pour courroies jusqu'à 50mm
+                                    } else {
+                                        beltWidth = 100 / 1000; // 100mm pour courroies plus larges
+                                    }
+                                    console.log(`Largeur ajustée pour revêtement de courroie soudée: ${beltWidth * 1000}mm`);
+                                }
+                                
                                 const beltLength = parseInt(state.size) / 1000; // en m
                                 const coatingArea = beltWidth * beltLength; // en m²
                                 
@@ -2433,9 +2453,11 @@ function calculatePrice() {
                     
                     // Ajouter le prix du guide
                     if (state.guide && tariff.options.guide[state.guide]) {
-                        const guidePrice = tariff.options.guide[state.guide].price_meter;
+                        const guideBasePricePerMeter = tariff.options.guide[state.guide].price_meter;
+                        const guideTotalPricePerMeter = guideBasePricePerMeter + tariff.fixed_fees.usinage;
+                        
                         if (state.size) {
-                            price += (guidePrice * (parseInt(state.size) / 1000));
+                            price += (guideTotalPricePerMeter * (parseInt(state.size) / 1000));
                         }
                     }
                     
@@ -2469,15 +2491,65 @@ function calculatePrice() {
         price += tariff.fixed_fees.revêtement;
         if (state.size) {
             const sizeInMeters = parseInt(state.size) / 1000;
-            price += (5.00 * sizeInMeters); // 5.00€/m pour le revêtement
+            price += (3.00 * sizeInMeters); // 3.00€/m pour le revêtement
         }
     }
     
-    if (state.guide && state.size) {
-        const numberOfTeeth = Math.round(parseInt(state.size) / state.beltsData.profiles[getProfileGroup(state.profile)][state.profile].pitch);
-        price += (numberOfTeeth * tariff.fixed_fees.guide_ou_dent);
-    }
-    
     return price > 0 ? price : null;
+}
+
+/**
+ * Calcule le prix alternatif basé sur une largeur de 100mm
+ * @returns {number|null} - Prix alternatif calculé ou null si non disponible
+ */
+function calculateAlternativePrice() {
+    if (!state.tariffData || Object.keys(state.tariffData).length === 0) {
+        console.error("Données de tarification non chargées");
+        return null;
+    }
+
+    // Sauvegarder temporairement la largeur originale
+    const originalWidth = state.width;
+    
+    // Définir temporairement la largeur à 100mm
+    state.width = '100';
+
+    // Calculer le prix de base avec la largeur temporaire (sans guide ni fausses dents)
+    let alternativePrice = calculatePrice();
+
+    // Restaurer la largeur originale
+    state.width = originalWidth;
+
+    if (alternativePrice !== null && originalWidth) {
+        // Calculer les frais supplémentaires pour les guides et les fausses dents
+        let additionalCost = 0;
+        
+        // Ajouter le prix du guide (non divisible)
+        if (state.guide && state.tariffData.options.guide[state.guide] && state.size) {
+            const guideBasePricePerMeter = state.tariffData.options.guide[state.guide].price_meter;
+            const guideTotalPricePerMeter = guideBasePricePerMeter + state.tariffData.fixed_fees.usinage;
+            additionalCost += (guideTotalPricePerMeter * (parseInt(state.size) / 1000));
+        }
+        
+        // Ajouter le prix des fausses dents (non divisible)
+        if (state.falseTeeth && state.tariffData.options.fausses_dents) {
+            additionalCost += (parseInt(state.falseTeeth) * state.tariffData.options.fausses_dents.price_per_tooth);
+        }
+        
+        // Soustraire ces coûts supplémentaires avant la division
+        alternativePrice -= additionalCost;
+        
+        // Calculer le ratio de largeur et diviser le prix de base
+        const widthRatio = 100 / parseInt(originalWidth);
+        const integerRatio = Math.floor(widthRatio);
+        alternativePrice = alternativePrice / integerRatio;
+        
+        // Réajouter les coûts supplémentaires après la division
+        alternativePrice += additionalCost;
+        
+        return alternativePrice;
+    } else {
+        return null;
+    }
 }
 
