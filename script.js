@@ -2322,6 +2322,7 @@ function calculatePrice() {
     }
     
     let price = 0;
+    let basePrice = null; // Déclarer basePrice en dehors du bloc conditionnel
     const tariff = state.tariffData;
     
     // Obtenir le prix de base
@@ -2346,7 +2347,8 @@ function calculatePrice() {
             
             const widths = categoryData.profiles[profileGroup][state.profile].widths;
             if (widths && widths[state.width] !== undefined) {
-                const basePrice = widths[state.width];
+                basePrice = widths[state.width];
+                
                 
                 if (basePrice !== null) {
                     // Si le prix est au mètre et que nous avons une taille
@@ -2367,6 +2369,68 @@ function calculatePrice() {
                         price *= tariff.options.revêtement_tissu[state.fabricOption].factor;
                     }
                     
+                    // Appliquer le prix du revêtement basé sur l'épaisseur choisie
+                    if (state.finalOption && state.coatingThickness && state.size) {
+                        let coatingFound = false;
+                        
+                        // Parcourir les catégories de revêtement (caoutchouc, PVC_PU, etc.)
+                        for (const category in tariff.options.revêtement) {
+                            const categoryData = tariff.options.revêtement[category];
+                            
+                            // Vérifier si cette catégorie contient l'option sélectionnée
+                            if (categoryData && categoryData[state.finalOption]) {
+                                const coatingOptions = categoryData[state.finalOption];
+                                const requestedThickness = parseFloat(state.coatingThickness);
+                                
+                                // Filtrer les options avec un prix valide et trier par épaisseur
+                                const validOptions = coatingOptions
+                                    .filter(opt => opt.price_per_roll !== null)
+                                    .sort((a, b) => a.thickness_mm - b.thickness_mm);
+                                
+                                if (validOptions.length === 0) continue;
+                                
+                                // Trouver l'épaisseur égale ou juste supérieure
+                                let selectedOption = validOptions.find(opt => 
+                                    opt.thickness_mm >= requestedThickness);
+                                
+                                // Si aucune option supérieure n'est trouvée, prendre la plus grande disponible
+                                if (!selectedOption) {
+                                    selectedOption = validOptions[validOptions.length - 1];
+                                }
+                                
+                                // Calculer le prix du revêtement
+                                const rollSurfaceArea = selectedOption.roll_length_m * 
+                                                       (selectedOption.roll_width_mm / 1000); // en m²
+                                const pricePerSquareMeter = selectedOption.price_per_roll / rollSurfaceArea;
+                                
+                                // Calculer la surface de la courroie
+                                const beltWidth = parseInt(state.width) / 1000; // en m
+                                const beltLength = parseInt(state.size) / 1000; // en m
+                                const coatingArea = beltWidth * beltLength; // en m²
+                                
+                                // Ajouter le prix du revêtement au prix total
+                                const coatingPrice = pricePerSquareMeter * coatingArea;
+                                console.log("Surface du rouleau:", rollSurfaceArea, "m²");
+                                console.log("Prix au m²:", pricePerSquareMeter, "€/m²");
+                                console.log("Surface courroie:", coatingArea, "m²");
+                                console.log("Coût revêtement:", coatingPrice, "€");
+                                
+                                price += coatingPrice;
+                                coatingFound = true;
+                                break;
+                            }
+                        }
+                        
+                        // Si aucun prix spécifique n'est trouvé mais qu'un facteur existe
+                        if (!coatingFound && tariff.options.revêtement[state.finalOption]) {
+                            price *= tariff.options.revêtement[state.finalOption].factor;
+                        }
+                    } else if (state.finalOption && tariff.options.revêtement && 
+                              tariff.options.revêtement[state.finalOption]) {
+                        // Fallback à l'ancien système (avec facteur) si pas d'épaisseur spécifiée
+                        price *= tariff.options.revêtement[state.finalOption].factor;
+                    }
+                    
                     // Ajouter le prix du guide
                     if (state.guide && tariff.options.guide[state.guide]) {
                         const guidePrice = tariff.options.guide[state.guide].price_meter;
@@ -2382,6 +2446,36 @@ function calculatePrice() {
                 }
             }
         }
+    }
+    
+    // Ajouter les frais fixes
+    if (state.size) {
+        const sizeInMeters = parseInt(state.size) / 1000;
+        if (sizeInMeters < 5) {
+            price += tariff.fixed_fees.coupe.less_than_5m;
+        } else {
+            price += tariff.fixed_fees.coupe.greater_than_5m;
+        }
+    }
+    
+    if (state.category === 'V') {
+        // Ajouter les frais de soudure ou 1m de courroie si plus cher
+        const soudureCost = tariff.fixed_fees.soudure;
+        const oneMeterCost = basePrice;
+        price += Math.max(soudureCost, oneMeterCost);
+    }
+    
+    if (state.finalOption) {
+        price += tariff.fixed_fees.revêtement;
+        if (state.size) {
+            const sizeInMeters = parseInt(state.size) / 1000;
+            price += (5.00 * sizeInMeters); // 5.00€/m pour le revêtement
+        }
+    }
+    
+    if (state.guide && state.size) {
+        const numberOfTeeth = Math.round(parseInt(state.size) / state.beltsData.profiles[getProfileGroup(state.profile)][state.profile].pitch);
+        price += (numberOfTeeth * tariff.fixed_fees.guide_ou_dent);
     }
     
     return price > 0 ? price : null;
